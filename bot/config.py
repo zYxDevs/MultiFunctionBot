@@ -165,6 +165,11 @@ if len(JIODRIVE_CRYPT) == 0:
     LOGGER(__name__).warning("JIODRIVE_CRYPT not provided!")
     JIODRIVE_CRYPT = ""
 
+SHAREDRIVE_PHPCKS = environ.get("SHAREDRIVE_PHPCKS", "")
+if len(SHAREDRIVE_PHPCKS) == 0:
+    LOGGER(__name__).warning("SHAREDRIVE_PHPCKS not provided!")
+    SHAREDRIVE_PHPCKS = ""
+
 Sharerpw_XSRF = environ.get("Sharerpw_XSRF", "")
 Sharerpw_laravel = environ.get("Sharerpw_laravel", "")
 if len(Sharerpw_XSRF) == 0 or len(Sharerpw_laravel) == 0:

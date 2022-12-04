@@ -19,53 +19,13 @@ prefixes = COMMAND_PREFIXES
 commands = ["direct", f"direct@{BOT_USERNAME}"]
 
 
-async def send_dirlink_message(cmd, link_type, url, uname, uid, msg):
-    LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
-    a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
-    await msg.edit(text=a)
-
-
-async def send_dirlink_message2(
-    start, cmd, res, link_type, uname, uid, message, url, client
-):
-    time_taken = get_readable_time(time() - start)
-    LOGGER(__name__).info(f" Destination : {cmd} - {res}")
-    if link_type == "GoFile":
-        b = f"<b><i>Sorry! GoFile Bypass is not supported anymore</i></b>"
-    elif link_type == "MegaUp":
-        b = (
-            f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :</i></b>\n<code>{res}</code>\n\n"
-            f"<b><u>NOTE : </u></b>\n<i>MegaUp has Cloudflare Protection Enabled.So Do not use this Link in Mirror Bots.Use it from your Device and downloading will start.</i>"
-        )
-    elif (
-        link_type == "Bunkr.is"
-        or link_type == "CyberDrop"
-        or link_type == "Pixl.is"
-        or link_type == "Sendcm Folder"
-    ):
-        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Telegraph URL (containing Result) is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
-    else:
-        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
-    await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
-    try:
-        logmsg = f"<b><i>User:</i></b> {uid}\n<i>User URL:</i> {url}\n<i>Command:</i> {cmd}\n<i>Destination URL:</i> {res}\n\n<b><i>Time Taken:</i></b> {time_taken}"
-        await client.send_message(
-            chat_id=LOG_CHANNEL,
-            text=logmsg,
-            parse_mode=enums.ParseMode.HTML,
-            disable_web_page_preview=True,
-        )
-    except Exception as err:
-        LOGGER(__name__).error(f"BOT Log Channel Error: {err}")
-
-
 @Client.on_message(filters.command(commands, **prefixes))
 @user_commands
 async def direct(client, message: Message):
     """
     Get Direct Link for various Supported URLs
     """
-    global res, res2
+    global res, res2, time_taken
     fsub = await forcesub(client, message)
     if not fsub:
         return
@@ -104,6 +64,10 @@ async def direct(client, message: Message):
     uname = message.from_user.mention
     uid = f"<code>{message.from_user.id}</code>"
     user_id = message.from_user.id
+    if message.from_user.username:
+        user_ = f'<a href="tg://user?id={message.from_user.id}">{message.from_user.username}</a>'
+    else:
+        user_ = f'<a href="tg://user?id={message.from_user.id}">{message.from_user.first_name}</a>'
     if not await DatabaseHelper().is_user_exist(user_id):
         await DatabaseHelper().add_user(user_id)
         try:
@@ -129,15 +93,20 @@ async def direct(client, message: Message):
     is_fichier = is_fichier_link(url)
     if is_artstation:
         link_type = "ArtStation"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.artstation(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "mdisk." in url:
         link_type = "MDisk"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.mdisk(url)
         res2 = await direct_link.mdisk_mpd(url)
         sleep(1)
@@ -145,349 +114,462 @@ async def direct(client, message: Message):
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b><i>Download Link: {res}\n MPD Link: {res2}</i></b>\n\n<i>Time Taken : {time_taken}</i>"
         await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
-        try:
-            logmsg = f"<b><i>User:</i></b> {uid}\n<i>User URL:</i> {url}\n<i>Command:</i> {cmd}\n<i>Destination URL:</i> {res}\n{res2}\n\n<b><i>Time Taken:</i></b> {time_taken}"
-            await client.send_message(
-                chat_id=LOG_CHANNEL,
-                text=logmsg,
-                parse_mode=enums.ParseMode.HTML,
-                disable_web_page_preview=True,
-            )
-        except Exception as err:
-            LOGGER(__name__).error(f"BOT Log Channel Error: {err}")
     elif "wetransfer." in url or "we.tl" in url:
         link_type = "WeTransfer"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.wetransfer(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "gdbot." in url:
         link_type = "GDBot"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.gdbot(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "gofile." in url:
         link_type = "GoFile"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         # res = await direct_link.gofile(url)
         res = url  # Temporary Solution
-        sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        """ sleep(1)
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>" """
+        b = f"<b><i>Sorry! GoFile Bypass is not supported anymore</i></b>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "megaup." in url:
         link_type = "MegaUp"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.megaup(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = (
+            f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :</i></b>\n<code>{res}</code>\n\n"
+            f"<b><u>NOTE : </u></b>\n<i>MegaUp has Cloudflare Protection Enabled.So Do not use this Link in Mirror Bots.Use it from your Device and downloading will start.</i>"
         )
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "sfile.mobi" in url:
         link_type = "Sfile.mobi"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.sfile(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif any(x in url for x in yandisk_list):
         link_type = "Yandex Disk"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.yandex_disk(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "osdn." in url:
         link_type = "OSDN"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.osdn(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "github.com" in url:
         link_type = "Github"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.github(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "mediafire." in url:
         link_type = "MediaFire"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.mediafire(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "zippyshare." in url:
         link_type = "ZippyShare"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.zippyshare(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "hxfile." in url:
         link_type = "HXFile"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.hxfile(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "files.im" in url:
         link_type = "FilesIm"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.filesIm(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "anonfiles." in url:
         link_type = "AnonFiles"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.anonfiles(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "letsupload." in url:
         link_type = "LetsUpload"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.letsupload(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "linkpoi." in url:
         link_type = "LinkPoi"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.linkpoi(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif any(x in url for x in fmed_list):
         link_type = "Fembed"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.fembed(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif any(x in url for x in sbembed_list):
         link_type = "SBEmbed"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.sbembed(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "mirrored." in url:
         link_type = "Mirrored"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.mirrored(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "reupload." in url:
         link_type = "ReUpload"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.reupload(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "uservideo." in url:
         link_type = "UserVideo"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.uservideo(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "antfiles." in url:
         link_type = "AntFiles"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.antfiles(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "streamtape." in url:
         link_type = "StreamTape"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.streamtape(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "sourceforge" in url:
         link_type = "SourceForge"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         if "master.dl.sourceforge.net" in url:
             res = await direct_link.sourceforge2(url)
             sleep(1)
-            await send_dirlink_message2(
-                start, cmd, res, link_type, uname, uid, message, url, client
-            )
+            time_taken = get_readable_time(time() - start)
+            LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+            b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+            await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
         else:
             res = await direct_link.sourceforge(url)
             sleep(1)
-            await send_dirlink_message2(
-                start, cmd, res, link_type, uname, uid, message, url, client
-            )
+            time_taken = get_readable_time(time() - start)
+            LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+            b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+            await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "androidatahost." in url:
         link_type = "AndroidataHost"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.androiddatahost(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "krakenfiles." in url:
         link_type = "KrakenFiles"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.krakenfiles(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "dropbox." in url:
         link_type = "DropBox"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         if "dropbox.com/s/" in url:
             res = await direct_link.dropbox(url)
             sleep(1)
-            await send_dirlink_message2(
-                start, cmd, res, link_type, uname, uid, message, url, client
-            )
+            time_taken = get_readable_time(time() - start)
+            LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+            b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+            await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
         else:
             res = await direct_link.dropbox2(url)
             sleep(1)
-            await send_dirlink_message2(
-                start, cmd, res, link_type, uname, uid, message, url, client
-            )
+            time_taken = get_readable_time(time() - start)
+            LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+            b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+            await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "pixeldrain." in url:
         link_type = "PixelDrain"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.pixeldrain(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif ("streamlare." or "sltube.") in url:
         link_type = "Streamlare"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.streamlare(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "pandafiles." in url:
         link_type = "PandaFiles"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.pandafile(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif is_fichier:
         link_type = "Fichier"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.fichier(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "upload.ee" in url:
         link_type = "UploadEE"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.uploadee(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "uptobox." in url:
         link_type = "Uptobox"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.uptobox(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "solidfiles." in url:
         link_type = "SolidFiles"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.solidfiles(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "hubcloud." in url:
         link_type = "HubCloud"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.hubcloud(url)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "bunkr.is" in url:
         link_type = "Bunkr.is"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.bunkr_cyber(url)
         res = await telegraph_paste(res)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Telegraph URL (containing Result) is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "cyberdrop." in url:
         link_type = "CyberDrop"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.bunkr_cyber(url)
         res = await telegraph_paste(res)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Telegraph URL (containing Result) is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "pixl.is" in url:
         link_type = "Pixl.is"
-        await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
         res = await direct_link.pixl(url)
         res = await telegraph_paste(res)
         sleep(1)
-        await send_dirlink_message2(
-            start, cmd, res, link_type, uname, uid, message, url, client
-        )
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Telegraph URL (containing Result) is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "send.cm" in url:
         is_sendcm_folder = is_sendcm_folder_link(url)
         if is_sendcm_folder:
             link_type = "Sendcm Folder"
-            await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+            LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+            a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+            await msg.edit(text=a)
             res = await direct_link.sendcm(url)
             res = await telegraph_paste(res)
             sleep(1)
-            await send_dirlink_message2(
-                start, cmd, res, link_type, uname, uid, message, url, client
-            )
+            time_taken = get_readable_time(time() - start)
+            LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+            b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Telegraph URL (containing Result) is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+            await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
         else:
             link_type = "Sendcm File"
-            await send_dirlink_message(cmd, link_type, url, uname, uid, msg)
+            LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+            a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+            await msg.edit(text=a)
             res = await direct_link.sendcm(url)
             sleep(1)
-            await send_dirlink_message2(
-                start, cmd, res, link_type, uname, uid, message, url, client
-            )
+            time_taken = get_readable_time(time() - start)
+            LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+            b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+            await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif any(x in url for x in linkvertise_list):
         err3 = (
             f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>This Link is Supported by the Short Link "
@@ -521,3 +603,13 @@ async def direct(client, message: Message):
         err7 = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Could not generate Direct Link for your URL</i></b>"
         await message.reply_text(text=err7, disable_web_page_preview=True, quote=True)
         return
+    try:
+        logmsg = f"<b><i>User:</i></b> {user_}\n<b><i>User ID: </i></b><code>{user_id}</code>\n<i>User URL:</i> {url}\n<i>Command:</i> {cmd}\n<i>Destination URL:</i> {res}\n\n<b><i>Time Taken:</i></b> {time_taken}"
+        await client.send_message(
+            chat_id=LOG_CHANNEL,
+            text=logmsg,
+            parse_mode=enums.ParseMode.HTML,
+            disable_web_page_preview=True,
+        )
+    except Exception as err:
+        LOGGER(__name__).error(f"BOT Log Channel Error: {err}")

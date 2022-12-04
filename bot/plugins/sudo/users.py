@@ -3,13 +3,14 @@ from pyrogram.types import Message
 
 from bot.config import BOT_USERNAME, COMMAND_PREFIXES, OWNER_ID, SUDO_USERS
 from bot.helpers.database import DatabaseHelper
-from bot.helpers.decorators import sudo_commands
+from bot.helpers.decorators import dev_commands, sudo_commands
 
 prefixes = COMMAND_PREFIXES
 cmds_user = ["users", f"users@{BOT_USERNAME}"]
 
 
 @Client.on_message(filters.command(cmds_user, **prefixes))
+@dev_commands
 @sudo_commands
 async def all_users(_, message: Message):
     """

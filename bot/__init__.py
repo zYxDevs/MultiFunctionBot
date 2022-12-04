@@ -11,8 +11,8 @@ from bot.logging import LOGGER
 BotStartTime = time.time()
 plugins = dict(root="bot/plugins")
 
-if os.path.exists("log.txt"):
-    with open("log.txt", "r+") as f:
+if os.path.exists("logs.txt"):
+    with open("logs.txt", "r+") as f:
         f.truncate(0)
 
 

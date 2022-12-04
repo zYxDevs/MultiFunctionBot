@@ -61,6 +61,10 @@ async def bifm(client, message: Message):
     uname = message.from_user.mention
     uid = f"<code>{message.from_user.id}</code>"
     user_id = message.from_user.id
+    if message.from_user.username:
+        user_ = f'<a href="tg://user?id={message.from_user.id}">{message.from_user.username}</a>'
+    else:
+        user_ = f'<a href="tg://user?id={message.from_user.id}">{message.from_user.first_name}</a>'
     if not await DatabaseHelper().is_user_exist(user_id):
         await DatabaseHelper().add_user(user_id)
         try:
@@ -87,7 +91,7 @@ async def bifm(client, message: Message):
     xyz = f"<b>Bypassed Link :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
     await message.reply_text(text=xyz, disable_web_page_preview=True, quote=True)
     try:
-        msg = f"<b><i>User:</i></b> {uid}\n<i>User URL:</i> {url}\n<i>Command:</i> {cmd}\n<i>Destination URL:</i> {res}\n\n<b><i>Time Taken:</i></b> {time_taken}"
+        msg = f"<b><i>User:</i></b> {user_}\n<b><i>User ID: </i></b><code>{user_id}</code>\n<i>User URL:</i> {url}\n<i>Command:</i> {cmd}\n<i>Destination URL:</i> {res}\n\n<b><i>Time Taken:</i></b> {time_taken}"
         await client.send_message(
             chat_id=LOG_CHANNEL,
             text=msg,

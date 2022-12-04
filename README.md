@@ -30,6 +30,7 @@
 - `JIODRIVE_CRYPT` Put your JioDrive Crypt
 - `Sharerpw_XSRF` Put your Sharer XSRF Token
 - `Sharerpw_laravel` Put your Sharer Laravel Session
+- `SHAREDRIVE_PHPCKS ` Put your ShareDrive.pics PHP Packs Token
 - `UPTOBOX_TOKEN` Put your UptoBox Account Token (Free Account works too!)
 - `EMILY_API_URL` Your [Emily API](https://github.com/missemily2022/Emily-API) instance Urls. Separate API URLs by space
 - `UPSTREAM_REPO` Add the Upstream Repo of your Bot for automatic updation

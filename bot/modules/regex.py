@@ -45,6 +45,11 @@ def is_udrive_link(url: str):
     return bool(url)
 
 
+def is_sharedrive_link(url: str):
+    url = re.match(r"https?://(sharedrive)\.pics/\S+", url)
+    return bool(url)
+
+
 def is_sharer_link(url: str):
     url = re.match(r"https?://(sharer)\.pw/\S+", url)
     return bool(url)

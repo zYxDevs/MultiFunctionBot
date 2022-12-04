@@ -354,10 +354,10 @@ async def rocklinks(url):
 
 async def script(url):
     try:
-        scriptb(url)
+        await scriptb(url)
     except BaseException:
         client = requests.session()
-        scripta(f"https://{url.split('/')[-2]}/", url, client)
+        await scripta(f"https://{url.split('/')[-2]}/", url, client)
 
 
 async def scripta(domain, url, client):
@@ -427,7 +427,7 @@ async def scriptb(url):
         rurl = ele.find("a").get("onclick")[13:-12]
     res = client.get(rurl)
     furl = res.url
-    return scripta(f"https://{furl.split('/')[-2]}/", furl, client)
+    return await scripta(f"https://{furl.split('/')[-2]}/", furl, client)
 
 
 async def shareus(url):
