@@ -276,35 +276,40 @@ async def shareDrive(url, directLogin=True):
     if SHAREDRIVE_PHPCKS is None:
         return "ShareDrive Cookie not Found!"
     try:
-        successMsgs = ['success', 'Success', 'SUCCESS']
+        successMsgs = ["success", "Success", "SUCCESS"]
         scrapper = requests.Session()
         cook = scrapper.get(url)
         cookies = cook.cookies.get_dict()
-        PHPSESSID = cookies['PHPSESSID']
+        PHPSESSID = cookies["PHPSESSID"]
         headers = {
-            'authority': urlparse(url).netloc,
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            'Origin': f'https://{urlparse(url).netloc}/',
-            'referer': url,
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.35',
-            'X-Requested-With': 'XMLHttpRequest'
+            "authority": urlparse(url).netloc,
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "Origin": f"https://{urlparse(url).netloc}/",
+            "referer": url,
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.35",
+            "X-Requested-With": "XMLHttpRequest",
         }
         if directLogin:
-            cookies = {'PHPSESSID': PHPSESSID}
-            data = {'id': url.rsplit('/', 1)[1], 'key': 'direct'}
+            cookies = {"PHPSESSID": PHPSESSID}
+            data = {"id": url.rsplit("/", 1)[1], "key": "direct"}
         else:
-            cookies = {'PHPSESSID': PHPSESSID, 'PHPCKS': SHAREDRIVE_PHPCKS}
-            data = {'id': url.rsplit('/', 1)[1], 'key': 'original'}
-        resp = scrapper.post(f'https://{urlparse(url).netloc}/post', headers=headers, data=data, cookies=cookies)
+            cookies = {"PHPSESSID": PHPSESSID, "PHPCKS": SHAREDRIVE_PHPCKS}
+            data = {"id": url.rsplit("/", 1)[1], "key": "original"}
+        resp = scrapper.post(
+            f"https://{urlparse(url).netloc}/post",
+            headers=headers,
+            data=data,
+            cookies=cookies,
+        )
         toJson = resp.json()
         if directLogin:
-            if toJson['message'] in successMsgs:
-                driveUrl = toJson['redirect']
+            if toJson["message"] in successMsgs:
+                driveUrl = toJson["redirect"]
                 return driveUrl
             else:
                 shareDrive(url, directLogin=False)
         else:
-            driveUrl = toJson['redirect']
+            driveUrl = toJson["redirect"]
             return driveUrl
     except Exception as err:
         return f"Encountered Error while parsing Link : {err}"
