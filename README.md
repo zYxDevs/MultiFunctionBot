@@ -11,7 +11,7 @@
 - `SUDO_USERS` Sudo Users who can control the Bot. Separate User IDs by space
 - `BOT_USERNAME` Your BotuserName Without `@`. Example `MultiFunctionUse_Bot`
 - `BIFM_URL` Your [BIFM](https://git.gay/a/bifm) instance Url. Default to `https://bifm.tacohitbox.com/api/bypass?url`
-- `DATABASE_URL` Your Mongo Database URL (Connection string). Follow this [guide](https://github.com/missemily22/MultiFunctionBot/blob/main#generate-database) to generate database. 
+- `DATABASE_URL` Your Mongo Database URL (Connection string). Follow this [guide](https://github.com/missemily22/MultiFunctionBot/blob/main/README.md#generate-database) to generate database. 
 - `LOG_CHANNEL` Your Log Channel ID where the Bot which store Critical Information. Starts with "-"
 - `BOTOWNER_UNAME` Username Name of the Bot Owner (without `@`)
 - `FORCESUB_ENABLE` Set to True if you want to enable ForceSubscribe else set to False/None
@@ -32,7 +32,7 @@
 - `Sharerpw_laravel` Put your Sharer Laravel Session
 - `SHAREDRIVE_PHPCKS ` Put your ShareDrive.pics PHP Packs Token
 - `UPTOBOX_TOKEN` Put your UptoBox Account Token (Free Account works too!)
-- `EMILY_API_URL` Your [Emily API](https://github.com/missemily2022/Emily-API) instance Urls. Separate API URLs by space
+- `EMILY_API_URL` Your [Emily API](https://github.com/missemily22/EmilyAPI) instance Urls. Separate API URLs by space
 - `UPSTREAM_REPO` Add the Upstream Repo of your Bot for automatic updation
 ---
 
@@ -46,6 +46,7 @@ image2pdf - Convert Image to PDF
 rename - Rename a File in Telegram
 tgupload - Upload a File to Telegram
 takess - Take ScreenShot of a Webpage
+wayback: Generate WayBack of a Webpage
 bifm - Bypass Short Links using BIFM API
 direct - Get Direct Link for various Supported URLs
 bypass - Bypass Various Supported Shortened URLs
@@ -54,7 +55,7 @@ shorten - Get AdFree Shortened URLs of your Link
 magnet - Extract Magnet from Torrent Websites
 index - Extract Direct Links from Bhadoo Index Folder URLs
 scrape - Extract Direct Links from Supported Sites
-gd - Get GDrive Links for various Drive File Sharer
+gd - (or use /clone) Get GDrive Links for various Drive File Sharer
 ```
 
 <details>
@@ -69,6 +70,7 @@ gd - Get GDrive Links for various Drive File Sharer
     /rename - Rename a File in Telegram <br>
     /tgupload - Upload a File to Telegram <br>
     /takess - Take ScreenShot of a Webpage <br>
+    /wayback: Generate WayBack of a Webpage <br>
 	/ping - Ping the telegram api server.<br>
     /bifm - Bypass Short Links using BIFM API <br>
     /direct - Get Direct Link for various Supported URLs <br>
@@ -78,7 +80,7 @@ gd - Get GDrive Links for various Drive File Sharer
     /magnet - Extract Magnet from Torrent Websites <br>
     /index - Extract Direct Links from Bhadoo Index Folder URLs <br>
     /scrape - Extract Direct Links from Supported Sites <br>
-    /gd - Get GDrive Links for various Drive File Sharer <br>
+    /gd - (or use /clone) Get GDrive Links for various Drive File Sharer <br>
 	</li>
 <br>
     <li>

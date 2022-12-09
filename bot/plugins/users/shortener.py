@@ -64,25 +64,28 @@ async def shorten(client, message: Message):
         user_ = f'<a href="tg://user?id={message.from_user.id}">{message.from_user.username}</a>'
     else:
         user_ = f'<a href="tg://user?id={message.from_user.id}">{message.from_user.first_name}</a>'
-    if not await DatabaseHelper().is_user_exist(user_id):
-        await DatabaseHelper().add_user(user_id)
-        try:
-            join_dt = await DatabaseHelper().get_bot_started_on(user_id)
-            msg = f"<i>A New User has started the Bot: {message.from_user.mention}.</i>\n\n<b>Join Time</b>: {join_dt}"
-            await client.send_message(
-                chat_id=LOG_CHANNEL,
-                text=msg,
-                parse_mode=enums.ParseMode.HTML,
-                disable_web_page_preview=True,
-            )
-        except Exception as err:
-            LOGGER(__name__).error(f"BOT Log Channel Error: {err}")
-    last_used_on = await DatabaseHelper().get_last_used_on(user_id)
-    if last_used_on != datetime.date.today().isoformat():
-        await DatabaseHelper().update_last_used_on(user_id)
+
+    if DATABASE_URL is not None:
+        if not await DatabaseHelper().is_user_exist(user_id):
+            await DatabaseHelper().add_user(user_id)
+            try:
+                join_dt = await DatabaseHelper().get_bot_started_on(user_id)
+                logmsg = f"<i>A New User has started the Bot: {message.from_user.mention}.</i>\n\n<b>Join Time</b>: {join_dt}"
+                await client.send_message(
+                    chat_id=LOG_CHANNEL,
+                    text=logmsg,
+                    parse_mode=enums.ParseMode.HTML,
+                    disable_web_page_preview=True,
+                )
+            except Exception as err:
+                LOGGER(__name__).error(f"BOT Log Channel Error: {err}")
+        last_used_on = await DatabaseHelper().get_last_used_on(user_id)
+        if last_used_on != datetime.date.today().isoformat():
+            await DatabaseHelper().update_last_used_on(user_id)
+
     start = time()
     LOGGER(__name__).info(f" Received : {cmd} - {url}")
-    abc = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b>‌ :\n<code>{url}</code>"
+    abc = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>"
     await message.reply_text(text=abc, disable_web_page_preview=True, quote=True)
     res1 = await shortener.bitly(url)
     res2 = await shortener.dagd(url)

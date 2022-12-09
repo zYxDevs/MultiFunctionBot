@@ -156,3 +156,14 @@ async def api_checker():
         return api_url
     else:
         await api_checker()
+
+def url_exists(url) -> bool:
+    try:
+        with requests.get(url, stream=True) as response:
+            try:
+                response.raise_for_status()
+                return True
+            except requests.exceptions.HTTPError:
+                return False
+    except requests.exceptions.ConnectionError:
+        return False

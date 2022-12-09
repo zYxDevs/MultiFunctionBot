@@ -9,6 +9,7 @@ flask_restful
 img2pdf
 lk21
 lxml
+playwright
 psutil
 PyBypass
 pymongo
@@ -22,3 +23,4 @@ speedtest-cli
 telegraph
 tgcrypto
 urllib3
+waybackpy

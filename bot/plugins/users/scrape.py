@@ -1,19 +1,15 @@
 import datetime
-import time
 from re import search
 
 from pyrogram import Client, enums, filters
 from pyrogram.types import Message
 
-from bot.config import BOT_USERNAME, COMMAND_PREFIXES, LOG_CHANNEL
+from bot.config import BOT_USERNAME, COMMAND_PREFIXES, LOG_CHANNEL, DATABASE_URL
 from bot.helpers.database import DatabaseHelper
 from bot.helpers.decorators import user_commands
 from bot.helpers.functions import forcesub, get_readable_time
-from bot.logging import LOGGER
-from bot.modules.bypasser import htpmovies, privatemoviez
 from bot.modules.gdrive_direct import pahe
 from bot.modules.lists import *
-from bot.modules.pasting import telegraph_paste
 from bot.modules.regex import *
 from bot.modules.scraper import *
 
@@ -70,22 +66,25 @@ async def scrape(client, message: Message):
         user_ = f'<a href="tg://user?id={message.from_user.id}">{message.from_user.username}</a>'
     else:
         user_ = f'<a href="tg://user?id={message.from_user.id}">{message.from_user.first_name}</a>'
-    if not await DatabaseHelper().is_user_exist(user_id):
-        await DatabaseHelper().add_user(user_id)
-        try:
-            join_dt = await DatabaseHelper().get_bot_started_on(user_id)
-            startmsg = f"<i>A New User has started the Bot: {message.from_user.mention}.</i>\n\n<b>Join Time</b>: {join_dt}"
-            await client.send_message(
-                chat_id=LOG_CHANNEL,
-                text=startmsg,
-                parse_mode=enums.ParseMode.HTML,
-                disable_web_page_preview=True,
-            )
-        except Exception as err:
-            LOGGER(__name__).error(f"BOT Log Channel Error: {err}")
-    last_used_on = await DatabaseHelper().get_last_used_on(user_id)
-    if last_used_on != datetime.date.today().isoformat():
-        await DatabaseHelper().update_last_used_on(user_id)
+
+    if DATABASE_URL is not None:
+        if not await DatabaseHelper().is_user_exist(user_id):
+            await DatabaseHelper().add_user(user_id)
+            try:
+                join_dt = await DatabaseHelper().get_bot_started_on(user_id)
+                logmsg = f"<i>A New User has started the Bot: {message.from_user.mention}.</i>\n\n<b>Join Time</b>: {join_dt}"
+                await client.send_message(
+                    chat_id=LOG_CHANNEL,
+                    text=logmsg,
+                    parse_mode=enums.ParseMode.HTML,
+                    disable_web_page_preview=True,
+                )
+            except Exception as err:
+                LOGGER(__name__).error(f"BOT Log Channel Error: {err}")
+        last_used_on = await DatabaseHelper().get_last_used_on(user_id)
+        if last_used_on != datetime.date.today().isoformat():
+            await DatabaseHelper().update_last_used_on(user_id)
+
     start = time.time()
     msg_text = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Processing your URL.....</b>"
     msg = await message.reply_text(
@@ -153,7 +152,7 @@ async def scrape(client, message: Message):
         link_type = "IGG Games"
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
-        des_url = await igggames_scrape(url)
+        des_url = await igggames_scrap(url)
         time_taken = get_readable_time(time.time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {link_type} - {des_url}")
         b = f"<b>Telegraph URL(with Result):\n</b> {des_url}\n\n<i>Time Taken : {time_taken}</i>"
@@ -226,6 +225,24 @@ async def scrape(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         des_url = await privatemoviez(url)
+        time_taken = get_readable_time(time.time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {link_type} - {des_url}")
+        b = f"<b>Telegraph URL(with Result):\n</b> {des_url}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
+    elif "moviesmod." in url:
+        link_type = "MoviesMod"
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
+        des_url = await moviesmod_scrap(url)
+        time_taken = get_readable_time(time.time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {link_type} - {des_url}")
+        b = f"<b>Telegraph URL(with Result):\n</b> {des_url}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
+    elif "skymovieshd." in url:
+        link_type = "SkyMoviesHD"
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
+        des_url = await skymovieshd_scrap(url)
         time_taken = get_readable_time(time.time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {link_type} - {des_url}")
         b = f"<b>Telegraph URL(with Result):\n</b> {des_url}\n\n<i>Time Taken : {time_taken}</i>"

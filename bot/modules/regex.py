@@ -72,6 +72,11 @@ def is_fichier_link(url: str):
     return bool(url)
 
 
+def is_filepress_link(url: str):
+    url = re.match(r'https?://(filepress|filebee)\.\S+', url)
+    return bool(url)
+
+
 def is_sendcm_folder_link(url: str):
     return (
         "https://send.cm/s/"

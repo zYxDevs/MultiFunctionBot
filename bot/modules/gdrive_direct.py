@@ -6,6 +6,7 @@ from urllib.parse import parse_qs, urlparse
 
 import chromedriver_autoinstaller
 from lxml import etree
+from playwright.sync_api import Playwright, sync_playwright, expect
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
@@ -22,7 +23,6 @@ async def gdtot(url: str) -> str:
     client = requests.Session()
     match = re.findall(r"https?://(.+)\.gdtot\.(.+)\/\S+\/\S+", url)[0]
     client.cookies.update({"crypt": crypt})
-    res = client.get(url)
     res = client.get(f"https://{match[0]}.gdtot.{match[1]}/dld?id={url.split('/')[-1]}")
     url = re.findall(r'URL=(.*?)"', res.text)[0]
     params = parse_qs(urlparse(url).query)
@@ -245,7 +245,7 @@ async def sharerpw(url: str, forced_login=False) -> str:
             info_parsed["error"] = False
             info_parsed["gdrive_link"] = res["url"]
         if len(ddl_btn) and not forced_login and "url" not in info_parsed:
-            return sharerpw(url, forced_login=True)
+            return await sharerpw(url, forced_login=True)
         return info_parsed["gdrive_link"]
     except Exception as err:
         return f"Encountered Error while parsing Link : {err}"
@@ -270,6 +270,34 @@ async def drivehubs(url: str) -> str:
         return flink
     else:
         return f"ERROR! Maybe Direct Download is not working for this file !\n Retrived URL : {flink}"
+
+
+async def filep_prun(playwright: Playwright, url:str) -> str:
+    browser = playwright.chromium.launch()
+    context = browser.new_context()
+    page = context.new_page()
+    page.goto(url)
+    firstbtn = page.locator("xpath=//div[text()='Direct Download']/parent::button")
+    expect(firstbtn).to_be_visible()
+    firstbtn.click()
+    sleep(10)
+    secondBtn = page.get_by_role("button", name="Download Now")
+    expect(secondBtn).to_be_visible()
+    with page.expect_navigation():
+        secondBtn.click()
+    flink = page.url
+    context.close()
+    browser.close()
+    if 'drive.google.com' in flink:
+        return flink
+    else:
+        return f"ERROR! Maybe Direct Download is not working for this file !\n Retrived URL : {flink}"
+
+
+async def filepress(url: str) -> str:
+    with sync_playwright() as playwright:
+        flink = await filep_prun(playwright, url)
+        return flink
 
 
 async def shareDrive(url, directLogin=True):
@@ -307,7 +335,7 @@ async def shareDrive(url, directLogin=True):
                 driveUrl = toJson["redirect"]
                 return driveUrl
             else:
-                shareDrive(url, directLogin=False)
+                await shareDrive(url, directLogin=False)
         else:
             driveUrl = toJson["redirect"]
             return driveUrl
@@ -362,5 +390,5 @@ async def pahe(url: str) -> str:
     wd.execute_script("arguments[0].click();", last)
     flink = wd.current_url
     wd.close()
-    gd_url = gdtot(flink)
+    gd_url = await gdtot(flink)
     return gd_url

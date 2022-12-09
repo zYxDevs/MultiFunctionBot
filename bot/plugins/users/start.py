@@ -46,6 +46,8 @@ USER_TEXT = """🗒️ Documentation for commands available to user's
 
 • /takess: Take ScreenShot of a Webpage
 
+• /wayback: Generate WayBack of a Webpage
+
 • /bifm - Bypass Short Links using BIFM API
 
 • /direct - Get Direct Link for various Supported URLs
@@ -135,22 +137,23 @@ async def start(client, message):
         return
     botuptime = get_readable_time(time.time() - BotStartTime)
     user_id = message.from_user.id
-    if not await DatabaseHelper().is_user_exist(user_id):
-        await DatabaseHelper().add_user(user_id)
-        try:
-            join_dt = await DatabaseHelper().get_bot_started_on(user_id)
-            msg = f"<i>A New User has started the Bot: {message.from_user.mention}.</i>\n\n<b>Join Time</b>: {join_dt}"
-            await client.send_message(
-                chat_id=LOG_CHANNEL,
-                text=msg,
-                parse_mode=enums.ParseMode.HTML,
-                disable_web_page_preview=True,
-            )
-        except Exception as err:
-            LOGGER(__name__).error(f"BOT Log Channel Error: {err}")
-    last_used_on = await DatabaseHelper().get_last_used_on(user_id)
-    if last_used_on != datetime.date.today().isoformat():
-        await DatabaseHelper().update_last_used_on(user_id)
+    if DATABASE_URL is not None:
+        if not await DatabaseHelper().is_user_exist(user_id):
+            await DatabaseHelper().add_user(user_id)
+            try:
+                join_dt = await DatabaseHelper().get_bot_started_on(user_id)
+                logmsg = f"<i>A New User has started the Bot: {message.from_user.mention}.</i>\n\n<b>Join Time</b>: {join_dt}"
+                await client.send_message(
+                    chat_id=LOG_CHANNEL,
+                    text=logmsg,
+                    parse_mode=enums.ParseMode.HTML,
+                    disable_web_page_preview=True,
+                )
+            except Exception as err:
+                LOGGER(__name__).error(f"BOT Log Channel Error: {err}")
+        last_used_on = await DatabaseHelper().get_last_used_on(user_id)
+        if last_used_on != datetime.date.today().isoformat():
+            await DatabaseHelper().update_last_used_on(user_id)
     await message.reply_text(
         text=START_TEXT.format(botuptime),
         disable_web_page_preview=True,

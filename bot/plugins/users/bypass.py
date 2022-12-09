@@ -67,27 +67,56 @@ async def bypass(client, message: Message):
         user_ = f'<a href="tg://user?id={message.from_user.id}">{message.from_user.username}</a>'
     else:
         user_ = f'<a href="tg://user?id={message.from_user.id}">{message.from_user.first_name}</a>'
-    if not await DatabaseHelper().is_user_exist(user_id):
-        await DatabaseHelper().add_user(user_id)
-        try:
-            join_dt = await DatabaseHelper().get_bot_started_on(user_id)
-            startmsg = f"<i>A New User has started the Bot: {message.from_user.mention}.</i>\n\n<b>Join Time</b>: {join_dt}"
-            await client.send_message(
-                chat_id=LOG_CHANNEL,
-                text=startmsg,
-                parse_mode=enums.ParseMode.HTML,
-                disable_web_page_preview=True,
-            )
-        except Exception as err:
-            LOGGER(__name__).error(f"BOT Log Channel Error: {err}")
-    last_used_on = await DatabaseHelper().get_last_used_on(user_id)
-    if last_used_on != datetime.date.today().isoformat():
-        await DatabaseHelper().update_last_used_on(user_id)
+
+    if DATABASE_URL is not None:
+        if not await DatabaseHelper().is_user_exist(user_id):
+            await DatabaseHelper().add_user(user_id)
+            try:
+                join_dt = await DatabaseHelper().get_bot_started_on(user_id)
+                logmsg = f"<i>A New User has started the Bot: {message.from_user.mention}.</i>\n\n<b>Join Time</b>: {join_dt}"
+                await client.send_message(
+                    chat_id=LOG_CHANNEL,
+                    text=logmsg,
+                    parse_mode=enums.ParseMode.HTML,
+                    disable_web_page_preview=True,
+                )
+            except Exception as err:
+                LOGGER(__name__).error(f"BOT Log Channel Error: {err}")
+        last_used_on = await DatabaseHelper().get_last_used_on(user_id)
+        if last_used_on != datetime.date.today().isoformat():
+            await DatabaseHelper().update_last_used_on(user_id)
+
     start = time()
     msg_text = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Processing your URL.....</b>"
     msg = await message.reply_text(
         text=msg_text, disable_web_page_preview=True, quote=True
     )
+
+    if DATABASE_URL is not None:
+        if await DatabaseHelper().is_dblink_exist(url):
+            a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>"
+            await msg.edit(text=a)
+            last_used_on = await DatabaseHelper().get_last_fetched_on(url)
+            if last_used_on != datetime.date.today().isoformat():
+                await DatabaseHelper().update_last_fetched_on(url)
+            result = await DatabaseHelper().fetch_dblink_result(url)
+            add_date = await DatabaseHelper().fetch_dblink_added(url)
+            time_taken = get_readable_time(time() - start)
+            LOGGER(__name__).info(f"Successfully Bypassed - DB:True - {result}")
+            b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>\n<i>Result Added on:</i>{add_date}"
+            await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
+            try:
+                logmsg = f"<b><i>User:</i></b> {user_}\n<b><i>User ID:</i></b><code>{user_id}</code>\n<i>User URL:</i> {url}\n<i>Command:</i> {cmd}\n<i>Destination URL:</i> {res}\n\n<b><i>Time Taken:</i></b> {time_taken} "
+                await client.send_message(
+                    chat_id=LOG_CHANNEL,
+                    text=logmsg,
+                    parse_mode=enums.ParseMode.HTML,
+                    disable_web_page_preview=True,
+                )
+            except Exception as err:
+                LOGGER(__name__).error(f"BOT Log Channel Error: {err}")
+            return
+
     if "adrinolinks." in url:
         link_type = "AdrinoLinks"
         LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
@@ -342,6 +371,72 @@ async def bypass(client, message: Message):
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
         await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
+    elif "pkin." in url:
+        link_type = "Pkin"
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
+        res = await bypasser.pkin(url)
+        sleep(1)
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
+    elif "rewayatcafe." in url:
+        link_type = "RewayatCafe"
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
+        res = await bypasser.rewayatcafe(url)
+        sleep(1)
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
+    elif "shortly." in url:
+        link_type = "Shortly"
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
+        res = await bypasser.shortly(url)
+        sleep(1)
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
+    elif "try2link." in url:
+        link_type = "Try2Link"
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
+        res = await bypasser.try2link(url)
+        sleep(1)
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
+    elif "thinfi." in url:
+        link_type = "ThinFi"
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
+        res = await bypasser.thinfi(url)
+        sleep(1)
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
+    elif "urlsopen." in url:
+        link_type = "UrlsOpen"
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
+        res = await bypasser.urlsopen(url)
+        sleep(1)
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif any(x in url for x in yandisk_list):
         err3 = (
             f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>This Link is Supported by the Direct Link "
@@ -393,6 +488,13 @@ async def bypass(client, message: Message):
             err = "<b><i>Could not find Bypass for your URL!</i></b>"
             await msg.edit(text=err)
             return
+
+    rest = str(res)
+    if (DATABASE_URL and res) is not None and ("Some Error Occurred" and "Could not Generate Direct Link") not in rest:
+        if not await DatabaseHelper().is_dblink_exist(url):
+            await DatabaseHelper().add_new_dblink(url, res)
+            LOGGER(__name__).info(f"Successfully Added - {url} - {res} to DB!")
+
     try:
         logmsg = f"<b><i>User:</i></b> {user_}\n<b><i>User ID:</i></b><code>{user_id}</code>\n<i>User URL:</i> {url}\n<i>Command:</i> {cmd}\n<i>Destination URL:</i> {res}\n\n<b><i>Time Taken:</i></b> {time_taken} "
         await client.send_message(
