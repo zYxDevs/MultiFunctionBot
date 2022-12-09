@@ -73,7 +73,7 @@ def is_fichier_link(url: str):
 
 
 def is_filepress_link(url: str):
-    url = re.match(r'https?://(filepress|filebee)\.\S+', url)
+    url = re.match(r"https?://(filepress|filebee)\.\S+", url)
     return bool(url)
 
 

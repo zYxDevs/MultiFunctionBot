@@ -157,6 +157,7 @@ async def api_checker():
     else:
         await api_checker()
 
+
 def url_exists(url) -> bool:
     try:
         with requests.get(url, stream=True) as response:

@@ -6,7 +6,7 @@ from urllib.parse import parse_qs, urlparse
 
 import chromedriver_autoinstaller
 from lxml import etree
-from playwright.sync_api import Playwright, sync_playwright, expect
+from playwright.sync_api import Playwright, expect, sync_playwright
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
@@ -272,7 +272,7 @@ async def drivehubs(url: str) -> str:
         return f"ERROR! Maybe Direct Download is not working for this file !\n Retrived URL : {flink}"
 
 
-async def filep_prun(playwright: Playwright, url:str) -> str:
+async def filep_prun(playwright: Playwright, url: str) -> str:
     browser = playwright.chromium.launch()
     context = browser.new_context()
     page = context.new_page()
@@ -288,7 +288,7 @@ async def filep_prun(playwright: Playwright, url:str) -> str:
     flink = page.url
     context.close()
     browser.close()
-    if 'drive.google.com' in flink:
+    if "drive.google.com" in flink:
         return flink
     else:
         return f"ERROR! Maybe Direct Download is not working for this file !\n Retrived URL : {flink}"

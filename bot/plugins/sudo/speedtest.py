@@ -27,8 +27,8 @@ async def speedtest(_, message: Message):
     test.upload()
     test.results.share()
     result = test.results.dict()
-    path = (result['share'])
-    string_speed = f'''
+    path = result["share"]
+    string_speed = f"""
     ╭─《 🚀 SPEEDTEST INFO 》
     ├ <b>Upload:</b> <code>{speed_convert(result['upload'], False)}</code>
     ├ <b>Download:</b>  <code>{speed_convert(result['download'], False)}</code>
@@ -50,15 +50,16 @@ async def speedtest(_, message: Message):
     ├ <b>Country:</b> <code>{result['client']['country']}</code>
     ├ <b>ISP:</b> <code>{result['client']['isp']}</code>
     ╰ <b>ISP Rating:</b> <code>{result['client']['isprating']}</code>
-    '''
+    """
 
     await speed.delete()
     await message.reply_photo(photo=path, caption=string_speed, quote=True)
 
 
 def speed_convert(size, byte=True):
-    if not byte: size = size / 8
-    power = 2 ** 10
+    if not byte:
+        size = size / 8
+    power = 2**10
     zero = 0
     units = {0: "B/s", 1: "KB/s", 2: "MB/s", 3: "GB/s", 4: "TB/s"}
     while size > power:

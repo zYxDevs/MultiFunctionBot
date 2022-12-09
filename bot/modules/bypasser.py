@@ -4,8 +4,8 @@ import urllib.parse
 from base64 import b64decode
 
 import cloudscraper
-from PyBypass import bypass as pybyp
 from bs4 import BeautifulSoup
+from PyBypass import bypass as pybyp
 
 from bot.config import *
 from bot.helpers.functions import api_checker, url_exists
@@ -112,7 +112,9 @@ async def droplink(url):
         data = {input.get("name"): input.get("value") for input in inputs}
         time.sleep(4)
         headers = {"x-requested-with": "XMLHttpRequest"}
-        des_url = client.post(domain + "links/go", data=data, headers=headers).json()["url"]
+        des_url = client.post(domain + "links/go", data=data, headers=headers).json()[
+            "url"
+        ]
         des_url = des_url.replace(" ", "%20")
         return des_url
     except BaseException:
@@ -208,7 +210,9 @@ async def gtlinks(url):
         data = {input.get("name"): input.get("value") for input in inputs}
         time.sleep(5)
         headers = {"x-requested-with": "XMLHttpRequest"}
-        des_url = client.post(domain + "links/go", data=data, headers=headers).json()["url"]
+        des_url = client.post(domain + "links/go", data=data, headers=headers).json()[
+            "url"
+        ]
         des_url = des_url.replace(" ", "%20")
         return des_url
     except BaseException:
@@ -270,7 +274,9 @@ async def hypershort(url):
     try:
         response = client.get(url)
         soup = BeautifulSoup(response.content, "html.parser")
-        token_response = client.get("https://blog.miuiflash.com/links/createToken.js").text
+        token_response = client.get(
+            "https://blog.miuiflash.com/links/createToken.js"
+        ).text
         token_regex = re.search("itsToken\.value = \S+", token_response)
         token = token_regex[0].split("=")[1].removesuffix('"').removeprefix(' "')
         inputs = soup.find(id="re-form").find_all(name="input")
@@ -477,12 +483,13 @@ async def pkin(url):
         data = {input.get("name"): input.get("value") for input in inputs}
         time.sleep(3)
         headers = {"x-requested-with": "XMLHttpRequest", "user-agent": user_agent}
-        des_url = client.post(domain + "links/go", data=data, headers=headers).json()["url"]
+        des_url = client.post(domain + "links/go", data=data, headers=headers).json()[
+            "url"
+        ]
         des_url = des_url.replace(" ", "%20")
         return des_url
     except BaseException:
         return "Some Error Occurred \nCould not Bypass your URL"
-
 
 
 async def rewayatcafe(url):
@@ -624,7 +631,9 @@ async def shareus(url):
     client = cloudscraper.create_scraper(allow_brotli=False)
     token = url.split("=")[-1]
     try:
-        des_url = f"https://us-central1-my-apps-server.cloudfunctions.net/r?shortid={token}"
+        des_url = (
+            f"https://us-central1-my-apps-server.cloudfunctions.net/r?shortid={token}"
+        )
         dest_url = client.get(des_url).text
         return dest_url
     except BaseException:
@@ -639,7 +648,9 @@ async def shorte(url):
     p = urllib.parse.urlparse(url)
     try:
         res = client.get(url)
-        sess_id = re.findall("""sessionId(?:\s+)?:(?:\s+)?['|"](.*?)['|"]""", res.text)[0]
+        sess_id = re.findall("""sessionId(?:\s+)?:(?:\s+)?['|"](.*?)['|"]""", res.text)[
+            0
+        ]
         final_url = f"{p.scheme}://{p.netloc}/shortest-url/end-adsession"
         params = {"adSessionId": sess_id, "callback": "_"}
         time.sleep(5)
@@ -759,7 +770,9 @@ async def try2link(url):
             "Origin": "https://try2link.com",
             "Referer": url,
         }
-        des_url = client.post(f"{dom}/links/go", headers=headers, data=data).json()["url"]
+        des_url = client.post(f"{dom}/links/go", headers=headers, data=data).json()[
+            "url"
+        ]
         des_url = des_url.replace(" ", "%20")
         return des_url
     except BaseException:
@@ -799,9 +812,7 @@ async def tnlink(url):
             "x-requested-with": "XMLHttpRequest",
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36",
         }
-        dest_url = client.post(
-            f"{dom}/links/go", data=data, headers=h2
-        ).json()["url"]
+        dest_url = client.post(f"{dom}/links/go", data=data, headers=h2).json()["url"]
         dest_url = dest_url.replace(" ", "%20")
         return dest_url
     except BaseException:

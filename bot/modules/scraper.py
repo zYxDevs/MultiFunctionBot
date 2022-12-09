@@ -8,12 +8,18 @@ import cloudscraper
 import requests
 from bs4 import BeautifulSoup, NavigableString, Tag
 
-from bot.logging import LOGGER
-from bot.modules.bypasser import privatemoviez, try2link, rocklinks, htpmovies, ez4short
 from bot.helpers.functions import url_exists
+from bot.logging import LOGGER
+from bot.modules.bypasser import ez4short, htpmovies, privatemoviez, rocklinks, try2link
 from bot.modules.pasting import telegraph_paste
 
-drive_list = ['drivelinks.in', 'driveroot.in', 'drivesharer.in', 'driveace.in', "drivehub.in"]
+drive_list = [
+    "drivelinks.in",
+    "driveroot.in",
+    "drivesharer.in",
+    "driveace.in",
+    "drivehub.in",
+]
 next_page = False
 next_page_token = ""
 
@@ -79,10 +85,10 @@ async def atishmkv_scrap(url):
     r = client.get(url)
     soup = BeautifulSoup(r.text, "html.parser")
     for a in soup.find_all(
-            "a",
-            {
-                "class": "mb-button mb-style-traditional mb-size-small mb-corners-straight mb-text-style-heavy"
-            },
+        "a",
+        {
+            "class": "mb-button mb-style-traditional mb-size-small mb-corners-straight mb-text-style-heavy"
+        },
     ):
         c = a.get("href")
         rslt += f"• <code>{c}</code><br>"
@@ -90,38 +96,38 @@ async def atishmkv_scrap(url):
         d = b.get("href")
         rslt += f"• <code>{d}</code><br>"
     for c in soup.find_all(
-            "a",
-            {
-                "class": "mb-button mb-style-traditional mb-size-default mb-corners-default mb-text-style-heavy"
-            },
+        "a",
+        {
+            "class": "mb-button mb-style-traditional mb-size-default mb-corners-default mb-text-style-heavy"
+        },
     ):
         e = c.get("href")
         rslt += f"• <code>{e}</code><br>"
     for d in soup.find_all(
-            "a",
-            {
-                "class": "mb-button mb-style-reversed mb-size-default mb-corners-pill mb-text-style-heavy wpel-icon-right"
-            },
+        "a",
+        {
+            "class": "mb-button mb-style-reversed mb-size-default mb-corners-pill mb-text-style-heavy wpel-icon-right"
+        },
     ):
         f = d.get("href")
         rslt += f"• <code>{f}</code><br>"
     for e in soup.find_all(
-            "a",
-            {
-                "class": "mb-button mb-style-reversed mb-size-default mb-corners-pill mb-text-style-heavy"
-            },
+        "a",
+        {
+            "class": "mb-button mb-style-reversed mb-size-default mb-corners-pill mb-text-style-heavy"
+        },
     ):
         g = e.get("href")
         rslt += f"• <code>{g}</code><br>"
     for f in soup.find_all(
-            "a",
-            {"class": "button button-shadow wpel-icon-right"},
+        "a",
+        {"class": "button button-shadow wpel-icon-right"},
     ):
         h = f.get("href")
         rslt += f"• <code>{h}</code><br>"
     for g in soup.find_all(
-            "a",
-            {"class": "wpel-icon-right"},
+        "a",
+        {"class": "wpel-icon-right"},
     ):
         i = g.get("href")
         rslt += f"• <code>{i}</code><br>"
@@ -139,14 +145,14 @@ async def cinevez_scrap(url):
     soup = BeautifulSoup(p.text, "html.parser")
     rslt += "<b><u>Magnet Torrents :</u></b><br>"
     for a in soup.find_all(
-            "div", {"class": "box-content p-3 flex justify-center items-center flex-wrap"}
+        "div", {"class": "box-content p-3 flex justify-center items-center flex-wrap"}
     ):
         for b in a.find_all("a"):
             rslt += f"• {b['href']}<br><br>"
     rslt += "<br><b><u>Direct Links :</u></b><br>"
     for c in soup.find_all(
-            "div",
-            {"class": "p-2 rounded flex items-center justify-between item-link text-dark"},
+        "div",
+        {"class": "p-2 rounded flex items-center justify-between item-link text-dark"},
     ):
         for d in c.find_all("a"):
             rslt += f"• <code>{d['href']}</code><br>"
@@ -212,9 +218,9 @@ async def filecrypt_scrap(url):
         line = ele.get("onclick")
         if line is not None and "DownloadDLC" in line:
             dlclink = (
-                    "https://filecrypt.co/DLC/"
-                    + line.split("DownloadDLC('")[1].split("'")[0]
-                    + ".html"
+                "https://filecrypt.co/DLC/"
+                + line.split("DownloadDLC('")[1].split("'")[0]
+                + ".html"
             )
             break
     if dlclink == "":
@@ -342,8 +348,6 @@ async def bypassBluemediafiles(url, torrent=False):
     return furl
 
 
-
-
 async def igggames_scrap(url):
     if not url_exists:
         return "The link you entered is wrong!"
@@ -414,16 +418,16 @@ async def moviesmod_scrap(url):
     for l in links:
         rslt += f"\n{(l.text).replace('Download Links', '🏷 Download Links')} :\n"
         scrapper = cloudscraper.create_scraper(allow_brotli=False)
-        res = scrapper.get(l['href'])
-        nsoup = BeautifulSoup(res.text, 'html.parser')
-        for ll in nsoup.select('a[href]'):
+        res = scrapper.get(l["href"])
+        nsoup = BeautifulSoup(res.text, "html.parser")
+        for ll in nsoup.select("a[href]"):
             for url in drive_list:
-                if url in ll['href']:
-                    nl = (client.get(ll['href']).text).split('"')[1]
+                if url in ll["href"]:
+                    nl = (client.get(ll["href"]).text).split('"')[1]
                     rslt += f"• <code>https://{url}{nl}</code><br>"
-            if 'urlflix.' in ll['href']:
-                resp = client.get(ll['href'])
-                ssoup = BeautifulSoup(resp.text, 'html.parser')
+            if "urlflix." in ll["href"]:
+                resp = client.get(ll["href"])
+                ssoup = BeautifulSoup(resp.text, "html.parser")
                 atag = ssoup.select('div[id="text-url"] > a[href]')
                 for ref in atag:
                     rslt += f"• <code>{ref['href']}</code><br>"
@@ -441,10 +445,10 @@ async def privatemoviez_scrap(url):
     r = client.get(url)
     soup = BeautifulSoup(r.text, "html.parser")
     for a in soup.find_all(
-            "a",
-            {
-                "class": "wp-block-button__link has-blush-bordeaux-gradient-background has-background"
-            },
+        "a",
+        {
+            "class": "wp-block-button__link has-blush-bordeaux-gradient-background has-background"
+        },
     ):
         try:
             d = a.get("href")
@@ -453,10 +457,10 @@ async def privatemoviez_scrap(url):
         except BaseException:
             continue
     for b in soup.find_all(
-            "a",
-            {
-                "class": "wp-block-button__link has-midnight-gradient-background has-background"
-            },
+        "a",
+        {
+            "class": "wp-block-button__link has-midnight-gradient-background has-background"
+        },
     ):
         try:
             e = b.get("href")
@@ -465,8 +469,8 @@ async def privatemoviez_scrap(url):
         except BaseException:
             continue
     for c in soup.find_all(
-            "a",
-            {"class": "wp-block-button__link has-background"},
+        "a",
+        {"class": "wp-block-button__link has-background"},
     ):
         try:
             f = c.get("href")
@@ -543,8 +547,8 @@ async def skymovieshd_scrap(url):
     t = soup.select('div[class^="Robiul"]')
     rslt += f"<i>{t[-1].text.replace('Download ', '')}</i><br><br>"
     rslt += f"<b>{a[0].text} :</b></br>"
-    nres = client.get(a[0]['href'], allow_redirects=False)
-    nsoup = BeautifulSoup(nres.text, 'html.parser')
+    nres = client.get(a[0]["href"], allow_redirects=False)
+    nsoup = BeautifulSoup(nres.text, "html.parser")
     atag = nsoup.select('div[class="cotent-box"] > a[href]')
     for no, link in enumerate(atag, start=1):
         rslt += f"• {no}. <code>{link['href']}</code><br>"
@@ -559,17 +563,17 @@ async def olamovies_scrap(url):
     res_mesg = f"<b>User URL :</b> <code>{url}</code><br>"
     res_mesg += f"<i>Direct Download Links:</i><br>"
     headers = {
-        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:103.0) Gecko/20100101 Firefox/103.0',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
-        'Referer': url,
-        'Alt-Used': 'olamovies.ink',
-        'Connection': 'keep-alive',
-        'Upgrade-Insecure-Requests': '1',
-        'Sec-Fetch-Dest': 'document',
-        'Sec-Fetch-Mode': 'navigate',
-        'Sec-Fetch-Site': 'same-origin',
-        'Sec-Fetch-User': '?1',
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:103.0) Gecko/20100101 Firefox/103.0",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.5",
+        "Referer": url,
+        "Alt-Used": "olamovies.ink",
+        "Connection": "keep-alive",
+        "Upgrade-Insecure-Requests": "1",
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-Site": "same-origin",
+        "Sec-Fetch-User": "?1",
     }
 
     client = cloudscraper.create_scraper()
@@ -584,22 +588,30 @@ async def olamovies_scrap(url):
     slist = []
     for ele in outlist:
         try:
-            key = ele.split("?key=")[1].split("&id=")[0].replace("%2B", "+").replace("%3D", "=").replace("%2F", "/")
+            key = (
+                ele.split("?key=")[1]
+                .split("&id=")[0]
+                .replace("%2B", "+")
+                .replace("%3D", "=")
+                .replace("%2F", "/")
+            )
             id = ele.split("&id=")[1]
-        except:
+        except BaseException:
             continue
         count = 3
-        params = {'key': key, 'id': id}
+        params = {"key": key, "id": id}
         soup = "None"
         LOGGER(__name__).info(f"Trying OlaMovies Scraping with Link : {url}!")
         url = "https://olamovies.wtf/download/&key=" + key + "&id=" + id
         while ("rocklinks." and "try2link." and "ez4short.com") not in soup:
-            res = client.get("https://olamovies.ink/download/", params=params, headers=headers)
+            res = client.get(
+                "https://olamovies.ink/download/", params=params, headers=headers
+            )
             rand = res.text
             rose = rand.split('url = "')[-1]
             soup = rose.split('";')[0]
             if soup != "":
-                if ("try2link." or 'rocklinks.' or "ez4short.") in soup:
+                if ("try2link." or "rocklinks." or "ez4short.") in soup:
                     LOGGER(__name__).info(f"Added {soup} in OlaMovies Scraping")
                     slist.append(soup)
                 else:
