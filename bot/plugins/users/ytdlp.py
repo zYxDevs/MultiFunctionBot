@@ -15,7 +15,7 @@ from bot.modules.pasting import telegraph_paste
 from bot.modules.regex import URL_REGEX, is_a_url
 
 prefixes = COMMAND_PREFIXES
-commands = ["ytdl", f"ytdl@{BOT_USERNAME}","ytdlp", f"ytdlp@{BOT_USERNAME}"]
+commands = ["ytdl", f"ytdl@{BOT_USERNAME}", "ytdlp", f"ytdlp@{BOT_USERNAME}"]
 
 
 @Client.on_message(filters.command(commands, **prefixes))
@@ -90,10 +90,12 @@ async def magnet(client, message: Message):
     abc = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n\n<b>Link Type</b> : <i>YT-DLP Scraping</i>"
     await message.reply_text(text=abc, disable_web_page_preview=True, quote=True)
 
-    yt_info = yt_dlp.YoutubeDL({"quiet": True, "no_warnings": True}).extract_info(url, download=False)
+    yt_info = yt_dlp.YoutubeDL({"quiet": True, "no_warnings": True}).extract_info(
+        url, download=False
+    )
     res = f"<b>Title:</b> <i>{yt_info['title']}</i><br>"
     res += "<b><i>DL Links:</i></b><br>"
-    formats = yt_info.get('requested_formats') or [yt_info]
+    formats = yt_info.get("requested_formats") or [yt_info]
     for f in formats:
         res += f"• <code>{f['url']}</code><br>"
     tlg_url = telegraph_paste(res)

@@ -27,14 +27,14 @@ commands = ["broadcast", f"broadcast@{BOT_USERNAME}"]
 @Client.on_message(filters.command(commands, **prefixes))
 @dev_commands
 async def broadcast_(c, m):
-    user_id=m.from_user.id
+    m.from_user.id
     out = await m.reply_text(
-            text=f"Broadcast initiated! You will be notified with log file when all the users are notified."
+        text=f"Broadcast initiated! You will be notified with log file when all the users are notified."
     )
     all_users = await DatabaseHelper().get_all_users()
     broadcast_msg = m.reply_to_message
     while True:
-        broadcast_id = ''.join([random.choice(string.ascii_letters) for i in range(3)])
+        broadcast_id = "".join([random.choice(string.ascii_letters) for i in range(3)])
         if not Broadcast_IDs.get(broadcast_id):
             break
     start_time = time.time()
@@ -43,17 +43,11 @@ async def broadcast_(c, m):
     failed = 0
     success = 0
     Broadcast_IDs[broadcast_id] = dict(
-        total=total_users,
-        current=done,
-        failed=failed,
-        success=success
+        total=total_users, current=done, failed=failed, success=success
     )
-    async with aiofiles.open('broadcast.txt', 'w') as broadcast_log_file:
+    async with aiofiles.open("broadcast.txt", "w") as broadcast_log_file:
         async for user in all_users:
-            sts, msg = await send_msg(
-                user_id=int(user['id']),
-                message=broadcast_msg
-            )
+            sts, msg = await send_msg(user_id=int(user["id"]), message=broadcast_msg)
             if msg is not None:
                 await broadcast_log_file.write(msg)
             if sts == 200:
@@ -67,11 +61,7 @@ async def broadcast_(c, m):
                 break
             else:
                 Broadcast_IDs[broadcast_id].update(
-                    dict(
-                        current=done,
-                        failed=failed,
-                        success=success
-                    )
+                    dict(current=done, failed=failed, success=success)
                 )
     if Broadcast_IDs.get(broadcast_id):
         Broadcast_IDs.pop(broadcast_id)
@@ -81,18 +71,18 @@ async def broadcast_(c, m):
     if failed == 0:
         await m.reply_text(
             text=f"Broadcast completed in `{completed_in}`\n\nTotal users {total_users}.\nTotal done {done}, {success} success and {failed} failed.",
-            quote=True
+            quote=True,
         )
     else:
         await m.reply_document(
-            document='broadcast.txt',
+            document="broadcast.txt",
             caption=f"Broadcast completed in `{completed_in}`\n\nTotal users {total_users}.\nTotal done {done}, {success} success and {failed} failed.",
-            quote=True
+            quote=True,
         )
 
     try:
-        os.remove('broadcast.txt')
-    except:
+        os.remove("broadcast.txt")
+    except BaseException:
         pass
 
 
@@ -109,5 +99,5 @@ async def send_msg(user_id, message):
         return 400, f"{user_id} : blocked the bot\n"
     except PeerIdInvalid:
         return 400, f"{user_id} : user id invalid\n"
-    except Exception as e:
+    except Exception:
         return 500, f"{user_id} : {traceback.format_exc()}\n"

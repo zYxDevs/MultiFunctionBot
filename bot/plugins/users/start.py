@@ -181,7 +181,8 @@ async def botCallbacks(client, CallbackQuery):
 
     elif CallbackQuery.data == "START_BUTTON":
         await CallbackQuery.edit_message_text(
-            START_TEXT.format(botuptime), reply_markup=InlineKeyboardMarkup(START_BUTTON)
+            START_TEXT.format(botuptime),
+            reply_markup=InlineKeyboardMarkup(START_BUTTON),
         )
 
     elif CallbackQuery.data == "COMMAND_BUTTON":
