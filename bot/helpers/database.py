@@ -216,6 +216,15 @@ class DatabaseHelper:
         self.__client.close()
         return count
 
+    def check_db_connection(self):
+        if self.__err:
+            return None
+        if not self.__err:
+            LOGGER(__name__).info("Successfully Connected to DB!")
+        self.__client.close()
+        return ""
+
 
 if DATABASE_URL is not None:
+    DatabaseHelper().check_db_connection()
     DatabaseHelper().load_sudo_users()

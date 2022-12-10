@@ -1,11 +1,14 @@
+import asyncio
 import os
+import shlex
 import subprocess
 import sys
 import traceback
 from io import BytesIO, StringIO
 
+import aiofiles
 from pyrogram import Client, filters
-from pyrogram.types import Message
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 
 from bot.config import *
 from bot.helpers.decorators import dev_commands
@@ -14,31 +17,30 @@ from bot.logging import LOGGER
 prefixes = COMMAND_PREFIXES
 
 shell_usage = f"**USAGE:** Executes terminal commands directly via bot.\n\n<pre>/shell pip install requests</pre>"
-commands = ["shell", f"shell@{BOT_USERNAME}"]
+cmds = ["shell", f"shell@{BOT_USERNAME}"]
 
 
-@Client.on_message(filters.command(commands, **prefixes))
+@Client.on_message(filters.command(cmds, **prefixes))
 @dev_commands
 async def shell(client, message: Message):
     """
-    Executes terminal commands via bot.
+    Executes command in terminal via bot.
     """
+
     if len(message.command) < 2:
         return await message.reply_text(shell_usage, quote=True)
 
-    user_input = message.text.split(None, 1)[1].split(" ")
+    user_input = message.text.split(None, 1)[1]
+    args = shlex.split(user_input)
 
     try:
-        shell = subprocess.Popen(
-            user_input, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
-
-        stdout, stderr = shell.communicate()
+        shell = await asyncio.create_subprocess_exec(*args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = await shell.communicate()
         result = str(stdout.decode().strip()) + str(stderr.decode().strip())
 
     except Exception as error:
         LOGGER(__name__).warning(f"{error}")
-        return await message.reply_text(f"**Error**:\n\n{error}", quote=True)
+        return await message.reply_text(f"Error :-\n\n{error}", quote=True)
 
     if len(result) > 2000:
         file = BytesIO(result.encode())
@@ -46,38 +48,37 @@ async def shell(client, message: Message):
         await message.reply_text("Output is too large (Sending it as File)", quote=True)
         await client.send_document(message.chat.id, file, caption=file.name)
     else:
-        await message.reply_text(f"**Output:**:\n\n{result}", quote=True)
-
-
-async def aexec(code, client, message):
-    exec(
-        "async def __aexec(client, message): "
-        + "".join(f"\n {a}" for a in code.split("\n"))
-    )
-    return await locals()["__aexec"](client, message)
+        await message.reply_text(f"Output :-\n\n{result}", quote=True)
 
 
 exec_usage = f"**USAGE:** Executes python commands directly via bot.\n\n<pre>/exec print('hello world')</pre>"
-commands = ["exec", f"exec@{BOT_USERNAME}", "execute"]
+cmds2 = ["exec", f"exec@{BOT_USERNAME}", "py", f"py@{BOT_USERNAME}"]
 
 
-@Client.on_message(filters.command(commands, **prefixes))
-@dev_commands
-async def executor(client, message: Message):
-    if len(message.command) < 2:
-        return await message.reply_text(exec_usage)
+async def aexec(code, client, message):
+    exec("async def __aexec(client, message): "
+         + "".join(f"\n {a}" for a in code.split("\n")))
 
-    try:
-        code = message.text.split(None, 1)[1]
-        print(message.text)
-    except IndexError:
-        return await message.delete()
+    return await locals()["__aexec"](client, message)
 
+
+async def runexec(client, message, replymsg):
     old_stderr = sys.stderr
     old_stdout = sys.stdout
     redirected_output = sys.stdout = StringIO()
     redirected_error = sys.stderr = StringIO()
     stdout, stderr, exc = None, None, None
+
+    try:
+        await replymsg.edit("ㅤ")
+        code = message.text.split(None, 1)[1]
+    except IndexError:
+        return await replymsg.edit("`No codes found to execute`", reply_markup=InlineKeyboardMarkup(
+            [[InlineKeyboardButton("Refresh  🔄", callback_data="refresh")]]))
+
+    if "config.env" in code:
+        return await replymsg.edit("`That's a dangerous operation! Not Permitted!`", reply_markup=InlineKeyboardMarkup(
+            [[InlineKeyboardButton("Refresh  🔄", callback_data="refresh")]]))
 
     try:
         await aexec(code, client, message)
@@ -89,6 +90,7 @@ async def executor(client, message: Message):
     sys.stdout = old_stdout
     sys.stderr = old_stderr
 
+    evaluation = ""
     if exc:
         evaluation = exc
     elif stderr:
@@ -96,16 +98,43 @@ async def executor(client, message: Message):
     elif stdout:
         evaluation = stdout
     else:
-        evaluation = "Success"
+        evaluation = "success"
+    final_output = f"{evaluation.strip()}"
 
-    final_output = f"**OUTPUT**: \n\n{evaluation.strip()}"
     if len(final_output) > 2000:
-        with open("output.txt", "w+", encoding="utf8") as file:
-            file.write(str(evaluation.strip()))
+        async with aiofiles.open("output.txt", "w+", encoding="utf8") as file:
+            await file.write(str(evaluation.strip()))
 
-        await message.reply_text("Output is too large (Sending it as File)", quote=True)
+        await replymsg.edit("output too large. sending it as a file...", reply_markup=InlineKeyboardMarkup(
+            [[InlineKeyboardButton("refresh 🔄", callback_data="refresh")]]))
         await client.send_document(message.chat.id, "output.txt", caption="output.txt")
         os.remove("output.txt")
 
     else:
-        await message.reply_text(final_output)
+        return await replymsg.edit(final_output, reply_markup=InlineKeyboardMarkup(
+            [[InlineKeyboardButton("refresh 🔄", callback_data="refresh")]]))
+
+
+@Client.on_callback_query()
+async def botCallbacks(client, CallbackQuery):
+    cliker_user_id = CallbackQuery.from_user.id
+    message_user_id = CallbackQuery.message.reply_to_message.from_user.id
+
+    if cliker_user_id != message_user_id:
+        return await CallbackQuery.answer("That command is not initiated by you.", show_alert=True)
+
+    message = await client.get_messages(CallbackQuery.message.chat.id, CallbackQuery.message.reply_to_message.id)
+    replymsg = await client.get_messages(CallbackQuery.message.chat.id, CallbackQuery.message.id)
+
+    if CallbackQuery.data == "refresh":
+        await runexec(client, message, replymsg)
+
+
+@Client.on_message(filters.command(cmds2, **prefixes))
+@dev_commands
+async def executor(client, message):
+    if len(message.command) < 2:
+        await message.reply_text(exec_usage)
+    else:
+        replymsg = await message.reply_text("executing....", quote=True)
+        await runexec(client, message, replymsg)

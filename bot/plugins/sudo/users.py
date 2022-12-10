@@ -9,14 +9,13 @@ from bot.config import (
     SUDO_USERS,
 )
 from bot.helpers.database import DatabaseHelper
-from bot.helpers.decorators import dev_commands, sudo_commands
+from bot.helpers.decorators import sudo_commands
 
 prefixes = COMMAND_PREFIXES
 cmds = ["users", f"users@{BOT_USERNAME}"]
 
 
 @Client.on_message(filters.command(cmds, **prefixes))
-@dev_commands
 @sudo_commands
 async def all_users(_, message: Message):
     """

@@ -7,7 +7,7 @@ from pyrogram.types import Message
 
 from bot import BotStartTime
 from bot.config import *
-from bot.helpers.decorators import dev_commands, sudo_commands
+from bot.helpers.decorators import sudo_commands
 from bot.helpers.functions import get_readable_size, get_readable_time
 
 prefixes = COMMAND_PREFIXES
@@ -22,7 +22,6 @@ commands = [
 
 
 @Client.on_message(filters.command(commands, **prefixes))
-@dev_commands
 @sudo_commands
 async def update(client, message: Message):
 

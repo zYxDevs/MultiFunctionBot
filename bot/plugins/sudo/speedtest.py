@@ -3,7 +3,7 @@ from pyrogram.types import Message
 from speedtest import Speedtest
 
 from bot.config import *
-from bot.helpers.decorators import dev_commands, sudo_commands
+from bot.helpers.decorators import sudo_commands
 from bot.helpers.functions import get_readable_size
 from bot.logging import LOGGER
 
@@ -12,7 +12,6 @@ commands = ["speedtest", f"speedtest@{BOT_USERNAME}"]
 
 
 @Client.on_message(filters.command(commands, **prefixes))
-@dev_commands
 @sudo_commands
 async def speedtest(_, message: Message):
     """

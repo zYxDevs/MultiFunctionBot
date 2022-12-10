@@ -2,6 +2,7 @@ import datetime
 from re import search
 from time import time
 
+import yt_dlp
 from pyrogram import Client, enums, filters
 from pyrogram.types import Message
 
@@ -10,18 +11,18 @@ from bot.helpers.database import DatabaseHelper
 from bot.helpers.decorators import user_commands
 from bot.helpers.functions import forcesub, get_readable_time
 from bot.logging import LOGGER
-from bot.modules import bypasser
+from bot.modules.pasting import telegraph_paste
 from bot.modules.regex import URL_REGEX, is_a_url
 
 prefixes = COMMAND_PREFIXES
-commands = ["multi", f"multi@{BOT_USERNAME}"]
+commands = ["ytdl", f"ytdl@{BOT_USERNAME}","ytdlp", f"ytdlp@{BOT_USERNAME}"]
 
 
 @Client.on_message(filters.command(commands, **prefixes))
 @user_commands
-async def multi(client, message: Message):
+async def magnet(client, message: Message):
     """
-    Bypass Short Links using PyBypass Library and EmilyAPI Multi Endpoint
+    Extract DL Links using YT-DLP
     """
     fsub = await forcesub(client, message)
     if not fsub:
@@ -57,6 +58,7 @@ async def multi(client, message: Message):
         err = "<b><i>You did not seem to have entered a valid URL!</i></b>"
         await message.reply_text(text=err, disable_web_page_preview=True, quote=True)
         return
+
     uname = message.from_user.mention
     uid = f"<code>{message.from_user.id}</code>"
     user_id = message.from_user.id
@@ -64,6 +66,7 @@ async def multi(client, message: Message):
         user_ = f'<a href="tg://user?id={message.from_user.id}">{message.from_user.username}</a>'
     else:
         user_ = f'<a href="tg://user?id={message.from_user.id}">{message.from_user.first_name}</a>'
+
     if DATABASE_URL is not None:
         if not await DatabaseHelper().is_user_exist(user_id):
             await DatabaseHelper().add_user(user_id)
@@ -81,18 +84,26 @@ async def multi(client, message: Message):
         last_used_on = await DatabaseHelper().get_last_used_on(user_id)
         if last_used_on != datetime.date.today().isoformat():
             await DatabaseHelper().update_last_used_on(user_id)
+
     start = time()
     LOGGER(__name__).info(f" Received : {cmd} - {url}")
-    abc = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>"
+    abc = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n\n<b>Link Type</b> : <i>YT-DLP Scraping</i>"
     await message.reply_text(text=abc, disable_web_page_preview=True, quote=True)
-    res = await bypasser.multi_bypass(url)
-    time_taken = get_readable_time(time() - start)
-    LOGGER(__name__).info(f" Destination : {cmd} - {res}")
-    xyz = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
-    await message.reply_text(text=xyz, disable_web_page_preview=True, quote=True)
 
+    yt_info = yt_dlp.YoutubeDL({"quiet": True, "no_warnings": True}).extract_info(url, download=False)
+    res = f"<b>Title:</b> <i>{yt_info['title']}</i><br>"
+    res += "<b><i>DL Links:</i></b><br>"
+    formats = yt_info.get('requested_formats') or [yt_info]
+    for f in formats:
+        res += f"• <code>{f['url']}</code><br>"
+    tlg_url = telegraph_paste(res)
+
+    time_taken = get_readable_time(time() - start)
+    LOGGER(__name__).info(f" Destination : {cmd} - {tlg_url}")
+    xyz = f"<b>YT-DLP Result :\n</b>{tlg_url}\n\n<i>Time Taken : {time_taken}</i>"
+    await message.reply_text(text=xyz, disable_web_page_preview=True, quote=True)
     try:
-        logmsg = f"<b><i>User:</i></b> {user_}\n<b><i>User ID: </i></b><code>{user_id}</code>\n<i>User URL:</i> {url}\n<i>Command:</i> {cmd}\n<i>Destination URL:</i> {res}\n\n<b><i>Time Taken:</i></b> {time_taken}"
+        logmsg = f"<b><i>User:</i></b> {user_}\n<b><i>User ID: </i></b><code>{user_id}</code>\n<i>User URL:</i> {url}\n<i>Command:</i> {cmd}\n<i>Destination URL:</i> {tlg_url}\n\n<b><i>Time Taken:</i></b> {time_taken}"
         await client.send_message(
             chat_id=LOG_CHANNEL,
             text=logmsg,

@@ -658,10 +658,8 @@ async def direct(client, message: Message):
         await message.reply_text(text=err7, disable_web_page_preview=True, quote=True)
         return
 
-    rest = str(res)
     if (DATABASE_URL and res) is not None and (
-        "Some Error Occurred" and "Could not Generate Direct Link"
-    ) not in rest:
+            "Some Error Occurred" or "Could not" or "Error" or "error") not in str(res.text()):
         if not await DatabaseHelper().is_dblink_exist(url):
             await DatabaseHelper().add_new_dblink(url, res)
             LOGGER(__name__).info(f"Successfully Added - {url} - {res} to DB!")

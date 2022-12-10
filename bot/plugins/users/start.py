@@ -64,15 +64,19 @@ USER_TEXT = """🗒️ Documentation for commands available to user's
 
 • /scrape - Extract Direct Links from Supported Sites
 
-• /gd - Get GDrive Links for various Drive File Sharer
+• /ytdl - (or /ytdlp) Extract DL Links using YT-DLP
+
+• /gd - (or use /clone) Get GDrive Links for various Drive File Sharer
 """
 
 SUDO_TEXT = """
 🗒️ Documentation for Sudo Users commands.
 
-• /speedtest: Check the internet speed of bot server.
+• /db: Get information about Bot DataBase
 
-• /serverstats: Get the stats of server.
+• /speedtest: Check the internet speed of bot server
+
+• /serverstats: Get the stats of server
 
 • /stats: Alias command for serverstats
 
@@ -86,6 +90,8 @@ DEV_TEXT = """
 
 • /removesudo - Remove a user to the Bot sudo users list
 
+• /broadcast - Broadcast a message to all the Bot Users
+
 • /update: To update the bot to latest commit from repository.
 
 • /restart: Restart the bot.
@@ -96,7 +102,7 @@ DEV_TEXT = """
 
 • /shell: To run the terminal commands via bot.
 
-• /exec: To run the python commands via bot
+• /exec: (or use /py) To run the python commands via bot
 """
 
 START_BUTTON = [
@@ -164,6 +170,7 @@ async def start(client, message):
 @Client.on_callback_query()
 async def botCallbacks(client, CallbackQuery):
     user_id = CallbackQuery.from_user.id
+    botuptime = get_readable_time(time.time() - BotStartTime)
 
     if CallbackQuery.data == "ABOUT_BUTTON":
         await CallbackQuery.edit_message_text(
@@ -174,7 +181,7 @@ async def botCallbacks(client, CallbackQuery):
 
     elif CallbackQuery.data == "START_BUTTON":
         await CallbackQuery.edit_message_text(
-            START_TEXT, reply_markup=InlineKeyboardMarkup(START_BUTTON)
+            START_TEXT.format(botuptime), reply_markup=InlineKeyboardMarkup(START_BUTTON)
         )
 
     elif CallbackQuery.data == "COMMAND_BUTTON":

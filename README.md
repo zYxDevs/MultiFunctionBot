@@ -55,6 +55,7 @@ shorten - Get AdFree Shortened URLs of your Link
 magnet - Extract Magnet from Torrent Websites
 index - Extract Direct Links from Bhadoo Index Folder URLs
 scrape - Extract Direct Links from Supported Sites
+ytdl - (or /ytdlp) Extract DL Links using YT-DLP
 gd - (or use /clone) Get GDrive Links for various Drive File Sharer
 ```
 
@@ -80,11 +81,13 @@ gd - (or use /clone) Get GDrive Links for various Drive File Sharer
     /magnet - Extract Magnet from Torrent Websites <br>
     /index - Extract Direct Links from Bhadoo Index Folder URLs <br>
     /scrape - Extract Direct Links from Supported Sites <br>
+    /ytdl - (or /ytdlp) Extract DL Links using YT-DLP <br>
     /gd - (or use /clone) Get GDrive Links for various Drive File Sharer <br>
 	</li>
 <br>
     <li>
     <i><b>Sudo User Commands </b></i><br><br>
+    /db: Get information about Bot DataBase <br>
     /speedtest: Check the internet speed of bot server.<br>
     /serverstats: Get the stats of server.<br>
     /stats: Alias command for serverstats.<br>
@@ -95,8 +98,9 @@ gd - (or use /clone) Get GDrive Links for various Drive File Sharer
     <i><b>Developer Commands </b></i><br><br> 
 	/addsudo - Add a user to the Bot sudo users list <br>
     /removesudo - Remove a user to the Bot sudo users list <br>
+    /broadcast - Broadcast a message to all the Bot Users <br>
     /shell: To run the terminal commands via bot.<br>
-    /exec: To run the python commands via bot. <br>
+    /exec: (or use /py) To run the python commands via bot. <br>
     /update: To update the bot to latest commit from UpStream Repositorys. <br> 
     /restart: Restart the bot. <br>
     /log: To get the log file of bot. <br>

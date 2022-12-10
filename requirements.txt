@@ -1,3 +1,4 @@
+aiofiles
 beautifulsoup4
 bs4
 chromedriver_autoinstaller
@@ -24,3 +25,4 @@ telegraph
 tgcrypto
 urllib3
 waybackpy
+yt_dlp
