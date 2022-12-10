@@ -2,7 +2,7 @@ import base64
 import os
 import re
 from time import sleep
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import urlparse
 
 import chromedriver_autoinstaller
 from lxml import etree
@@ -24,9 +24,9 @@ async def gdtot(url: str) -> str:
     match = re.findall(r"https?://(.+)\.gdtot\.(.+)\/\S+\/\S+", url)[0]
     client.cookies.update({"crypt": crypt})
     res = client.get(f"https://{match[0]}.gdtot.{match[1]}/dld?id={url.split('/')[-1]}")
-    params = re.findall('gd=(.*?)&', res.text)
+    params = re.findall("gd=(.*?)&", res.text)
     try:
-        decoded_id = base64.b64decode(str(params[0])).decode('utf-8')
+        decoded_id = base64.b64decode(str(params[0])).decode("utf-8")
     except BaseException:
         return "Something went wrong. Could not generate GDrive URL for your GDTot Link"
     drive_link = f"https://drive.google.com/open?id={decoded_id}"

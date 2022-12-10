@@ -120,11 +120,11 @@ async def gd(client, message: Message):
         link_type = "AppDrive LookAlike"
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
-        #res = await unified(url)
+        # res = await unified(url)
         sleep(1)
         time_taken = get_readable_time(time() - start)
-        #LOGGER(__name__).info(f" Destination : {cmd} - {res}")
-        #b = f"<b>Direct Gdrive Link :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        # LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        # b = f"<b>Direct Gdrive Link :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
         b = f"<b><i>AppDrive and its lookalikes have implemented Captcha.\n\nSo it would not work for now</i></b>"
         await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif is_udrive:
