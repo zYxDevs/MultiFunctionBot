@@ -26,8 +26,7 @@ commands = ["broadcast", f"broadcast@{BOT_USERNAME}"]
 
 @Client.on_message(filters.command(commands, **prefixes))
 @dev_commands
-async def broadcast_(c, m):
-    m.from_user.id
+async def broadcast(c, m):
     out = await m.reply_text(
         text=f"Broadcast initiated! You will be notified with log file when all the users are notified."
     )

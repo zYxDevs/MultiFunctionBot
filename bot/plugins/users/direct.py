@@ -104,10 +104,10 @@ async def direct(client, message: Message):
             add_date = await DatabaseHelper().fetch_dblink_added(url)
             time_taken = get_readable_time(time() - start)
             LOGGER(__name__).info(f"Successfully Generated DL - DB:True - {result}")
-            b = f"<b>Download Link :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>\n<i>Result Added on:</i>{add_date}"
+            b = f"<b>Download Link :\n</b>{result}\n\n<i>Time Taken : {time_taken}</i>\n<i>Result Added on:</i>{add_date}"
             await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
             try:
-                logmsg = f"<b><i>User:</i></b> {user_}\n<b><i>User ID:</i></b><code>{user_id}</code>\n<i>User URL:</i> {url}\n<i>Command:</i> {cmd}\n<i>Destination URL:</i> {res}\n\n<b><i>Time Taken:</i></b> {time_taken} "
+                logmsg = f"<b><i>User:</i></b> {user_}\n<b><i>User ID:</i></b><code>{user_id}</code>\n<i>User URL:</i> {url}\n<i>Command:</i> {cmd}\n<i>Destination URL:</i> {result}\n\n<b><i>Time Taken:</i></b> {time_taken} "
                 await client.send_message(
                     chat_id=LOG_CHANNEL,
                     text=logmsg,
@@ -660,7 +660,7 @@ async def direct(client, message: Message):
 
     if (DATABASE_URL and res) is not None and (
         "Some Error Occurred" or "Could not" or "Error" or "error"
-    ) not in str(res.text()):
+    ) not in str(res):
         if not await DatabaseHelper().is_dblink_exist(url):
             await DatabaseHelper().add_new_dblink(url, res)
             LOGGER(__name__).info(f"Successfully Added - {url} - {res} to DB!")

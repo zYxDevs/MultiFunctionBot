@@ -24,15 +24,11 @@ async def gdtot(url: str) -> str:
     match = re.findall(r"https?://(.+)\.gdtot\.(.+)\/\S+\/\S+", url)[0]
     client.cookies.update({"crypt": crypt})
     res = client.get(f"https://{match[0]}.gdtot.{match[1]}/dld?id={url.split('/')[-1]}")
-    url = re.findall(r'URL=(.*?)"', res.text)[0]
-    params = parse_qs(urlparse(url).query)
-    if "gd" not in params or not params["gd"] or params["gd"][0] == "false":
+    params = re.findall('gd=(.*?)&', res.text)
+    try:
+        decoded_id = base64.b64decode(str(params[0])).decode('utf-8')
+    except BaseException:
         return "Something went wrong. Could not generate GDrive URL for your GDTot Link"
-    else:
-        try:
-            decoded_id = base64.b64decode(str(params["gd"][0])).decode("utf-8")
-        except BaseException:
-            return "Something went wrong. Could not generate GDrive URL for your GDTot Link"
     drive_link = f"https://drive.google.com/open?id={decoded_id}"
     return drive_link
 

@@ -7,8 +7,8 @@ from pyrogram.raw.all import layer
 https://github.com/UsergeTeam/Userge/blob/alpha/userge/versions.py
 """
 
-__major__ = 3
-__minor__ = 5
+__major__ = 4
+__minor__ = 0
 __micro__ = 0
 
 

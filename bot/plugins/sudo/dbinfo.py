@@ -23,9 +23,9 @@ async def all_users(_, message: Message):
         else:
             con_stats = False
         msg = f"<b>DataBase URL:</b> <code>{DATABASE_URL}</code>"
-        msg += f"\n<b>Connection Status:</b> <code>{con_stats}</code>"
-        msg += f"\n<b><i>No of Links Stored: </i></b>{total_links}"
-        msg += f"\n<b><i>Total Bot Users: </i></b>{total_users}"
+        msg += f"\n\n<b>Connection Status:</b> <code>{con_stats}</code>"
+        msg += f"\n\n<b><i>No of Links Stored: </i></b>{total_links}"
+        msg += f"\n\n<b><i>Total Bot Users: </i></b>{total_users}"
         await message.reply_text(text=msg, disable_web_page_preview=True, quote=True)
     else:
         err = "You have not provided a DB URL, so this function wont work!"
