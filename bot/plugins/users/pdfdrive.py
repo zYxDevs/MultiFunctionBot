@@ -113,9 +113,7 @@ async def pdfdrive_callback(message, client):
 
     if client.data[0] == "D":
         choose = int(client.data.replace("D", ""))
-        client.edit_message_text(
-            message.chat.id, message.id, "__Downloading__"
-        )
+        client.edit_message_text(message.chat.id, message.id, "__Downloading__")
         durl = pdfdrivefetch.getdownlink(books[choose])
         res = requests.get(durl)
         with open(f"{books[choose].title}.pdf", "wb") as file:
@@ -123,9 +121,7 @@ async def pdfdrive_callback(message, client):
         res = requests.get(books[choose].coverlink)
         with open(f"{books[choose].title}.jpg", "wb") as file:
             file.write(res.content)
-        client.edit_message_text(
-            message.chat.id, message.id, "__Uploading__"
-        )
+        client.edit_message_text(message.chat.id, message.id, "__Uploading__")
         client.edit_message_media(
             message.chat.id,
             message.id,
