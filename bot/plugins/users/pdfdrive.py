@@ -100,22 +100,21 @@ async def pdfdrive(client, message):
 
 
 @Client.on_callback_query()
-async def pdfdrive_callback(_, CallbackQuery):
-    books = getdata(CallbackQuery.message.id)
+async def pdfdrive_callback(message, client):
+    books = getdata(client.message.id)
     if books == 0:
         wrongimage = "https://graph.org/file/fddb76c4e758df3dfad37.png"
-        CallbackQuery.edit_message_media(
-            CallbackQuery.message.chat.id,
-            CallbackQuery.message.id,
+        client.edit_message_media(
+            message.chat.id,
+            message.id,
             InputMediaPhoto(wrongimage, "__Out of Date, Search Again__"),
         )
         return
 
-    # download
-    if CallbackQuery.data[0] == "D":
-        choose = int(CallbackQuery.data.replace("D", ""))
-        CallbackQuery.edit_message_text(
-            CallbackQuery.message.chat.id, CallbackQuery.message.id, "__Downloading__"
+    if client.data[0] == "D":
+        choose = int(client.data.replace("D", ""))
+        client.edit_message_text(
+            message.chat.id, message.id, "__Downloading__"
         )
         durl = pdfdrivefetch.getdownlink(books[choose])
         res = requests.get(durl)
@@ -124,12 +123,12 @@ async def pdfdrive_callback(_, CallbackQuery):
         res = requests.get(books[choose].coverlink)
         with open(f"{books[choose].title}.jpg", "wb") as file:
             file.write(res.content)
-        CallbackQuery.edit_message_text(
-            CallbackQuery.message.chat.id, CallbackQuery.message.id, "__Uploading__"
+        client.edit_message_text(
+            message.chat.id, message.id, "__Uploading__"
         )
-        CallbackQuery.edit_message_media(
-            CallbackQuery.message.chat.id,
-            CallbackQuery.message.id,
+        client.edit_message_media(
+            message.chat.id,
+            message.id,
             InputMediaDocument(
                 f"{books[choose].title}.pdf",
                 thumb=f"{books[choose].title}.jpg",
@@ -140,10 +139,10 @@ async def pdfdrive_callback(_, CallbackQuery):
         os.remove(f"{books[choose].title}.jpg")
         return
 
-    choose = int(CallbackQuery.data)
-    CallbackQuery.edit_message_media(
-        CallbackQuery.message.chat.id,
-        CallbackQuery.message.id,
+    choose = int(client.data)
+    client.edit_message_media(
+        message.chat.id,
+        message.id,
         InputMediaPhoto(
             books[choose].link,
             f"**{books[choose].title}**\n\n__Year: {books[choose].year}\nSize: {books[choose].size}\nPages: {books[choose].pages}\nDownloads: {books[choose].downloads}__",
