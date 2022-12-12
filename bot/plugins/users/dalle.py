@@ -37,7 +37,7 @@ async def dalle(client, message: Message):
         return
 
     try:
-        generateimages(client, message, query)
+        await generateimages(client, message, query)
     except BaseException:
         e = "<b>Error encountered while generating Image from DALLE-Mini</b>"
         await message.reply_text(text=e, disable_web_page_preview=True, quote=True)
@@ -63,7 +63,7 @@ headersList = {
 }
 
 
-def generateimages(client, message, query):
+async def generateimages(client, message, query):
 
     payload = json.dumps({"prompt": query})
     response = requests.request(

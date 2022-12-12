@@ -106,7 +106,7 @@ async def direct(client, message: Message):
             b = f"<b>Download Link :\n</b>{result}\n\n<i>Time Taken : {time_taken}</i>\n<i>Result Added on:</i>{add_date}"
             await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
             try:
-                logmsg = f"<b><i>User:</i></b> {user_}\n<b><i>User ID:</i></b><code>{user_id}</code>\n<i>User URL:</i> {url}\n<i>Command:</i> {cmd}\n<i>Destination URL:</i> {result}\n\n<b><i>Time Taken:</i></b> {time_taken} "
+                logmsg = f"<b><i>User:</i></b> {user_}\n<b><i>User ID:</i></b><code>{user_id}</code>\n<i>User URL:</i> {url}\n<i>Command:</i> {cmd}\n<i>Destination URL:</i> {result}\n\n<b><i>Time Taken:</i></b> {time_taken}\n\n<i>Result Added on:</i> {add_date}"
                 await client.send_message(
                     chat_id=LOG_CHANNEL,
                     text=logmsg,
