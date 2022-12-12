@@ -1,11 +1,10 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
-from bot.config import BOT_USERNAME, COMMAND_PREFIXES, DATABASE_URL
+from bot.config import BOT_USERNAME, DATABASE_URL, prefixes
 from bot.helpers.database import DatabaseHelper
 from bot.helpers.decorators import sudo_commands
 
-prefixes = COMMAND_PREFIXES
 cmds = ["db", f"db@{BOT_USERNAME}"]
 
 

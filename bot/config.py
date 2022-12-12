@@ -41,12 +41,12 @@ if len(BOT_USERNAME) == 0:
 if "@" in BOT_USERNAME:
     BOT_USERNAME = BOT_USERNAME.replace("@", "")
 
-list = []
+cmd_list = []
 cmd_prfx = environ.get("COMMAND_PREFIXES", "! / .")
 if len(cmd_prfx) != 0:
     for cmds in cmd_prfx.split():
-        list.append(cmds.strip())
-    COMMAND_PREFIXES = dict(prefixes=list)
+        cmd_list.append(cmds.strip())
+    COMMAND_PREFIXES = prefixes = dict(prefixes=cmd_list)
 else:
     COMMAND_PREFIXES = set()
 
@@ -118,7 +118,7 @@ if len(BIFM_URL) == 0:
 EMILY_API_URL = environ.get("EMILY_API_URL", "")
 if len(EMILY_API_URL) == 0:
     LOGGER(__name__).warning("EMILY_API_URL not provided! (Using Default)")
-    EMILY_API_URL = "https://api.emilyx.in/api https://emilyapi.fly.dev/api https://emily-api.fly.dev/api"
+    EMILY_API_URL = "https://api.emilyx.in/api https://emilyapi.fly.dev/api"
 
 GDTOT_CRYPT = environ.get("GDTOT_CRYPT", "")
 if len(GDTOT_CRYPT) == 0:
@@ -184,7 +184,18 @@ if len(UNIFIED_EMAIL) == 0 or len(UNIFIED_PASS) == 0:
     UNIFIED_EMAIL = ""
     UNIFIED_PASS = ""
 
+OPENAI_EMAIL = environ.get("OPENAI_EMAIL", "")
+OPENAI_PASSWORD = environ.get("OPENAI_PASSWORD", "")
+if len(OPENAI_EMAIL) == 0 or len(OPENAI_PASSWORD) == 0:
+    LOGGER(__name__).warning("OpenAI Email/Pass not provided!")
+    OPENAI_EMAIL = ""
+    OPENAI_PASSWORD = ""
+
 UPSTREAM_REPO = environ.get("UPSTREAM_REPO", "")
 if len(UPSTREAM_REPO) == 0:
     LOGGER(__name__).warning("UPSTREAM_REPO not provided!")
     UPSTREAM_REPO = ""
+    
+UPSTREAM_BRANCH = environ.get("UPSTREAM_BRANCH", "")
+if len(UPSTREAM_BRANCH) == 0:
+    UPSTREAM_BRANCH = "main"

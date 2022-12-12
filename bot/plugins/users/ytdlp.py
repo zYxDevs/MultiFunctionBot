@@ -5,6 +5,9 @@ from time import time
 import yt_dlp
 from pyrogram import Client, enums, filters
 from pyrogram.types import Message
+from yt_dlp import YoutubeDL, DownloadError
+from yt_dlp.utils import GeoRestrictedError, PostProcessingError, UnavailableVideoError, XAttrMetadataError, \
+    ExtractorError, MaxDownloadsReached, ContentTooShortError
 
 from bot.config import *
 from bot.helpers.database import DatabaseHelper
@@ -14,7 +17,7 @@ from bot.logging import LOGGER
 from bot.modules.pasting import telegraph_paste
 from bot.modules.regex import URL_REGEX, is_a_url
 
-prefixes = COMMAND_PREFIXES
+
 commands = ["ytdl", f"ytdl@{BOT_USERNAME}", "ytdlp", f"ytdlp@{BOT_USERNAME}"]
 
 
@@ -88,21 +91,60 @@ async def ytdlp(client, message: Message):
     start = time()
     LOGGER(__name__).info(f" Received : {cmd} - {url}")
     abc = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n\n<b>Link Type</b> : <i>YT-DLP Scraping</i>"
-    await message.reply_text(text=abc, disable_web_page_preview=True, quote=True)
+    init_msg = await message.reply_text(text=abc, disable_web_page_preview=True, quote=True)
 
-    yt_info = yt_dlp.YoutubeDL({"quiet": True, "no_warnings": True}).extract_info(
-        url, download=False
-    )
+    ydl_opts = {
+        "addmetadata": True,
+        "geo_bypass": True,
+        "nocheckcertificate": True,
+        "logtostderr": False,
+        "quiet": True,
+        "no_warnings": True,
+    }
+
+    ytdl_data = None
+    errmsg = None
+    try:
+        with YoutubeDL(ydl_opts) as ytdl:
+            ytdl_data = ytdl.extract_info(url, download=False)
+    except DownloadError as DE:
+       errmsg = f"`{DE}`"
+    except ContentTooShortError:
+        errmsg = "`The download content was too short.`"
+    except GeoRestrictedError:
+        errmsg = (
+            "`Video is not available from your geographic location due to geographic restrictions imposed by a website.`"
+        )
+    except MaxDownloadsReached:
+        errmsg = "`Max-downloads limit has been reached.`"
+    except PostProcessingError:
+        errmsg = "`There was an error during post processing.`"
+    except UnavailableVideoError:
+        errmsg = "`Media is not available in the requested format.`"
+    except XAttrMetadataError as XAME:
+        errmsg = f"`{XAME.code}: {XAME.msg}\n{XAME.reason}`"
+    except ExtractorError:
+        errmsg = "`There was an error during info extraction.`"
+    except Exception as e:
+        errmsg = f"**Error : **\n__{e}__"
+
+    if errmsg is not None:
+        await init_msg.delete()
+        await message.reply_text(text=errmsg, disable_web_page_preview=True, quote=True)
+        return
 
     try:
-        res = f"<b>Title:</b> <i>{yt_info['title']}</i><br>"
+        res = f"<b>Title:</b> <i>{ytdl_data['title']}</i><br>"
         res += "<b><i>DL Links:</i></b><br>"
-        formats = yt_info.get("requested_formats") or [yt_info]
+        formats = ytdl_data.get("requested_formats") or [ytdl_data]
         for f in formats:
             res += f"• <code>{f['url']}</code><br>"
         tlg_url = await telegraph_paste(res)
     except Exception as e:
-        tlg_url = f"YT-DLP Engine could not process your URL!\nERROR: {e}"
+        await init_msg.delete()
+        err = f"YT-DLP Engine could not process your URL!\nERROR: {e}"
+        await message.reply_text(text=err, disable_web_page_preview=True, quote=True)
+        return
 
     time_taken = get_readable_time(time() - start)
     LOGGER(__name__).info(f" Destination : {cmd} - {tlg_url}")

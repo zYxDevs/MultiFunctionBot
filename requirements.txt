@@ -7,9 +7,11 @@ colorama
 dnspython
 flask
 flask_restful
+httpx
 img2pdf
 lk21
 lxml
+nest_asyncio
 playwright
 psutil
 PyBypass
@@ -21,6 +23,7 @@ requests
 sapling-py
 selenium
 speedtest-cli
+telegram
 telegraph
 tgcrypto
 urllib3

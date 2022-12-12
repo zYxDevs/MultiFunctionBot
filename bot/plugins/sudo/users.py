@@ -3,15 +3,14 @@ from pyrogram.types import Message
 
 from bot.config import (
     BOT_USERNAME,
-    COMMAND_PREFIXES,
     DATABASE_URL,
     OWNER_ID,
     SUDO_USERS,
+    prefixes,
 )
 from bot.helpers.database import DatabaseHelper
 from bot.helpers.decorators import sudo_commands
 
-prefixes = COMMAND_PREFIXES
 cmds = ["users", f"users@{BOT_USERNAME}"]
 
 

@@ -14,7 +14,7 @@ from bot.modules import scraper
 from bot.modules.pasting import telegraph_paste
 from bot.modules.regex import URL_REGEX, is_a_url
 
-prefixes = COMMAND_PREFIXES
+
 commands = ["index", f"index@{BOT_USERNAME}"]
 
 

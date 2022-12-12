@@ -1,11 +1,11 @@
-import requests
+import httpx
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
 from bot.config import *
 from bot.helpers.decorators import dev_commands
 
-prefixes = COMMAND_PREFIXES
+
 commands = ["ip", f"ip@{BOT_USERNAME}"]
 
 
@@ -16,5 +16,7 @@ async def ipinfo(client, message: Message):
     Give ip of the server where bot is running.
     """
 
-    response = requests.get("http://ipinfo.io/ip").text
-    await message.reply_text(f"IP Address of the server is: `{response}`", quote=True)
+    async with httpx.AsyncClient() as client:
+        response = await client.get("http://ipinfo.io/ip")
+
+    await message.reply_text(f"IP Adress of the server bot server is: `{response.text}`", quote=True)

@@ -14,7 +14,7 @@ from bot.modules import bypasser
 from bot.modules.lists import *
 from bot.modules.regex import *
 
-prefixes = COMMAND_PREFIXES
+
 commands = ["bypass", f"bypass@{BOT_USERNAME}"]
 
 
@@ -288,6 +288,17 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.rocklinks(url)
+        sleep(1)
+        time_taken = get_readable_time(time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {res}")
+        b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
+    elif "mdisk.pro" in url:
+        link_type = "MDiskPro"
+        LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
+        res = await bypasser.mdiskpro(url)
         sleep(1)
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")

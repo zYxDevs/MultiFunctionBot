@@ -15,7 +15,7 @@ from bot.modules.lists import *
 from bot.modules.pasting import telegraph_paste
 from bot.modules.regex import *
 
-prefixes = COMMAND_PREFIXES
+
 commands = ["direct", f"direct@{BOT_USERNAME}"]
 
 
@@ -131,7 +131,7 @@ async def direct(client, message: Message):
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b><i>Your Direct-Download Link is :\n</i></b>{res}\n\n<i>Time Taken : {time_taken}</i>"
         await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
-    elif "mdisk." in url:
+    elif "mdisk.me" in url:
         link_type = "MDisk"
         LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"

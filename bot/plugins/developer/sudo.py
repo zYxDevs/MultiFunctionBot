@@ -1,12 +1,11 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
-from bot.config import BOT_USERNAME, COMMAND_PREFIXES, DATABASE_URL, SUDO_USERS
+from bot.config import BOT_USERNAME, DATABASE_URL, SUDO_USERS, prefixes
 from bot.helpers.database import DatabaseHelper
 from bot.helpers.decorators import dev_commands
 from bot.logging import LOGGER
 
-prefixes = COMMAND_PREFIXES
 cmds_addsudo = ["addsudo", f"addsudo@{BOT_USERNAME}"]
 cmds_rmsudo = ["removesudo", f"removesudo@{BOT_USERNAME}"]
 

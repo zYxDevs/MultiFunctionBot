@@ -3,11 +3,8 @@ from sys import version_info
 from pyrogram import __version__ as __pyrog_version__
 from pyrogram.raw.all import layer
 
-"""
-https://github.com/UsergeTeam/Userge/blob/alpha/userge/versions.py
-"""
 
-__major__ = 4
+__major__ = 5
 __minor__ = 0
 __micro__ = 0
 

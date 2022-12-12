@@ -15,12 +15,12 @@ from pyrogram.errors import (
     UserIsBlocked,
 )
 
-from bot.config import BOT_USERNAME, COMMAND_PREFIXES
+from bot.config import BOT_USERNAME, prefixes
 from bot.helpers.database import DatabaseHelper
 from bot.helpers.decorators import dev_commands
 
 Broadcast_IDs = {}
-prefixes = COMMAND_PREFIXES
+
 commands = ["broadcast", f"broadcast@{BOT_USERNAME}"]
 
 

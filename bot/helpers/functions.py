@@ -110,23 +110,6 @@ def get_readable_time(seconds: int) -> str:
     return result
 
 
-def get_readable_bytes(value, digits=2, delim="", postfix=""):
-    """
-    Return a human-readable file size.
-    """
-
-    if value is None:
-        return None
-    chosen_unit = "B"
-    for unit in ("KiB", "MiB", "GiB", "TiB"):
-        if value > 1000:
-            value /= 1024
-            chosen_unit = unit
-        else:
-            break
-    return f"{value:.{digits}f}" + delim + chosen_unit + postfix
-
-
 def get_readable_size(size):
     if not size:
         return ""
@@ -152,7 +135,7 @@ async def api_checker():
     api_url = await multi_api()
     r = requests.get(api_url)
     if r.status_code == 200:
-        LOGGER(__name__).info(f" Using API : {api_url}")
+        LOGGER(__name__).info(f"Using API : {api_url}")
         return api_url
     else:
         await api_checker()

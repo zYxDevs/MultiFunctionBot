@@ -353,6 +353,27 @@ async def linkvertise(url):
         return "Some Error Occurred \nCould not Bypass your URL"
 
 
+async def mdiskpro(url):
+    if not url_exists:
+        return "The link you entered is wrong!"
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    DOMAIN = "https://mdisk.pro"
+    ref = "https://m.meclipstudy.in/"
+    h = {"referer": ref}
+    try:
+        resp = client.get(url, headers=h)
+        soup = BeautifulSoup(resp.content, "html.parser")
+        inputs = soup.find(id="go-link").find_all(name="input")
+        data = {input.get("name"): input.get("value") for input in inputs}
+        h = {"x-requested-with": "XMLHttpRequest"}
+        time.sleep(8)
+        des_url = client.post(f"{DOMAIN}/links/go", data=data, headers=h).json()["url"]
+        des_url = des_url.replace(" ", "%20")
+        return des_url
+    except BaseException:
+        return "Some Error Occurred \nCould not Bypass your URL"
+
+
 async def multi_aio(url):
     if not url_exists:
         return "The link you entered is wrong!"

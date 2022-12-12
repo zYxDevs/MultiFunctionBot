@@ -31,7 +31,7 @@ linkvertise_list = [
 ]
 directdl_list = [
     "artstation.",
-    "mdisk.",
+    "mdisk.me",
     "wetransfer.",
     "we.tl",
     "gdbot.",
@@ -111,6 +111,7 @@ bypass_list = [
     "tnlink.",
     "xpshort.",
     "adrinolinks.",
+    "mdisk.pro",
 ]
 scrape_list = [
     "atishmkv.",

@@ -10,12 +10,12 @@ from bot.config import *
 from bot.helpers.decorators import dev_commands
 from bot.logging import LOGGER
 
-prefixes = COMMAND_PREFIXES
 
-commands = ["update", f"update@{BOT_USERNAME}"]
+cmds = ["update", f"update@{BOT_USERNAME}"]
+cmds2 = ["restart", f"restart@{BOT_USERNAME}"]
 
 
-@Client.on_message(filters.command(commands, **prefixes))
+@Client.on_message(filters.command(cmds, **prefixes))
 @dev_commands
 async def update(client, message: Message):
     """
@@ -37,7 +37,7 @@ async def update(client, message: Message):
                             && git commit -sm update -q \
                             && git remote add origin {UPSTREAM_REPO} \
                             && git fetch origin -q \
-                            && git reset --hard origin/main -q"
+                            && git reset --hard origin/{UPSTREAM_BRANCH} -q"
             ],
             shell=True,
         )
@@ -63,10 +63,7 @@ async def update(client, message: Message):
         )
 
 
-commands = ["restart", f"restart@{BOT_USERNAME}"]
-
-
-@Client.on_message(filters.command(commands, **prefixes))
+@Client.on_message(filters.command(cmds2, **prefixes))
 @dev_commands
 async def restart(client, message: Message):
     """
@@ -74,7 +71,6 @@ async def restart(client, message: Message):
     """
 
     LOGGER(__name__).info("Restarting the bot. Shutting down this instance")
-    print("ok")
     await message.reply_text(
         "`Starting a new instance and shutting down this one`", quote=True
     )
