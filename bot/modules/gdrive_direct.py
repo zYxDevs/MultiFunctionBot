@@ -210,7 +210,7 @@ async def sharerpw(url: str, forced_login=False) -> str:
     if (Sharerpw_XSRF or Sharerpw_laravel) is None:
         return "Sharerpw Cookies not Found!"
     try:
-        scraper = cloudscraper.create_scraper(delay=10, browser='chrome')
+        scraper = cloudscraper.create_scraper(delay=10, browser="chrome")
         scraper.cookies.update(
             {
                 "XSRF-TOKEN": Sharerpw_XSRF,

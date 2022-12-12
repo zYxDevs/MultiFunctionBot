@@ -4,15 +4,14 @@ import shlex
 import subprocess
 import sys
 import traceback
-from io import StringIO, BytesIO
+from io import BytesIO, StringIO
 
 import aiofiles
 from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from bot.config import *
 from bot.helpers.decorators import dev_commands
-
 
 shell_usage = f"**USAGE:** Executes terminal commands directly via bot.\n\n**Example: **<pre>/shell pip install requests</pre>"
 commands = ["shell", "sh", f"shell@{BOT_USERNAME}", f"sh@{BOT_USERNAME}"]
@@ -32,7 +31,9 @@ async def shell(client, message: Message):
     args = shlex.split(user_input)
 
     try:
-        shell = await asyncio.create_subprocess_exec(*args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        shell = await asyncio.create_subprocess_exec(
+            *args, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
         stdout, stderr = await shell.communicate()
         result = str(stdout.decode().strip()) + str(stderr.decode().strip())
 
@@ -54,8 +55,10 @@ commands = ["exec", "py", f"exec@{BOT_USERNAME}", f"py@{BOT_USERNAME}"]
 
 
 async def aexec(code, client, message):
-    exec("async def __aexec(client, message): "
-         + "".join(f"\n {a}" for a in code.split("\n")))
+    exec(
+        "async def __aexec(client, message): "
+        + "".join(f"\n {a}" for a in code.split("\n"))
+    )
     return await locals()["__aexec"](client, message)
 
 
@@ -70,12 +73,20 @@ async def py_runexec(client, message, replymsg):
         await replymsg.edit("executing...")
         code = message.text.split(None, 1)[1]
     except IndexError:
-        return await replymsg.edit("No codes found to execute.", reply_markup=InlineKeyboardMarkup(
-            [[InlineKeyboardButton("Refresh  🔄", callback_data="refresh")]]))
+        return await replymsg.edit(
+            "No codes found to execute.",
+            reply_markup=InlineKeyboardMarkup(
+                [[InlineKeyboardButton("Refresh  🔄", callback_data="refresh")]]
+            ),
+        )
 
     if "config.env" in code:
-        return await replymsg.edit("That's a dangerous operation! Not Permitted!", reply_markup=InlineKeyboardMarkup(
-            [[InlineKeyboardButton("Refresh  🔄", callback_data="refresh")]]))
+        return await replymsg.edit(
+            "That's a dangerous operation! Not Permitted!",
+            reply_markup=InlineKeyboardMarkup(
+                [[InlineKeyboardButton("Refresh  🔄", callback_data="refresh")]]
+            ),
+        )
 
     try:
         await aexec(code, client, message)
@@ -102,14 +113,22 @@ async def py_runexec(client, message, replymsg):
         async with aiofiles.open("output.txt", "w+", encoding="utf8") as file:
             await file.write(str(evaluation.strip()))
 
-        await replymsg.edit("output too large. sending it as a file...", reply_markup=InlineKeyboardMarkup(
-            [[InlineKeyboardButton("refresh 🔄", callback_data="refresh")]]))
+        await replymsg.edit(
+            "output too large. sending it as a file...",
+            reply_markup=InlineKeyboardMarkup(
+                [[InlineKeyboardButton("refresh 🔄", callback_data="refresh")]]
+            ),
+        )
         await client.send_document(message.chat.id, "output.txt", caption="output.txt")
         os.remove("output.txt")
 
     else:
-        return await replymsg.edit(final_output, reply_markup=InlineKeyboardMarkup(
-            [[InlineKeyboardButton("refresh 🔄", callback_data="refresh")]]))
+        return await replymsg.edit(
+            final_output,
+            reply_markup=InlineKeyboardMarkup(
+                [[InlineKeyboardButton("refresh 🔄", callback_data="refresh")]]
+            ),
+        )
 
 
 @Client.on_callback_query(filters.regex("refresh"))
@@ -118,10 +137,16 @@ async def botCallbacks(client, CallbackQuery):
     message_user_id = CallbackQuery.message.reply_to_message.from_user.id
 
     if clicker_user_id != message_user_id:
-        return await CallbackQuery.answer("That command has not been initiated by you", show_alert=True)
+        return await CallbackQuery.answer(
+            "That command has not been initiated by you", show_alert=True
+        )
 
-    message = await client.get_messages(CallbackQuery.message.chat.id, CallbackQuery.message.reply_to_message.id)
-    replymsg = await client.get_messages(CallbackQuery.message.chat.id, CallbackQuery.message.id)
+    message = await client.get_messages(
+        CallbackQuery.message.chat.id, CallbackQuery.message.reply_to_message.id
+    )
+    replymsg = await client.get_messages(
+        CallbackQuery.message.chat.id, CallbackQuery.message.id
+    )
 
     if CallbackQuery.data == "refresh":
         await py_runexec(client, message, replymsg)

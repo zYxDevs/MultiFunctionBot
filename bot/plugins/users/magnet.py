@@ -13,7 +13,6 @@ from bot.logging import LOGGER
 from bot.modules import scraper
 from bot.modules.regex import URL_REGEX, is_a_url
 
-
 commands = ["magnet", f"magnet@{BOT_USERNAME}"]
 
 

@@ -10,9 +10,6 @@ from bot.config import *
 from bot.helpers.decorators import sudo_commands
 from bot.helpers.functions import get_readable_size, get_readable_time
 
-
-
-
 commands = [
     "stats",
     f"stats@{BOT_USERNAME}",

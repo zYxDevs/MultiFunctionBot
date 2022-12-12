@@ -4,7 +4,7 @@ from re import search
 from pyrogram import Client, enums, filters
 from pyrogram.types import Message
 
-from bot.config import BOT_USERNAME, COMMAND_PREFIXES, DATABASE_URL, LOG_CHANNEL, prefixes
+from bot.config import BOT_USERNAME, DATABASE_URL, LOG_CHANNEL, prefixes
 from bot.helpers.database import DatabaseHelper
 from bot.helpers.decorators import user_commands
 from bot.helpers.functions import forcesub, get_readable_time
@@ -12,7 +12,6 @@ from bot.modules.gdrive_direct import pahe
 from bot.modules.lists import *
 from bot.modules.regex import *
 from bot.modules.scraper import *
-
 
 commands = ["scrape", f"scrape@{BOT_USERNAME}"]
 

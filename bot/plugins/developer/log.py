@@ -4,7 +4,6 @@ from pyrogram.types import Message
 from bot.config import *
 from bot.helpers.decorators import dev_commands
 
-
 commands = ["log", "logs", f"log@{BOT_USERNAME}", f"logs@{BOT_USERNAME}"]
 
 

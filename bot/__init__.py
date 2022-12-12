@@ -1,9 +1,9 @@
 import os
 import sys
 import time
-import nest_asyncio
-
 from asyncio import get_event_loop, new_event_loop, set_event_loop
+
+import nest_asyncio
 from playwright.sync_api import sync_playwright
 from playwright_stealth import stealth_sync
 from pyrogram import Client, __version__
@@ -52,17 +52,22 @@ ________________________________________________________________________________
 
 
 PLAY = sync_playwright().start()
-BROWSER = PLAY.chromium.launch_persistent_context(user_data_dir="/tmp/playwright", headless=False)
+BROWSER = PLAY.chromium.launch_persistent_context(
+    user_data_dir="/tmp/playwright", headless=False
+)
 PAGE = BROWSER.new_page()
 stealth_sync(PAGE)
+
 
 def get_input_box():
     """Get the child textarea of `PromptTextarea__TextareaWrapper`"""
     return PAGE.query_selector("textarea")
 
+
 def is_logged_in():
     # See if we have a textarea with data-id="root"
     return get_input_box() is not None
+
 
 def send_message_to_browser(message):
     # Send the message
@@ -76,7 +81,9 @@ LOGGER(__name__).info("Installing Bot Requirements...")
 os.system("pip3 install --no-cache-dir -r requirements.txt --upgrade")
 LOGGER(__name__).info("Initiating the Client!")
 LOGGER(__name__).info(BANNER)
-LOGGER(__name__).info(f"Pyrogram v{__version__} (Layer {layer}) started on {f'@{BOT_USERNAME}'}.")
+LOGGER(__name__).info(
+    f"Pyrogram v{__version__} (Layer {layer}) started on {f'@{BOT_USERNAME}'}."
+)
 LOGGER(__name__).info("Telegram Bot Started.")
 
 bot = Client(

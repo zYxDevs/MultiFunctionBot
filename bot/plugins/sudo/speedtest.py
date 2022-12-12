@@ -10,6 +10,7 @@ from bot.logging import LOGGER
 
 commands = ["speedtest", f"speedtest@{BOT_USERNAME}"]
 
+
 def speedtestcli():
     test = Speedtest()
     test.get_best_server()

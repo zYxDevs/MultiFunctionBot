@@ -1,13 +1,7 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
-from bot.config import (
-    BOT_USERNAME,
-    DATABASE_URL,
-    OWNER_ID,
-    SUDO_USERS,
-    prefixes,
-)
+from bot.config import BOT_USERNAME, DATABASE_URL, OWNER_ID, SUDO_USERS, prefixes
 from bot.helpers.database import DatabaseHelper
 from bot.helpers.decorators import sudo_commands
 

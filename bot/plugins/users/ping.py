@@ -10,7 +10,6 @@ from bot.config import *
 from bot.helpers.decorators import user_commands
 from bot.helpers.functions import get_readable_time
 
-
 commands = ["ping", f"ping@{BOT_USERNAME}"]
 
 
@@ -31,4 +30,6 @@ async def ping(_, message: Message):
     botuptime = get_readable_time(time.time() - BotStartTime)
     pong = (end - start).microseconds / 1000
 
-    return await pong_reply.edit(f"**Ping Time:** `{pong}`ms | **Bot is alive since:** `{botuptime}`")
+    return await pong_reply.edit(
+        f"**Ping Time:** `{pong}`ms | **Bot is alive since:** `{botuptime}`"
+    )

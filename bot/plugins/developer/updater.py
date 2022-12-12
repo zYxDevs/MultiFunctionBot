@@ -10,7 +10,6 @@ from bot.config import *
 from bot.helpers.decorators import dev_commands
 from bot.logging import LOGGER
 
-
 cmds = ["update", f"update@{BOT_USERNAME}"]
 cmds2 = ["restart", f"restart@{BOT_USERNAME}"]
 

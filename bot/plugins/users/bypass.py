@@ -14,7 +14,6 @@ from bot.modules import bypasser
 from bot.modules.lists import *
 from bot.modules.regex import *
 
-
 commands = ["bypass", f"bypass@{BOT_USERNAME}"]
 
 

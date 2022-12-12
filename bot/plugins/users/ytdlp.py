@@ -2,12 +2,18 @@ import datetime
 from re import search
 from time import time
 
-import yt_dlp
 from pyrogram import Client, enums, filters
 from pyrogram.types import Message
-from yt_dlp import YoutubeDL, DownloadError
-from yt_dlp.utils import GeoRestrictedError, PostProcessingError, UnavailableVideoError, XAttrMetadataError, \
-    ExtractorError, MaxDownloadsReached, ContentTooShortError
+from yt_dlp import DownloadError, YoutubeDL
+from yt_dlp.utils import (
+    ContentTooShortError,
+    ExtractorError,
+    GeoRestrictedError,
+    MaxDownloadsReached,
+    PostProcessingError,
+    UnavailableVideoError,
+    XAttrMetadataError,
+)
 
 from bot.config import *
 from bot.helpers.database import DatabaseHelper
@@ -16,7 +22,6 @@ from bot.helpers.functions import forcesub, get_readable_time
 from bot.logging import LOGGER
 from bot.modules.pasting import telegraph_paste
 from bot.modules.regex import URL_REGEX, is_a_url
-
 
 commands = ["ytdl", f"ytdl@{BOT_USERNAME}", "ytdlp", f"ytdlp@{BOT_USERNAME}"]
 
@@ -91,7 +96,9 @@ async def ytdlp(client, message: Message):
     start = time()
     LOGGER(__name__).info(f" Received : {cmd} - {url}")
     abc = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n\n<b>Link Type</b> : <i>YT-DLP Scraping</i>"
-    init_msg = await message.reply_text(text=abc, disable_web_page_preview=True, quote=True)
+    init_msg = await message.reply_text(
+        text=abc, disable_web_page_preview=True, quote=True
+    )
 
     ydl_opts = {
         "addmetadata": True,
@@ -108,13 +115,11 @@ async def ytdlp(client, message: Message):
         with YoutubeDL(ydl_opts) as ytdl:
             ytdl_data = ytdl.extract_info(url, download=False)
     except DownloadError as DE:
-       errmsg = f"`{DE}`"
+        errmsg = f"`{DE}`"
     except ContentTooShortError:
         errmsg = "`The download content was too short.`"
     except GeoRestrictedError:
-        errmsg = (
-            "`Video is not available from your geographic location due to geographic restrictions imposed by a website.`"
-        )
+        errmsg = "`Video is not available from your geographic location due to geographic restrictions imposed by a website.`"
     except MaxDownloadsReached:
         errmsg = "`Max-downloads limit has been reached.`"
     except PostProcessingError:

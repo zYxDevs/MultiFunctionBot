@@ -2,27 +2,35 @@ import datetime
 import os
 
 import requests
-from pyrogram import Client, filters, enums
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, InputMediaPhoto, InputMediaDocument
+from pyrogram import Client, enums, filters
+from pyrogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    InputMediaDocument,
+    InputMediaPhoto,
+)
 
-from bot.config import BOT_USERNAME, prefixes, DATABASE_URL, LOG_CHANNEL
+from bot.config import BOT_USERNAME, DATABASE_URL, LOG_CHANNEL, prefixes
 from bot.helpers.database import DatabaseHelper
 from bot.helpers.decorators import user_commands
 from bot.helpers.functions import forcesub
-from bot.modules import pdfdrivefetch
 from bot.logging import LOGGER
+from bot.modules import pdfdrivefetch
 
 data = []
+
 
 class save:
     msgid: str
     books: list
+
 
 def storedata(msgid, books):
     new = save()
     new.msgid = msgid
     new.books = books
     data.append(new)
+
 
 def getdata(msgid):
     for ele in data:
@@ -31,8 +39,8 @@ def getdata(msgid):
     return 0
 
 
-
 commands = ["pdfdrive", f"pdfdrive@{BOT_USERNAME}"]
+
 
 @Client.on_message(filters.command(commands, **prefixes))
 @user_commands
@@ -73,14 +81,21 @@ async def pdfdrive(client, message):
             await DatabaseHelper().update_last_used_on(user_id)
 
     books = pdfdrivefetch.getpage(search)
-    msg = message.send_photo(message.chat.id, books[0].link,
-                         f'**{books[0].title}**\n\n__Year: {books[0].year}\nSize: {books[0].size}\nPages: {books[0].pages}\nDownloads: {books[0].downloads}__',
-                         reply_to_message_id=message.id, reply_markup=InlineKeyboardMarkup(
-            [[
-                InlineKeyboardButton(text='⬅️', callback_data="-1"),
-                InlineKeyboardButton(text='✅', callback_data="D0"),
-                InlineKeyboardButton(text='➡️', callback_data="+1")
-            ]]))
+    msg = message.send_photo(
+        message.chat.id,
+        books[0].link,
+        f"**{books[0].title}**\n\n__Year: {books[0].year}\nSize: {books[0].size}\nPages: {books[0].pages}\nDownloads: {books[0].downloads}__",
+        reply_to_message_id=message.id,
+        reply_markup=InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(text="⬅️", callback_data="-1"),
+                    InlineKeyboardButton(text="✅", callback_data="D0"),
+                    InlineKeyboardButton(text="➡️", callback_data="+1"),
+                ]
+            ]
+        ),
+    )
     storedata(msg.id, books)
 
 
@@ -89,14 +104,19 @@ async def pdfdrive_callback(_, CallbackQuery):
     books = getdata(CallbackQuery.message.id)
     if books == 0:
         wrongimage = "https://graph.org/file/fddb76c4e758df3dfad37.png"
-        CallbackQuery.edit_message_media(CallbackQuery.message.chat.id, CallbackQuery.message.id,
-                               InputMediaPhoto(wrongimage, "__Out of Date, Search Again__"))
+        CallbackQuery.edit_message_media(
+            CallbackQuery.message.chat.id,
+            CallbackQuery.message.id,
+            InputMediaPhoto(wrongimage, "__Out of Date, Search Again__"),
+        )
         return
 
     # download
     if CallbackQuery.data[0] == "D":
         choose = int(CallbackQuery.data.replace("D", ""))
-        CallbackQuery.edit_message_text(CallbackQuery.message.chat.id, CallbackQuery.message.id, "__Downloading__")
+        CallbackQuery.edit_message_text(
+            CallbackQuery.message.chat.id, CallbackQuery.message.id, "__Downloading__"
+        )
         durl = pdfdrivefetch.getdownlink(books[choose])
         res = requests.get(durl)
         with open(f"{books[choose].title}.pdf", "wb") as file:
@@ -104,20 +124,37 @@ async def pdfdrive_callback(_, CallbackQuery):
         res = requests.get(books[choose].coverlink)
         with open(f"{books[choose].title}.jpg", "wb") as file:
             file.write(res.content)
-        CallbackQuery.edit_message_text(CallbackQuery.message.chat.id, CallbackQuery.message.id, "__Uploading__")
-        CallbackQuery.edit_message_media(CallbackQuery.message.chat.id, CallbackQuery.message.id,
-                               InputMediaDocument(f"{books[choose].title}.pdf", thumb=f"{books[choose].title}.jpg",
-                                                  caption=f"**{books[choose].title}**"))
+        CallbackQuery.edit_message_text(
+            CallbackQuery.message.chat.id, CallbackQuery.message.id, "__Uploading__"
+        )
+        CallbackQuery.edit_message_media(
+            CallbackQuery.message.chat.id,
+            CallbackQuery.message.id,
+            InputMediaDocument(
+                f"{books[choose].title}.pdf",
+                thumb=f"{books[choose].title}.jpg",
+                caption=f"**{books[choose].title}**",
+            ),
+        )
         os.remove(f"{books[choose].title}.pdf")
         os.remove(f"{books[choose].title}.jpg")
         return
 
     choose = int(CallbackQuery.data)
-    CallbackQuery.edit_message_media(CallbackQuery.message.chat.id, CallbackQuery.message.id, InputMediaPhoto(books[choose].link,
-                                                                                  f'**{books[choose].title}**\n\n__Year: {books[choose].year}\nSize: {books[choose].size}\nPages: {books[choose].pages}\nDownloads: {books[choose].downloads}__'),
-                           reply_markup=InlineKeyboardMarkup(
-                               [[
-                                   InlineKeyboardButton(text='⬅️', callback_data=str(choose - 1)),
-                                   InlineKeyboardButton(text='✅', callback_data=f'D{choose}'),
-                                   InlineKeyboardButton(text='➡️', callback_data=str(choose + 1))
-                               ]]))
+    CallbackQuery.edit_message_media(
+        CallbackQuery.message.chat.id,
+        CallbackQuery.message.id,
+        InputMediaPhoto(
+            books[choose].link,
+            f"**{books[choose].title}**\n\n__Year: {books[choose].year}\nSize: {books[choose].size}\nPages: {books[choose].pages}\nDownloads: {books[choose].downloads}__",
+        ),
+        reply_markup=InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(text="⬅️", callback_data=str(choose - 1)),
+                    InlineKeyboardButton(text="✅", callback_data=f"D{choose}"),
+                    InlineKeyboardButton(text="➡️", callback_data=str(choose + 1)),
+                ]
+            ]
+        ),
+    )

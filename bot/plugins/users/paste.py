@@ -1,8 +1,8 @@
 import datetime
 import os
-import aiofiles
 
-from pyrogram import Client, filters, enums
+import aiofiles
+from pyrogram import Client, enums, filters
 
 from bot.config import *
 from bot.helpers.database import DatabaseHelper
@@ -29,8 +29,11 @@ async def paste(client, message):
             content = replied_message.text
 
         elif replied_message.document and any(
-                format in replied_message.document.mime_type for format in ["text", "json"]):
-            await message.reply_to_message.download(os.path.join(os.getcwd(), "temp_file"))
+            format in replied_message.document.mime_type for format in ["text", "json"]
+        ):
+            await message.reply_to_message.download(
+                os.path.join(os.getcwd(), "temp_file")
+            )
             async with aiofiles.open("temp_file", "r+") as file:
                 content = await file.read()
             os.remove("temp_file")
@@ -58,7 +61,6 @@ async def paste(client, message):
         last_used_on = await DatabaseHelper().get_last_used_on(user_id)
         if last_used_on != datetime.date.today().isoformat():
             await DatabaseHelper().update_last_used_on(user_id)
-
 
     paste_reply = await message.reply_text("Pasting...", quote=True)
     output = await katbin_paste(content)

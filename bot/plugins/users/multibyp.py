@@ -13,7 +13,6 @@ from bot.logging import LOGGER
 from bot.modules import bypasser
 from bot.modules.regex import URL_REGEX, is_a_url
 
-
 commands = ["multi", f"multi@{BOT_USERNAME}"]
 
 

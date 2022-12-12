@@ -13,7 +13,6 @@ from bot.logging import LOGGER
 from bot.modules import shortener
 from bot.modules.regex import URL_REGEX, is_a_url
 
-
 commands = ["shorten", f"shorten@{BOT_USERNAME}"]
 
 

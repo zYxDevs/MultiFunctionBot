@@ -6,8 +6,14 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from bot import BotStartTime
 from bot.config import *
-from bot.helpers.constants import ABOUT_TEXT, COMMAND_TEXT, USER_TEXT, SUDO_TEXT, DEV_TEXT, START_TEXT
-
+from bot.helpers.constants import (
+    ABOUT_TEXT,
+    COMMAND_TEXT,
+    DEV_TEXT,
+    START_TEXT,
+    SUDO_TEXT,
+    USER_TEXT,
+)
 from bot.helpers.database import DatabaseHelper
 from bot.helpers.decorators import user_commands
 from bot.helpers.functions import forcesub, get_readable_time

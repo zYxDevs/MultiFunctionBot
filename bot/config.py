@@ -195,7 +195,7 @@ UPSTREAM_REPO = environ.get("UPSTREAM_REPO", "")
 if len(UPSTREAM_REPO) == 0:
     LOGGER(__name__).warning("UPSTREAM_REPO not provided!")
     UPSTREAM_REPO = ""
-    
+
 UPSTREAM_BRANCH = environ.get("UPSTREAM_BRANCH", "")
 if len(UPSTREAM_BRANCH) == 0:
     UPSTREAM_BRANCH = "main"

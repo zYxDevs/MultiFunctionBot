@@ -34,7 +34,6 @@ if __name__ == "__main__":
         start_browser()
     except Exception as e:
         LOGGER(__name__).error(f"Could not start Browser for ChatGPT due to:\n{e}")
-        pass
     try:
         bot.run()
     except (ApiIdInvalid, ApiIdPublishedFlood):

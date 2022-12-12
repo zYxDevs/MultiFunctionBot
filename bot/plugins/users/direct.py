@@ -15,7 +15,6 @@ from bot.modules.lists import *
 from bot.modules.pasting import telegraph_paste
 from bot.modules.regex import *
 
-
 commands = ["direct", f"direct@{BOT_USERNAME}"]
 
 

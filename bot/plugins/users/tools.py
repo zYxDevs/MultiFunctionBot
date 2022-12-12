@@ -33,7 +33,6 @@ opener.addheaders = [
 urllib.request.install_opener(opener)
 
 
-
 cmds = ["image2pdf", f"image2pdf@{BOT_USERNAME}"]
 cmds2 = ["rename", f"rename@{BOT_USERNAME}"]
 cmds3 = ["tgupload", f"tgupload@{BOT_USERNAME}"]
