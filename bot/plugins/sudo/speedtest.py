@@ -2,23 +2,12 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 from speedtest import Speedtest
 
-from bot import loop
 from bot.config import *
 from bot.helpers.decorators import sudo_commands
 from bot.helpers.functions import get_readable_size
 from bot.logging import LOGGER
 
 commands = ["speedtest", f"speedtest@{BOT_USERNAME}"]
-
-
-def speedtestcli():
-    test = Speedtest()
-    test.get_best_server()
-    test.download()
-    test.upload()
-    test.results.share()
-    result = test.results.dict()
-    return result
 
 
 @Client.on_message(filters.command(commands, **prefixes))
@@ -29,8 +18,15 @@ async def speedtest(_, message: Message):
     """
     speed = await message.reply("**Running Speedtest on your Server....**", quote=True)
     LOGGER(__name__).info("Starting Speedtest....")
-    result = await loop.run_in_executor(None, speedtestcli)
-    photo = result["share"]
+
+    test = Speedtest()
+    test.get_best_server()
+    test.download()
+    test.upload()
+    test.results.share()
+    result = test.results.dict()
+    photo = (result['share'])
+
     string_speed = f"""
     ╭─《 🚀 SPEEDTEST INFO 》
     ├ <b>Upload:</b> <code>{speed_convert(result['upload'], False)}</code>

@@ -20,7 +20,7 @@ commands = ["scrape", f"scrape@{BOT_USERNAME}"]
 @user_commands
 async def scrape(client, message: Message):
     """
-    Extract Direct Links from Supported Sites
+    Extract Download/GDrive/Shortened Links from Supported Sites
     """
     global time_taken, des_url
     fsub = await forcesub(client, message)
@@ -102,11 +102,29 @@ async def scrape(client, message: Message):
         LOGGER(__name__).info(f" Destination : {cmd} - {link_type} - {des_url}")
         b = f"<b>Telegraph URL(with Result):\n</b> {des_url}\n\n<i>Time Taken : {time_taken}</i>"
         await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
-    elif "atishmkv." in url or "atish.mkv" in url:
+    elif "animeremux." in url:
+        link_type = "AnimeRemux"
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
+        des_url = await animeremux_scrap(url)
+        time_taken = get_readable_time(time.time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {link_type} - {des_url}")
+        b = f"<b>Telegraph URL(with Result):\n</b> {des_url}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
+    elif ("atishmkv." or "atish.mkv") in url:
         link_type = "AtishMKV"
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         des_url = await atishmkv_scrap(url)
+        time_taken = get_readable_time(time.time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {link_type} - {des_url}")
+        b = f"<b>Telegraph URL(with Result):\n</b> {des_url}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
+    elif "benzmovies." in url:
+        link_type = "BenzMovies"
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
+        des_url = await benzmovies_scrap(url)
         time_taken = get_readable_time(time.time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {link_type} - {des_url}")
         b = f"<b>Telegraph URL(with Result):\n</b> {des_url}\n\n<i>Time Taken : {time_taken}</i>"
@@ -138,7 +156,7 @@ async def scrape(client, message: Message):
         LOGGER(__name__).info(f" Destination : {cmd} - {link_type} - {des_url}")
         b = f"<b>Telegraph URL(with Result):\n</b> {des_url}\n\n<i>Time Taken : {time_taken}</i>"
         await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
-    elif "htpmovies." in url and "/exit.php?url=" in url:
+    elif ("htpmovies." and "/exit.php?url=") in url:
         link_type = "HTPMovies DL"
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
@@ -152,6 +170,15 @@ async def scrape(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         des_url = await igggames_scrap(url)
+        time_taken = get_readable_time(time.time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {link_type} - {des_url}")
+        b = f"<b>Telegraph URL(with Result):\n</b> {des_url}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
+    elif "moviesboss." in url:
+        link_type = "MoviesBoss"
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
+        des_url = await moviesboss_scrap(url)
         time_taken = get_readable_time(time.time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {link_type} - {des_url}")
         b = f"<b>Telegraph URL(with Result):\n</b> {des_url}\n\n<i>Time Taken : {time_taken}</i>"
@@ -192,6 +219,15 @@ async def scrape(client, message: Message):
         LOGGER(__name__).info(f" Destination : {cmd} - {link_type} - {des_url}")
         b = f"<b>Telegraph URL(with Result):\n</b> {des_url}\n\n<i>Time Taken : {time_taken}</i>"
         await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
+    elif "tamiltvtoons." in url:
+        link_type = "TamilTVToons"
+        a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n\n<b>Link Type</b> : <i>{link_type}</i>"
+        await msg.edit(text=a)
+        des_url = await tamiltvtoons_scrap(url)
+        time_taken = get_readable_time(time.time() - start)
+        LOGGER(__name__).info(f" Destination : {cmd} - {link_type} - {des_url}")
+        b = f"<b>Telegraph URL(with Result):\n</b> {des_url}\n\n<i>Time Taken : {time_taken}</i>"
+        await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "teleguflix." in url:
         link_type = "TeleguFlix"
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n\n<b>Link Type</b> : <i>{link_type}</i>"
@@ -219,7 +255,7 @@ async def scrape(client, message: Message):
         LOGGER(__name__).info(f" Destination : {cmd} - {link_type} - {des_url}")
         b = f"<b>Telegraph URL(with Result):\n</b> {des_url}\n\n<i>Time Taken : {time_taken}</i>"
         await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
-    elif "privatemoviez." in url and "/secret?data=" in url:
+    elif ("privatemoviez." and "/secret?data=") in url:
         link_type = "PrivateMoviez DL"
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)

@@ -25,8 +25,6 @@ USER_TEXT = """🗒️ Documentation for commands available to user's
 
 • /help - Alias command for start
 
-• /chatai - Get result for query using OpenAI - ChatGPT
-
 • /dalle - Generate images from a text prompt using DALLE-Mini
 
 • /bifm - Bypass Short Links using BIFM API
@@ -61,8 +59,6 @@ USER_TEXT = """🗒️ Documentation for commands available to user's
 
 • /wayback - Generate WayBack of a Webpage
 
-• /pdfdrive - Get Results from PDFDrive
-
 • /paste: Paste the text/document to KatBin
 """
 
@@ -80,8 +76,6 @@ SUDO_TEXT = """
 • /users: Get details about the Bot Users
 
 • /inspect: Inspect the message and give reply in json format
-
-• /reload_browser - Reload the Browser to refresh the OpenAI`s Website
 """
 
 DEV_TEXT = """

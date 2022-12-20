@@ -78,14 +78,14 @@ else:
     LOG_CHANNEL = int(LOG_CHANNEL)
 
 FORCESUB_ENABLE = environ.get("FORCESUB_ENABLE")
-if FORCESUB_ENABLE is (False or None):
+if FORCESUB_ENABLE is (False or None or ""):
     FORCESUB_ENABLE = False
     LOGGER(__name__).warning("ForceSub is Disabled!")
 
 FORCESUB_CHANNEL = environ.get("FORCESUB_CHANNEL", "")
 if len(FORCESUB_CHANNEL) == 0:
     LOGGER(__name__).warning("FORCESUB_CHANNEL not provided!")
-    FORCESUB_CHANNEL = "-100"
+    FORCESUB_CHANNEL = None
 elif not FORCESUB_CHANNEL.startswith("-"):
     FORCESUB_CHANNEL = int(f"-{FORCESUB_CHANNEL}")
 else:
@@ -183,13 +183,6 @@ if len(UNIFIED_EMAIL) == 0 or len(UNIFIED_PASS) == 0:
     LOGGER(__name__).warning("Unified Email/Pass not provided!")
     UNIFIED_EMAIL = ""
     UNIFIED_PASS = ""
-
-OPENAI_EMAIL = environ.get("OPENAI_EMAIL", "")
-OPENAI_PASSWORD = environ.get("OPENAI_PASSWORD", "")
-if len(OPENAI_EMAIL) == 0 or len(OPENAI_PASSWORD) == 0:
-    LOGGER(__name__).warning("OpenAI Email/Pass not provided!")
-    OPENAI_EMAIL = ""
-    OPENAI_PASSWORD = ""
 
 UPSTREAM_REPO = environ.get("UPSTREAM_REPO", "")
 if len(UPSTREAM_REPO) == 0:

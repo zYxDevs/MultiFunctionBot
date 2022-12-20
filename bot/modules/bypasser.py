@@ -103,7 +103,7 @@ async def droplink(url):
     if not url_exists:
         return "The link you entered is wrong!"
     client = requests.Session()
-    domain = "https://droplink.co/"
+    dom = "https://droplink.co"
     h = {"referer": "https://yoshare.net"}
     try:
         res = client.get(url, headers=h)
@@ -112,7 +112,7 @@ async def droplink(url):
         data = {input.get("name"): input.get("value") for input in inputs}
         time.sleep(4)
         headers = {"x-requested-with": "XMLHttpRequest"}
-        des_url = client.post(domain + "links/go", data=data, headers=headers).json()[
+        des_url = client.post(f"{dom}/links/go", data=data, headers=headers).json()[
             "url"
         ]
         des_url = des_url.replace(" ", "%20")
@@ -125,11 +125,11 @@ async def dulink(url):
     if not url_exists:
         return "The link you entered is wrong!"
     client = cloudscraper.create_scraper(allow_brotli=False)
-    DOMAIN = "https://cac.teckypress.in/"
+    dom = "https://cac.teckypress.in"
     ref = "https://teckypress.in/"
     url = url[:-1] if url[-1] == "/" else url
     code = url.split("/")[-1]
-    final_url = f"{DOMAIN}/{code}"
+    final_url = f"{dom}/{code}"
     h = {"referer": ref}
     try:
         resp = client.get(final_url, headers=h)
@@ -137,7 +137,7 @@ async def dulink(url):
         inputs = soup.find_all("input")
         data = {input.get("name"): input.get("value") for input in inputs}
         h = {"x-requested-with": "XMLHttpRequest"}
-        des_url = client.post(f"{DOMAIN}/links/go", data=data, headers=h).json()["url"]
+        des_url = client.post(f"{dom}/links/go", data=data, headers=h).json()["url"]
         des_url = des_url.replace(" ", "%20")
         return des_url
     except BaseException:
@@ -148,7 +148,7 @@ async def ez4short(url):
     if not url_exists:
         return "The link you entered is wrong!"
     client = cloudscraper.create_scraper(allow_brotli=False)
-    DOMAIN = "https://ez4short.com"
+    dom = "https://ez4short.com"
     ref = "https://techmody.io/"
     h = {"referer": ref}
     try:
@@ -158,7 +158,7 @@ async def ez4short(url):
         data = {input.get("name"): input.get("value") for input in inputs}
         h = {"x-requested-with": "XMLHttpRequest"}
         time.sleep(8)
-        des_url = client.post(f"{DOMAIN}/links/go", data=data, headers=h).json()["url"]
+        des_url = client.post(f"{dom}/links/go", data=data, headers=h).json()["url"]
         des_url = des_url.replace(" ", "%20")
         return des_url
     except BaseException:
@@ -168,26 +168,23 @@ async def ez4short(url):
 async def gplinks(url):
     if not url_exists:
         return "The link you entered is wrong!"
+    url = url[:-1] if url[-1] == '/' else url
+    dom = "https://gplinks.co"
+    ref = "https://mynewsmedia.co/"
     client = requests.Session()
+    h = {"referer": ref}
     try:
-        p1 = urllib.parse.urlparse(url)
-        final_url = f"{p1.scheme}://{p1.netloc}/links/go"
-        res = client.head(url)
-        header_loc = res.headers["location"]
-        p2 = urllib.parse.urlparse(header_loc)
-        ref_url = f"{p2.scheme}://{p2.netloc}/"
-        h1 = {"referer": ref_url}
-        res2 = client.get(url, headers=h1, allow_redirects=False)
-        bs4 = BeautifulSoup(res2.content, "html.parser")
-        inputs = bs4.find_all("input")
+        vid = client.get(url, allow_redirects=False).headers["Location"].split("=")[-1]
+        final_url = f"{url}/?{vid}"
+        resp = client.get(final_url, headers=h)
+        soup = BeautifulSoup(resp.content, "html.parser")
+        inputs = soup.find(id="go-link").find_all(name="input")
         data = {input.get("name"): input.get("value") for input in inputs}
-        h2 = {
-            "referer": ref_url,
-            "x-requested-with": "XMLHttpRequest",
-        }
-        time.sleep(12)
-        res3 = client.post(final_url, headers=h2, data=data)
-        return res3.json()["url"].replace("\/", "/")
+        h = {"x-requested-with": "XMLHttpRequest"}
+        time.sleep(6)
+        des_url = client.post(f"{dom}/links/go", data=data, headers=h).json()["url"]
+        des_url = des_url.replace(" ", "%20")
+        return des_url
     except BaseException:
         return "Some Error Occurred \nCould not Bypass your URL"
 
@@ -202,15 +199,15 @@ async def gtlinks(url):
     else:
         url = requests.get(url).url
         token = url.split("=")[-1]
-    domain = "https://go.kinemaster.cc/"
+    dom = "https://go.kinemaster.cc/"
     try:
-        response = client.get(domain + token, headers={"referer": domain + token})
+        response = client.get(dom + token, headers={"referer": dom + token})
         soup = BeautifulSoup(response.content, "html.parser")
         inputs = soup.find(id="go-link").find_all(name="input")
         data = {input.get("name"): input.get("value") for input in inputs}
         time.sleep(5)
         headers = {"x-requested-with": "XMLHttpRequest"}
-        des_url = client.post(domain + "links/go", data=data, headers=headers).json()[
+        des_url = client.post(dom + "links/go", data=data, headers=headers).json()[
             "url"
         ]
         des_url = des_url.replace(" ", "%20")
@@ -252,15 +249,15 @@ async def htpmovies(url):
         t_url = b.split('")')[0]
         t_url = t_url.replace("&m=1", "")
         param = t_url.split("/")[-1]
-        DOMAIN = "https://go.theforyou.in"
-        final_url = f"{DOMAIN}/{param}"
+        dom = "https://go.theforyou.in"
+        final_url = f"{dom}/{param}"
         resp = client.get(final_url)
         soup = BeautifulSoup(resp.content, "html.parser")
         inputs = soup.find(id="go-link").find_all(name="input")
         data = {input.get("name"): input.get("value") for input in inputs}
         h = {"x-requested-with": "XMLHttpRequest"}
         time.sleep(10)
-        des_url = client.post(f"{DOMAIN}/links/go", data=data, headers=h).json()["url"]
+        des_url = client.post(f"{dom}/links/go", data=data, headers=h).json()["url"]
         des_url = des_url.replace(" ", "%20")
         return des_url
     except BaseException:
@@ -312,7 +309,7 @@ async def krownlinks(url):
     if not url_exists:
         return "The link you entered is wrong!"
     client = requests.session()
-    dom = "https://go.gyanitheme.com"
+    dom = "https://go.bloggertheme.xyz"
     url = url[:-1] if url[-1] == "/" else url
     code = url.split("/")[-1]
     final_url = f"{dom}/{code}"
@@ -323,6 +320,27 @@ async def krownlinks(url):
         data = {input.get("name"): input.get("value") for input in inputs}
         h = {"x-requested-with": "XMLHttpRequest"}
         time.sleep(10)
+        des_url = client.post(f"{dom}/links/go", data=data, headers=h).json()["url"]
+        des_url = des_url.replace(" ", "%20")
+        return des_url
+    except BaseException:
+        return "Some Error Occurred \nCould not Bypass your URL"
+
+
+async def linkbnao(url):
+    if not url_exists:
+        return "The link you entered is wrong!"
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    dom = "https://go.linkbnao.com"
+    ref = "https://ctdbihar.in/"
+    h = {"referer": ref}
+    try:
+        resp = client.get(url, headers=h)
+        soup = BeautifulSoup(resp.content, "html.parser")
+        inputs = soup.find(id="go-link").find_all(name="input")
+        data = {input.get("name"): input.get("value") for input in inputs}
+        h = {"x-requested-with": "XMLHttpRequest"}
+        time.sleep(8)
         des_url = client.post(f"{dom}/links/go", data=data, headers=h).json()["url"]
         des_url = des_url.replace(" ", "%20")
         return des_url
@@ -357,7 +375,7 @@ async def mdiskpro(url):
     if not url_exists:
         return "The link you entered is wrong!"
     client = cloudscraper.create_scraper(allow_brotli=False)
-    DOMAIN = "https://mdisk.pro"
+    dom = "https://mdisk.pro"
     ref = "https://m.meclipstudy.in/"
     h = {"referer": ref}
     try:
@@ -367,7 +385,7 @@ async def mdiskpro(url):
         data = {input.get("name"): input.get("value") for input in inputs}
         h = {"x-requested-with": "XMLHttpRequest"}
         time.sleep(8)
-        des_url = client.post(f"{DOMAIN}/links/go", data=data, headers=h).json()["url"]
+        des_url = client.post(f"{dom}/links/go", data=data, headers=h).json()["url"]
         des_url = des_url.replace(" ", "%20")
         return des_url
     except BaseException:
@@ -471,15 +489,15 @@ async def privatemoviez(url):
         t_url = param.split('");')[0]
         t_url = t_url.replace("&m=1", "")
         param = t_url.split("/")[-1]
-        DOMAIN = "https://go.kinemaster.cc"
-        final_url = f"{DOMAIN}/{param}"
+        dom = "https://go.kinemaster.cc"
+        final_url = f"{dom}/{param}"
         resp = client.get(final_url)
         soup = BeautifulSoup(resp.content, "html.parser")
         inputs = soup.find(id="go-link").find_all(name="input")
         data = {input.get("name"): input.get("value") for input in inputs}
         h = {"x-requested-with": "XMLHttpRequest"}
         time.sleep(10)
-        des_url = client.post(f"{DOMAIN}/links/go", data=data, headers=h).json()["url"]
+        des_url = client.post(f"{dom}/links/go", data=data, headers=h).json()["url"]
         des_url = des_url.replace(" ", "%20")
         return des_url
     except BaseException:
@@ -490,21 +508,21 @@ async def pkin(url):
     if not url_exists:
         return "The link you entered is wrong!"
     url = url[:-1] if url[-1] == "/" else url
-    domain = "https://go.paisakamalo.in/"
-    referer = "https://techkeshri.com/"
+    dom = "https://go.paisakamalo.in/"
+    ref = "https://techkeshri.com/"
     token = url.split("/")[-1]
     user_agent = "Mozilla/5.0 (Linux; Android 11; 2201116PI) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Mobile Safari/537.36"
     client = requests.Session()
     try:
         response = client.get(
-            domain + token, headers={"referer": referer, "user-agent": user_agent}
+            dom + token, headers={"referer": ref, "user-agent": user_agent}
         )
         soup = BeautifulSoup(response.content, "html.parser")
         inputs = soup.find(id="go-link").find_all(name="input")
         data = {input.get("name"): input.get("value") for input in inputs}
         time.sleep(3)
         headers = {"x-requested-with": "XMLHttpRequest", "user-agent": user_agent}
-        des_url = client.post(domain + "links/go", data=data, headers=headers).json()[
+        des_url = client.post(dom + "links/go", data=data, headers=headers).json()[
             "url"
         ]
         des_url = des_url.replace(" ", "%20")
@@ -575,7 +593,7 @@ async def script(url):
         await scripta(f"https://{url.split('/')[-2]}/", url, client)
 
 
-async def scripta(domain, url, client):
+async def scripta(dom, url, client):
     res = client.get(url)
     soup = BeautifulSoup(res.text, "html.parser")
     soup = soup.find("form").findAll("input")
@@ -595,7 +613,7 @@ async def scripta(domain, url, client):
         "Accept-Language": "en-US,en;q=0.5",
         "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
         "X-Requested-With": "XMLHttpRequest",
-        "Origin": domain,
+        "Origin": dom,
         "Connection": "keep-alive",
         "Referer": url,
         "Sec-Fetch-Dest": "empty",
@@ -603,7 +621,7 @@ async def scripta(domain, url, client):
         "Sec-Fetch-Site": "same-origin",
     }
     time.sleep(10)  # important
-    response = client.post(domain + "/links/go", data=data).json()
+    response = client.post(dom + "/links/go", data=data).json()
     furl = response["url"]
     return furl
 
@@ -687,7 +705,7 @@ async def short2url(url):
     if not url_exists:
         return "The link you entered is wrong!"
     client = cloudscraper.create_scraper(allow_brotli=False)
-    DOMAIN = "https://technemo.xyz/blog"
+    dom = "https://technemo.xyz/blog"
     ref = "https://mytop5.club/"
     try:
         if ("short2url." and "/full?api=") in url:
@@ -696,7 +714,7 @@ async def short2url(url):
             code = url.split("/")[-1].replace("?", "")
         else:
             code = url.split("/")[-1]
-        final_url = f"{DOMAIN}/{code}"
+        final_url = f"{dom}/{code}"
         h = {"referer": ref}
         resp = client.get(final_url, headers=h)
         soup = BeautifulSoup(resp.content, "html.parser")
@@ -704,7 +722,7 @@ async def short2url(url):
         data = {input.get("name"): input.get("value") for input in inputs}
         h = {"x-requested-with": "XMLHttpRequest"}
         time.sleep(10)
-        des_url = client.post(f"{DOMAIN}/links/go", data=data, headers=h).json()["url"]
+        des_url = client.post(f"{dom}/links/go", data=data, headers=h).json()["url"]
         des_url = des_url.replace(" ", "%20")
         return des_url
     except BaseException:
@@ -788,7 +806,7 @@ async def try2link(url):
         headers = {
             "Host": "try2link.com",
             "X-Requested-With": dom,
-            "Origin": "https://try2link.com",
+            "Origin": dom,
             "Referer": url,
         }
         des_url = client.post(f"{dom}/links/go", headers=headers, data=data).json()[
@@ -858,6 +876,27 @@ async def urlsopen(url):
         h = {"x-requested-with": "XMLHttpRequest"}
         time.sleep(12)
         des_url = client.post(f"{dom}/links/go", data=data, headers=h).json()["url"]
+        return des_url
+    except BaseException:
+        return "Some Error Occurred \nCould not Bypass your URL"
+
+
+async def vearnl(url):
+    if not url_exists:
+        return "The link you entered is wrong!"
+    client = cloudscraper.create_scraper(allow_brotli=False)
+    dom = "https://go.urlearn.xyz"
+    ref = "https://download.modmakers.xyz/"
+    h = {"referer": ref}
+    try:
+        resp = client.get(url, headers=h)
+        soup = BeautifulSoup(resp.content, "html.parser")
+        inputs = soup.find(id="go-link").find_all(name="input")
+        data = {input.get("name"): input.get("value") for input in inputs}
+        h = {"x-requested-with": "XMLHttpRequest"}
+        time.sleep(8)
+        des_url = client.post(f"{dom}/links/go", data=data, headers=h).json()["url"]
+        des_url = des_url.replace(" ", "%20")
         return des_url
     except BaseException:
         return "Some Error Occurred \nCould not Bypass your URL"

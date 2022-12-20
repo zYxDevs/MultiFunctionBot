@@ -1,11 +1,11 @@
 version: "3.9"
 
 services:
-  multibot:
+  multifbot:
     image: ghcr.io/missemily22/multifunctionbot:main
-    container_name: multibot
+    container_name: multifbot
     environment:
-      - CONFIG_FILE_URL = ${CONFIG_FILE_URL}
+      - CONFIG_FILE_URL=${CONFIG_FILE_URL}
     ports:
-      - 8080:8080
+      - "8080:8080"
     restart: unless-stopped

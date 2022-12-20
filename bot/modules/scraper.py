@@ -65,7 +65,7 @@ async def index_scrap(url):
         return "The link you entered is wrong!"
     x = 0
     payload = {"page_token": next_page_token, "page_index": x}
-    msg = f"Index Link: {url}\n\n"
+    msg = f"Index Link: {url}<br><br>"
     msg += index_scraper(payload, url)
     while next_page:
         payload = {"page_token": next_page_token, "page_index": x}
@@ -73,6 +73,27 @@ async def index_scrap(url):
         msg += index_scraper(payload, url)
         x += 1
     return msg
+
+
+async def animeremux_scrap(url):
+    if not url_exists:
+        return "The link you entered is wrong!"
+    client = requests.Session()
+    rslt = f"<b>User URL :</b> <code>{url}</code><br>"
+    rslt += f"<i>GDrive Links:</i><br>"
+    url = url + "/" if url[-1] != "/" else url
+    r = client.get(url).text
+    soup = BeautifulSoup(r, "html.parser")
+    for a in soup.find_all("a"):
+        c = a.get("href")
+        if "urlshortx." in c:
+            x = c.split("url=")[-1]
+            t = client.get(x).text
+            soupt = BeautifulSoup(t, "html.parser")
+            title = soupt.title
+            rslt += f"<b>{(title.text).replace('GDToT | ', '')}</b><br><code>{x}</code><br><br>"
+    tlg_url = await telegraph_paste(rslt)
+    return tlg_url
 
 
 async def atishmkv_scrap(url):
@@ -130,6 +151,23 @@ async def atishmkv_scrap(url):
         {"class": "wpel-icon-right"},
     ):
         i = g.get("href")
+        rslt += f"• <code>{i}</code><br>"
+    tlg_url = await telegraph_paste(rslt)
+    return tlg_url
+
+
+async def benzmovies_scrap(url):
+    if not url_exists:
+        return "The link you entered is wrong!"
+    client = requests.Session()
+    rslt = f"<b>User URL :</b> <code>{url}</code><br>"
+    rslt += f"<i>Links:</i><br>"
+    url = url + "/" if url[-1] != "/" else url
+    p = client.get(url)
+    soup = BeautifulSoup(p.text, "html.parser")
+    links = soup.select('a[href*="filepress"]')
+    for a in links:
+        i = a["href"]
         rslt += f"• <code>{i}</code><br>"
     tlg_url = await telegraph_paste(rslt)
     return tlg_url
@@ -384,6 +422,51 @@ async def igggames_scrap(url):
     return tlg_url
 
 
+async def magnet_scrap(url):
+    if not url_exists:
+        return "The link you entered is wrong!"
+    result = f"<b>User URL :</b> <code>{url}</code><br>"
+    result += f"<i>Magnets:</i><br>"
+    magns = []
+    url = url + "/" if url[-1] != "/" else url
+    res = requests.get(url)
+    soup = BeautifulSoup(res.text, "html.parser")
+    x = soup.select('a[href^="magnet:?xt=urn:btih:"]')
+    for a in x:
+        magns.append(a["href"])
+    for o in magns:
+        result += f"• <code>{o}</code><br>"
+    tlg_url = await telegraph_paste(result)
+    return tlg_url
+
+
+async def moviesboss_scrap(url):
+    if not url_exists:
+        return "The link you entered is wrong!"
+    client = requests.Session()
+    rslt = f"<b>User URL :</b> <code>{url}</code><br>"
+    rslt += f"<i>Links:</i><br>"
+    url = url + "/" if url[-1] != "/" else url
+    p = client.get(url)
+    soup = BeautifulSoup(p.text, "html.parser")
+    links = soup.select('a[href^="https://themoviesboss.mx/links/"]')
+    for a in links:
+        i = a["href"]
+        r1 = client.get(i)
+        soup2 = BeautifulSoup(r1.text, "html.parser")
+        lnks = soup2.select('a[href^="https://links.inbbotlist.com/links/"]')
+        for b in lnks:
+            j = b["href"]
+            r2 = client.get(j)
+            soup3 = BeautifulSoup(r2.text, "html.parser")
+            lks = soup3.select('a[href^="https://filepress.lol/file/"]')
+            for c in lks:
+                k = c["href"]
+                rslt += f"• <code>{k}</code><br>"
+    tlg_url = await telegraph_paste(rslt)
+    return tlg_url
+
+
 async def moviesdrama_scrap(url):
     if not url_exists:
         return "The link you entered is wrong!"
@@ -416,7 +499,7 @@ async def moviesmod_scrap(url):
     soup = BeautifulSoup(p.text, "html.parser")
     links = soup.select("a[rel='noopener nofollow external noreferrer']")
     for l in links:
-        rslt += f"\n{(l.text).replace('Download Links', '🏷 Download Links')} :\n"
+        rslt += f"<br>{(l.text).replace('Download Links', '🏷 Download Links')} :<br>"
         scrapper = cloudscraper.create_scraper(allow_brotli=False)
         res = scrapper.get(l["href"])
         nsoup = BeautifulSoup(res.text, "html.parser")
@@ -480,24 +563,6 @@ async def privatemoviez_scrap(url):
             continue
     rslt += "<br><br><b><u>NOTE:</u></b><i>The GDrive Links are actually GTLinks AdLinks. Bypass them manually</i>"
     tlg_url = await telegraph_paste(rslt)
-    return tlg_url
-
-
-async def magnet_scrap(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
-    result = f"<b>User URL :</b> <code>{url}</code><br>"
-    result += f"<i>Magnets:</i><br>"
-    magns = []
-    url = url + "/" if url[-1] != "/" else url
-    res = requests.get(url)
-    soup = BeautifulSoup(res.text, "html.parser")
-    x = soup.select('a[href^="magnet:?xt=urn:btih:"]')
-    for a in x:
-        magns.append(a["href"])
-    for o in magns:
-        result += f"• <code>{o}</code><br>"
-    tlg_url = await telegraph_paste(result)
     return tlg_url
 
 
@@ -690,6 +755,24 @@ async def taemovies_scrap(url):
         rslt += f"• {c}<br>"
     rslt += "<br><br><b><u>NOTE:</u></b><i>The GDrive Links are actually Shortingly AdLinks. Bypass them manually</i>"
     tlg_url = await telegraph_paste(rslt)
+    return tlg_url
+
+
+async def tamiltvtoons_scrap(url):
+    if not url_exists:
+        return "The link you entered is wrong!"
+    client = requests.Session()
+    ad_urls = f"<b>User URL :</b> <code>{url}</code><br>"
+    ad_urls += f"<i>AdLinks:</i><br>"
+    url = url + "/" if url[-1] != "/" else url
+    r = client.get(url)
+    soup = BeautifulSoup(r.text, "html.parser")
+    links = soup.select('a[href*="short2url"]')
+    for a in links:
+        down = client.get(a["href"], stream=True, allow_redirects=False)
+        link = down.headers["location"]
+        ad_urls += f"• <code>{link}</code><br><br>"
+    tlg_url = await telegraph_paste(ad_urls)
     return tlg_url
 
 

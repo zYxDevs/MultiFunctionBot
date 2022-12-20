@@ -81,7 +81,7 @@ async def start(client, message):
     )
 
 
-@Client.on_callback_query()
+@Client.on_callback_query(filters.regex("_BUTTON"))
 async def botCallbacks(client, CallbackQuery):
     clicker_user_id = CallbackQuery.from_user.id
     user_id = CallbackQuery.message.reply_to_message.from_user.id

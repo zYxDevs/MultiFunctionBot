@@ -3,11 +3,12 @@ About python decorators.
 https://www.geeksforgeeks.org/decorators-in-python/
 https://realpython.com/primer-on-python-decorators/
 """
-
-from typing import Callable
+from functools import wraps
 
 from pyrogram import Client
 from pyrogram.types import Message
+
+from typing import Callable
 
 from bot.config import *
 from bot.helpers.functions import isAdmin
@@ -18,6 +19,7 @@ def user_commands(func: Callable) -> Callable:
     Allows all user's' to use publicly available commands
     """
 
+    @wraps(func)
     async def decorator(client: Client, message: Message):
         return await func(client, message)
 
@@ -29,6 +31,7 @@ def sudo_commands(func: Callable) -> Callable:
     Restricts user's from executing certain sudo user's' related commands
     """
 
+    @wraps(func)
     async def decorator(client: Client, message: Message):
         uid = message.from_user.id
         if uid in SUDO_USERS:
@@ -44,6 +47,7 @@ def dev_commands(func: Callable) -> Callable:
     Restricts user's from executing certain developer's related commands
     """
 
+    @wraps(func)
     async def decorator(client: Client, message: Message):
         uid = message.from_user.id
         if uid in OWNER_ID:
@@ -57,6 +61,7 @@ def admin_commands(func: Callable) -> Callable:
     Restricts user's from using group admin commands.
     """
 
+    @wraps(func)
     async def decorator(client: Client, message: Message):
         if await isAdmin(message):
             return await func(client, message)
@@ -69,6 +74,7 @@ def errors(func: Callable) -> Callable:
     Try and catch error of any function.
     """
 
+    @wraps(func)
     async def decorator(client: Client, message: Message):
         try:
             return await func(client, message)

@@ -112,20 +112,29 @@ bypass_list = [
     "xpshort.",
     "adrinolinks.",
     "mdisk.pro",
+    "linkbnao.",
+    "vearnl.",
+    "urlearn.",
 ]
 scrape_list = [
+    "animeremux,",
     "atishmkv.",
+    "benzmovies.",
     "cinevez.",
     "cinevood.",
     "filecrypt.",
-    "htpmovies.",
     "igg-games.",
+    "moviesboss.",
     "moviesdrama.",
-    "privatemoviez.",
-    "sharespark.",
     "olamovies.",
     "psa.",
+    "taemovies.",
+    "tamiltvtoons.",
+    "teleguflix."
     "toonworld4all.",
+    "sharespark.",
+    "moviesmod.",
+    "skymovieshd.",
 ]
 shst_list = [
     "shorte.st",

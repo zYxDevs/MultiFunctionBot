@@ -35,8 +35,6 @@
 - `EMILY_API_URL` Your [Emily API](https://github.com/missemily22/EmilyAPI) instance Urls. Separate API URLs by space
 - `UPSTREAM_REPO` Add the Upstream Repo of your Bot for automatic updation
 - `UPSTREAM_BRANCH` Select the Upstream Branch of your Bot for automatic updation
-- `OPENAI_EMAIL` Your email address used to login to [OpenAI](https://chat.openai.com/). Needed for ChatAI to work
-- `OPENAI_PASSWORD` Your password used to login to [OpenAI](https://chat.openai.com/). Needed for ChatAI to work
 ---
 
 <b>NOTE: Fill the above values in <code>config.env</code> or use them as Environment Variables. </b><br>
@@ -45,8 +43,6 @@
 ```
 start - Bot Start Message
 help - Alias command for start
-chatai - Get result for query using OpenAI - ChatGPT
-pdfdrive - Get Results from PDFDrive
 dalle - Generate images from a text prompt using DALLE-Mini
 bifm - Bypass Short Links using BIFM API
 direct - Get Direct Link for various Supported URLs
@@ -73,7 +69,6 @@ wayback - Generate WayBack of a Webpage
 	<i><b>Users Commands </b></i><br><br>
 	/start - To get the start message.<br>
 	/help - Alias command for start. <br>
-    /chatai - Get result for query using OpenAI - ChatGPT <br>
     /dalle - Generate images from a text prompt using DALLE-Mini <br>
     /bifm - Bypass Short Links using BIFM API <br>
     /direct - Get Direct Link for various Supported URLs <br>
@@ -90,7 +85,6 @@ wayback - Generate WayBack of a Webpage
     /tgupload - Upload a File to Telegram <br>
     /takess - Take ScreenShot of a Webpage <br>
     /wayback - Generate WayBack of a Webpage <br>
-    /pdfdrive - Get Results from PDFDrive <br>
     /paste - Paste the text/document to KatBin <br>
 	/ping - Ping the telegram api server <br>
 	</li>
