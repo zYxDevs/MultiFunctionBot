@@ -130,7 +130,7 @@ scrape_list = [
     "psa.",
     "taemovies.",
     "tamiltvtoons.",
-    "teleguflix."
+    "teleguflix.",
     "toonworld4all.",
     "sharespark.",
     "moviesmod.",

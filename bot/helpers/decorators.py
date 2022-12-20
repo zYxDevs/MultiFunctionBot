@@ -4,11 +4,10 @@ https://www.geeksforgeeks.org/decorators-in-python/
 https://realpython.com/primer-on-python-decorators/
 """
 from functools import wraps
+from typing import Callable
 
 from pyrogram import Client
 from pyrogram.types import Message
-
-from typing import Callable
 
 from bot.config import *
 from bot.helpers.functions import isAdmin

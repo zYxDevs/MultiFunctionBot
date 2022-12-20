@@ -25,7 +25,7 @@ async def speedtest(_, message: Message):
     test.upload()
     test.results.share()
     result = test.results.dict()
-    photo = (result['share'])
+    photo = result["share"]
 
     string_speed = f"""
     ╭─《 🚀 SPEEDTEST INFO 》

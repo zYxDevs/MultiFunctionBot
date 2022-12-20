@@ -168,7 +168,7 @@ async def ez4short(url):
 async def gplinks(url):
     if not url_exists:
         return "The link you entered is wrong!"
-    url = url[:-1] if url[-1] == '/' else url
+    url = url[:-1] if url[-1] == "/" else url
     dom = "https://gplinks.co"
     ref = "https://mynewsmedia.co/"
     client = requests.Session()

@@ -8,7 +8,6 @@ from pyrogram.raw.all import layer
 from bot.config import API_HASH, API_ID, BOT_TOKEN, BOT_USERNAME
 from bot.logging import LOGGER
 
-
 BotStartTime = time.time()
 plugins = dict(root="bot/plugins")
 
