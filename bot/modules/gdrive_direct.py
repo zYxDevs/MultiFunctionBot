@@ -269,7 +269,7 @@ async def drivehubs(url: str) -> str:
         return f"ERROR! Maybe Direct Download is not working for this file !\n Retrived URL : {flink}"
 
 
-async def filep_prun(playwright: Playwright, url: str) -> str:
+def filep_prun(playwright: Playwright, url: str) -> str:
     browser = playwright.chromium.launch()
     context = browser.new_context()
     page = context.new_page()
@@ -291,9 +291,9 @@ async def filep_prun(playwright: Playwright, url: str) -> str:
         return f"ERROR! Maybe Direct Download is not working for this file !\n Retrived URL : {flink}"
 
 
-async def filepress(url: str) -> str:
+def filepress(url: str) -> str:
     with sync_playwright() as playwright:
-        flink = await filep_prun(playwright, url)
+        flink = filep_prun(playwright, url)
         return flink
 
 
