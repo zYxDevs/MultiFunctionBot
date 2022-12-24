@@ -1,5 +1,4 @@
 import re
-
 import requests
 from bs4 import BeautifulSoup
 
@@ -17,7 +16,7 @@ def is_a_url(url: str):
 def is_bhadoo_index(url: str):
     client = requests.Session()
     url = url + "/" if url[-1] != "/" else url
-    res = client.get(url, allow_redirects=False)
+    res = client.get(url, allow_redirects=True)
     soup = BeautifulSoup(res.content, "html.parser")
     x = soup.select('link[href^="https://cdn.jsdelivr.net/npm/@googledrive/index"]')
     if x:

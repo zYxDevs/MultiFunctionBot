@@ -11,7 +11,7 @@ from bot.helpers.decorators import user_commands
 from bot.helpers.functions import forcesub, get_readable_time
 from bot.logging import LOGGER
 from bot.modules import shortener
-from bot.modules.regex import URL_REGEX, is_a_url
+from bot.modules.regex import URL_REGEX
 
 commands = ["shorten", f"shorten@{BOT_USERNAME}"]
 
@@ -51,11 +51,6 @@ async def shorten(client, message: Message):
         await message.reply_text(text=err, disable_web_page_preview=True, quote=True)
         return
 
-    valid_url = is_a_url(url)
-    if valid_url is not True:
-        err = "<b><i>You did not seem to have entered a valid URL!</i></b>"
-        await message.reply_text(text=err, disable_web_page_preview=True, quote=True)
-        return
     uname = message.from_user.mention
     uid = f"<code>{message.from_user.id}</code>"
     user_id = message.from_user.id

@@ -36,8 +36,8 @@ def decrypt_url(code):
 
 
 async def adfly(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     res = requests.get(url).text
     out = {"error": False, "src_url": url}
     try:
@@ -55,8 +55,8 @@ async def adfly(url):
 
 
 async def adrinolinks(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = cloudscraper.create_scraper(allow_brotli=False)
     dom = "https://adrinolinks.in"
     code = url.split("/")[-1]
@@ -80,8 +80,8 @@ async def adrinolinks(url):
 
 
 async def bifm(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = cloudscraper.create_scraper(allow_brotli=False)
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.63 Safari/537.36"
@@ -100,8 +100,8 @@ async def bifm(url):
 
 
 async def droplink(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.Session()
     dom = "https://droplink.co"
     h = {"referer": "https://yoshare.net"}
@@ -122,8 +122,8 @@ async def droplink(url):
 
 
 async def dulink(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = cloudscraper.create_scraper(allow_brotli=False)
     dom = "https://cac.teckypress.in"
     ref = "https://teckypress.in/"
@@ -145,8 +145,8 @@ async def dulink(url):
 
 
 async def ez4short(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = cloudscraper.create_scraper(allow_brotli=False)
     dom = "https://ez4short.com"
     ref = "https://techmody.io/"
@@ -166,8 +166,8 @@ async def ez4short(url):
 
 
 async def gplinks(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     url = url[:-1] if url[-1] == "/" else url
     dom = "https://gplinks.co"
     ref = "https://mynewsmedia.co/"
@@ -190,8 +190,8 @@ async def gplinks(url):
 
 
 async def gtlinks(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.Session()
     url = url[:-1] if url[-1] == "/" else url
     if "theforyou.in" in url:
@@ -217,8 +217,8 @@ async def gtlinks(url):
 
 
 async def gyanilinks(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.Session()
     dom = "https://go.kinemaster.cc"
     try:
@@ -240,8 +240,8 @@ async def gyanilinks(url):
 
 
 async def htpmovies(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.Session()
     try:
         a = client.get(url, allow_redirects=True).text
@@ -265,8 +265,8 @@ async def htpmovies(url):
 
 
 async def hypershort(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.Session()
     try:
         response = client.get(url)
@@ -306,8 +306,8 @@ async def hypershort(url):
 
 
 async def krownlinks(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.session()
     dom = "https://go.bloggertheme.xyz"
     url = url[:-1] if url[-1] == "/" else url
@@ -328,8 +328,8 @@ async def krownlinks(url):
 
 
 async def linkbnao(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = cloudscraper.create_scraper(allow_brotli=False)
     dom = "https://go.linkbnao.com"
     ref = "https://ctdbihar.in/"
@@ -349,8 +349,8 @@ async def linkbnao(url):
 
 
 async def linkvertise(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = cloudscraper.create_scraper(allow_brotli=False)
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36",
@@ -372,8 +372,8 @@ async def linkvertise(url):
 
 
 async def mdiskpro(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = cloudscraper.create_scraper(allow_brotli=False)
     dom = "https://mdisk.pro"
     ref = "https://m.meclipstudy.in/"
@@ -393,8 +393,8 @@ async def mdiskpro(url):
 
 
 async def multi_aio(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     resp = requests.get(url)
     if resp.status_code == 404:
         return "File not found/The link you entered is wrong!"
@@ -408,8 +408,8 @@ async def multi_aio(url):
 
 
 async def multi_bypass(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     resp = requests.get(url)
     if resp.status_code == 404:
         return "File not found/The link you entered is wrong!"
@@ -451,8 +451,8 @@ async def RecaptchaV3(ANCHOR_URL):
 
 
 async def ouo(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.Session()
     tempurl = url.replace("ouo.press", "ouo.io")
     p = urllib.parse.urlparse(tempurl)
@@ -478,8 +478,8 @@ async def ouo(url):
 
 
 async def privatemoviez(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.Session()
     try:
         r = client.get(url)
@@ -505,8 +505,8 @@ async def privatemoviez(url):
 
 
 async def pkin(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     url = url[:-1] if url[-1] == "/" else url
     dom = "https://go.paisakamalo.in/"
     ref = "https://techkeshri.com/"
@@ -532,8 +532,8 @@ async def pkin(url):
 
 
 async def rewayatcafe(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = cloudscraper.create_scraper(allow_brotli=False)
     p = urllib.parse.urlparse(url)
     ref = f"{p.scheme}://{p.netloc}/"
@@ -558,11 +558,13 @@ async def rewayatcafe(url):
 
 
 async def rocklinks(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = cloudscraper.create_scraper(allow_brotli=False)
+    ref = "https://disheye.com/"
+    h = {"referer": ref}
     if "rocklinks.net" in url:
-        dom = "https://blog.disheye.com"
+        dom = "https://rl.techysuccess.com"
     else:
         dom = "https://rocklinks.net"
     url = url[:-1] if url[-1] == "/" else url
@@ -572,7 +574,7 @@ async def rocklinks(url):
     else:
         final_url = f"{dom}/{code}"
     try:
-        resp = client.get(final_url)
+        resp = client.get(final_url, headers=h)
         soup = BeautifulSoup(resp.content, "html.parser")
         inputs = soup.find(id="go-link").find_all(name="input")
         data = {input.get("name"): input.get("value") for input in inputs}
@@ -665,8 +667,8 @@ async def scriptb(url):
 
 
 async def shareus(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = cloudscraper.create_scraper(allow_brotli=False)
     token = url.split("=")[-1]
     try:
@@ -680,8 +682,8 @@ async def shareus(url):
 
 
 async def shorte(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = cloudscraper.create_scraper(allow_brotli=False)
     client.headers.update({"referer": url})
     p = urllib.parse.urlparse(url)
@@ -702,8 +704,8 @@ async def shorte(url):
 
 
 async def short2url(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = cloudscraper.create_scraper(allow_brotli=False)
     dom = "https://technemo.xyz/blog"
     ref = "https://mytop5.club/"
@@ -730,10 +732,10 @@ async def short2url(url):
 
 
 async def shortingly(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.Session()
-    dom = "https://go.techyjeeshan.xyz"
+    dom = "https://go.gyanitheme.com"
     url = url[:-1] if url[-1] == "/" else url
     code = url.split("/")[-1]
     try:
@@ -755,8 +757,8 @@ async def shortingly(url):
 
 
 async def shortly(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     url = url[:-1] if url[-1] == "/" else url
     token = url.split("/")[-1]
     shortly_bypass_api = "https://www.shortly.xyz/getlink.php/"
@@ -772,8 +774,8 @@ async def shortly(url):
 
 
 async def sirigan(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = cloudscraper.create_scraper(allow_brotli=False)
     time.sleep(3)
     try:
@@ -790,8 +792,8 @@ async def sirigan(url):
 
 
 async def try2link(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.Session()
     dom = "https://try2link.com"
     ref = "https://newforex.online/"
@@ -819,8 +821,8 @@ async def try2link(url):
 
 
 async def thinfi(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     response = requests.get(url)
     try:
         des_url = BeautifulSoup(response.content, "html.parser").p.a.get("href")
@@ -831,8 +833,8 @@ async def thinfi(url):
 
 
 async def tnlink(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     dom = "https://gadgets.usanewstoday.club"
     url = url[:-1] if url[-1] == "/" else url
     token = url.split("/")[-1]
@@ -859,8 +861,8 @@ async def tnlink(url):
 
 
 async def urlsopen(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.session()
     dom = "https://short.url2go.in/RJOVAq30CU7lINo9AwG4oT3eISn7"
     url = url[:-1] if url[-1] == "/" else url
@@ -882,8 +884,8 @@ async def urlsopen(url):
 
 
 async def vearnl(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = cloudscraper.create_scraper(allow_brotli=False)
     dom = "https://go.urlearn.xyz"
     ref = "https://download.modmakers.xyz/"
@@ -903,8 +905,8 @@ async def vearnl(url):
 
 
 async def xpshort(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.Session()
     dom = "https://xpshort.com"
     url = url[:-1] if url[-1] == "/" else url

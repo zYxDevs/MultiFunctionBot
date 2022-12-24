@@ -61,8 +61,8 @@ def index_scraper(payload, url):
 
 
 async def index_scrap(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     x = 0
     payload = {"page_token": next_page_token, "page_index": x}
     msg = f"Index Link: {url}<br><br>"
@@ -76,8 +76,8 @@ async def index_scrap(url):
 
 
 async def animeremux_scrap(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.Session()
     rslt = f"<b>User URL :</b> <code>{url}</code><br>"
     rslt += f"<i>GDrive Links:</i><br>"
@@ -97,8 +97,8 @@ async def animeremux_scrap(url):
 
 
 async def atishmkv_scrap(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.Session()
     rslt = f"<b>User URL :</b> <code>{url}</code><br>"
     rslt += f"<i>GDrive Links:</i><br>"
@@ -157,8 +157,8 @@ async def atishmkv_scrap(url):
 
 
 async def benzmovies_scrap(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.Session()
     rslt = f"<b>User URL :</b> <code>{url}</code><br>"
     rslt += f"<i>Links:</i><br>"
@@ -174,8 +174,8 @@ async def benzmovies_scrap(url):
 
 
 async def cinevez_scrap(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.Session()
     rslt = f"<b>User URL :</b> <code>{url}</code><br><br>"
     url = url + "/" if url[-1] != "/" else url
@@ -199,8 +199,8 @@ async def cinevez_scrap(url):
 
 
 async def cinevood_scrap(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     t_urls = []
     client = requests.Session()
     rslt = f"<b>User URL :</b> <code>{url}</code><br>"
@@ -225,8 +225,8 @@ async def cinevood_scrap(url):
 
 
 async def filecrypt_scrap(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     res_msg = f"<b>User URL :</b> <code>{url}</code><br><br>"
     client = requests.Session()
     h1 = {
@@ -289,8 +289,8 @@ async def filecrypt_scrap(url):
 
 
 async def htpmovies_scrap(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.Session()
     rslt = f"<b>User URL :</b> <code>{url}</code><br><br>"
     url = url + "/" if url[-1] != "/" else url
@@ -387,8 +387,8 @@ async def bypassBluemediafiles(url, torrent=False):
 
 
 async def igggames_scrap(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     res_text = f"<b>User URL :</b> <code>{url}</code><br>"
     res_text += f"<i>Links/Magnets Below:</i><br>"
     url = url + "/" if url[-1] != "/" else url
@@ -423,8 +423,8 @@ async def igggames_scrap(url):
 
 
 async def magnet_scrap(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     result = f"<b>User URL :</b> <code>{url}</code><br>"
     result += f"<i>Magnets:</i><br>"
     magns = []
@@ -441,13 +441,13 @@ async def magnet_scrap(url):
 
 
 async def moviesboss_scrap(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.Session()
     rslt = f"<b>User URL :</b> <code>{url}</code><br>"
     rslt += f"<i>Links:</i><br>"
     url = url + "/" if url[-1] != "/" else url
-    p = client.get(url)
+    p = client.get(url, allow_redirects=True)
     soup = BeautifulSoup(p.text, "html.parser")
     links = soup.select('a[href^="https://themoviesboss.mx/links/"]')
     for a in links:
@@ -468,8 +468,8 @@ async def moviesboss_scrap(url):
 
 
 async def moviesdrama_scrap(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.Session()
     rslt = f"<b>User URL :</b> <code>{url}</code><br>"
     rslt += f"<i>Links:</i><br>"
@@ -490,8 +490,8 @@ async def moviesdrama_scrap(url):
 
 
 async def moviesmod_scrap(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.Session()
     rslt = f"<b>User URL :</b> <code>{url}</code><br>"
     url = url + "/" if url[-1] != "/" else url
@@ -519,8 +519,8 @@ async def moviesmod_scrap(url):
 
 
 async def privatemoviez_scrap(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.Session()
     rslt = f"<b>User URL :</b> <code>{url}</code><br>"
     rslt += "<b><u>Links :</u></b><br>"
@@ -567,8 +567,8 @@ async def privatemoviez_scrap(url):
 
 
 async def sharespark_scrap(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     rslt = f"<b>User URL :</b> <code>{url}</code><br><br>"
     client = requests.Session()
     url = "?action=printpage;".join(url.split("?"))
@@ -601,8 +601,8 @@ async def sharespark_scrap(url):
 
 
 async def skymovieshd_scrap(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.Session()
     rslt = f"<b>User URL :</b> <code>{url}</code><br>"
     url = url + "/" if url[-1] != "/" else url
@@ -622,8 +622,8 @@ async def skymovieshd_scrap(url):
 
 
 async def olamovies_scrap(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     url = url + "/" if url[-1] != "/" else url
     res_mesg = f"<b>User URL :</b> <code>{url}</code><br>"
     res_mesg += f"<i>Direct Download Links:</i><br>"
@@ -720,8 +720,8 @@ async def try2link_scrape(url):
 
 
 async def psa_scrap(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     rs_msg = f"<b>User URL :</b> <code>{url}</code><br><br>"
     client = requests.Session()
     url = url + "/" if url[-1] != "/" else url
@@ -741,8 +741,8 @@ async def psa_scrap(url):
 
 
 async def taemovies_scrap(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.Session()
     rslt = f"User URL : {url}<br><br>"
     rslt += "Gdrive Links :<br><br>"
@@ -759,8 +759,8 @@ async def taemovies_scrap(url):
 
 
 async def tamiltvtoons_scrap(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.Session()
     ad_urls = f"<b>User URL :</b> <code>{url}</code><br>"
     ad_urls += f"<i>AdLinks:</i><br>"
@@ -777,8 +777,8 @@ async def tamiltvtoons_scrap(url):
 
 
 async def teleguflix_scrap(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.Session()
     rslt = f"User URL : {url}<br><br>"
     rslt += "Links :<br><br>"
@@ -797,8 +797,8 @@ async def teleguflix_scrap(url):
 
 
 async def toonworld4all_scrap(url):
-    if not url_exists:
-        return "The link you entered is wrong!"
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
     client = requests.Session()
     ad_urls = f"<b>User URL :</b> <code>{url}</code><br>"
     ad_urls += f"<i>AdLinks:</i><br>"
