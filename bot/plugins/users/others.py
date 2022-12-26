@@ -2,19 +2,21 @@ import datetime
 import time
 from re import search
 
-from pyrogram import Client, filters, enums
+from pyrogram import Client, enums, filters
 from pyrogram.types import Message
 
-from bot.logging import LOGGER
-from bot.config import prefixes, DATABASE_URL, LOG_CHANNEL, BOT_USERNAME
+from bot.config import BOT_USERNAME, DATABASE_URL, LOG_CHANNEL, prefixes
 from bot.helpers.database import DatabaseHelper
 from bot.helpers.decorators import user_commands
 from bot.helpers.functions import forcesub, get_readable_time
+from bot.logging import LOGGER
 from bot.modules.extras import headfone, hungama
 from bot.modules.regex import URL_REGEX, is_a_url
 
 
-@Client.on_message(filters.command(["headfone", f"headfone@{BOT_USERNAME}"], **prefixes))
+@Client.on_message(
+    filters.command(["headfone", f"headfone@{BOT_USERNAME}"], **prefixes)
+)
 @user_commands
 async def headfone_hndlr(client, message: Message):
     """
