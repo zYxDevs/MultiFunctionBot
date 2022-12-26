@@ -47,7 +47,7 @@ async def update(client, message: Message):
             )
         else:
             LOGGER(__name__).error(
-                "Something went wrong while updating, check UPSTREAM_REPO if valid or not!"
+                "Something went wrong while updating, check UPSTREAM_REPO and UPSTREAM_BRANCH if valid or not!"
             )
         time.sleep(2)
         LOGGER(__name__).info("Bot Updated with latest commits. Restarting now..")

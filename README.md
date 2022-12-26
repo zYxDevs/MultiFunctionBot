@@ -46,6 +46,7 @@ help - Alias command for start
 dalle - Generate images from a text prompt using DALLE-Mini
 bifm - Bypass Short Links using BIFM API
 direct - Get Direct Link for various Supported URLs
+bvip - Bypass Short Links using Bypass.vip API
 bypass - Bypass Various Supported Shortened URLs
 multi - Bypass Short Links using PyBypass Library
 shorten - Get AdFree Shortened URLs of your Link
@@ -54,6 +55,8 @@ index - Extract Direct Links from Bhadoo Index Folder URLs
 scrape - Extract Direct Links from Supported Sites
 ytdl - (or /ytdlp) Extract DL Links using YT-DLP
 gd - (or use /clone) Get GDrive Links for various Drive File Sharer
+headfone - Scrape Headfone.co.in to get Direct Links of an Album
+hungama - Get Download link and Metadata of a Hungama Link
 image2pdf - Convert Image to PDF
 rename - Rename a File in Telegram
 tgupload - Upload a File to Telegram
@@ -72,6 +75,7 @@ wayback - Generate WayBack of a Webpage
     /dalle - Generate images from a text prompt using DALLE-Mini <br>
     /bifm - Bypass Short Links using BIFM API <br>
     /direct - Get Direct Link for various Supported URLs <br>
+    /bvip - Bypass Short Links using Bypass.vip API <br>
     /bypass - Bypass Various Supported Shortened URLs <br>
     /multi - Bypass Short Links using PyBypass Library <br>
     /shorten - Get AdFree Shortened URLs of your Link <br>
@@ -80,6 +84,8 @@ wayback - Generate WayBack of a Webpage
     /scrape - Extract Direct Links from Supported Sites <br>
     /ytdl - (or /ytdlp) Extract DL Links using YT-DLP <br>
     /gd - (or use /clone) Get GDrive Links for various Drive File Sharer <br>
+    /headfone - Scrape Headfone.co.in to get Direct Links of an Album <br>
+    /hungama - Get Download link and Metadata of a Hungama Link <br>
     /image2pdf - Convert Image to PDF <br>
     /rename - Rename a File in Telegram <br>
     /tgupload - Upload a File to Telegram <br>

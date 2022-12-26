@@ -31,6 +31,8 @@ USER_TEXT = """🗒️ Documentation for commands available to user's
 
 • /direct - Get Direct Link for various Supported URLs
 
+• /bvip - Bypass Short Links using Bypass.vip API
+
 • /bypass - Bypass Various Supported Shortened URLs
 
 • /multi - Bypass Short Links using PyBypass Library
@@ -46,6 +48,10 @@ USER_TEXT = """🗒️ Documentation for commands available to user's
 • /ytdl - (or /ytdlp) Extract DL Links using YT-DLP
 
 • /gd - (or use /clone) Get GDrive Links for various Drive File Sharer
+
+• /headfone - Scrape Headfone.co.in to get Direct Links of an Album
+
+• /hungama - Get Download link and Metadata of a Hungama Link
 
 • /ping - Ping the telegram api server.
 

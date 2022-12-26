@@ -83,7 +83,7 @@ async def forcesub(client, message: Message) -> bool:
     return True
 
 
-def get_readable_time(seconds: int) -> str:
+def get_readable_time(seconds) -> str:
     """
     Return a human-readable time format
     """
