@@ -7,7 +7,7 @@ from pyrogram.types import Message
 
 from bot import BotStartTime
 from bot.config import *
-from bot.helpers.decorators import user_commands
+from bot.helpers.decorators import user_commands, ratelimit
 from bot.helpers.functions import get_readable_time
 
 commands = ["ping", f"ping@{BOT_USERNAME}"]
@@ -15,6 +15,7 @@ commands = ["ping", f"ping@{BOT_USERNAME}"]
 
 @Client.on_message(filters.command(commands, **prefixes))
 @user_commands
+@ratelimit
 async def ping(_, message: Message):
     """
     Checks ping speed to bot API

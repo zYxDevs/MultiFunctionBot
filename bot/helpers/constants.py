@@ -27,6 +27,8 @@ USER_TEXT = """🗒️ Documentation for commands available to user's
 
 • /dalle - Generate images from a text prompt using DALLE-Mini
 
+• /upload - Upload a Telegram File to various Free File Hosting Servers
+
 • /bifm - Bypass Short Links using BIFM API
 
 • /direct - Get Direct Link for various Supported URLs

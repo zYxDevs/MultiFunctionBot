@@ -12,7 +12,7 @@ from pyrogram.types import Message
 
 from bot.config import *
 from bot.helpers.database import DatabaseHelper
-from bot.helpers.decorators import user_commands
+from bot.helpers.decorators import user_commands, ratelimit
 from bot.helpers.functions import forcesub
 
 opener = urllib.request.build_opener()
@@ -42,6 +42,7 @@ cmds5 = ["wayback", f"wayback@{BOT_USERNAME}"]
 
 @Client.on_message(filters.command(cmds, **prefixes))
 @user_commands
+@ratelimit
 async def image2pdf(client, message: Message):
     """
     Generate PDF of an Image
@@ -81,6 +82,7 @@ async def image2pdf(client, message: Message):
 
 @Client.on_message(filters.command(cmds2, **prefixes))
 @user_commands
+@ratelimit
 async def rename(client, message: Message):
     """
     Rename a Telegram Media File
@@ -124,6 +126,7 @@ async def rename(client, message: Message):
 
 @Client.on_message(filters.command(cmds3, **prefixes))
 @user_commands
+@ratelimit
 async def tgupload(client, message: Message):
     """
     Upload a URL to Telegram
@@ -157,7 +160,7 @@ async def tgupload(client, message: Message):
         last_used_on = await DatabaseHelper().get_last_used_on(user_id)
         if last_used_on != datetime.date.today().isoformat():
             await DatabaseHelper().update_last_used_on(user_id)
-    x = await message.reply_text("Uploading to telegram...")
+    x = await message.reply_text("Uploading to Telegram...")
     try:
         if address.startswith("http"):
             if address.endswith((".jpg", ".png", ".jpeg")):
@@ -181,6 +184,7 @@ async def tgupload(client, message: Message):
 
 @Client.on_message(filters.command(cmds4, **prefixes))
 @user_commands
+@ratelimit
 async def takess(client, message: Message):
     """
     Generate Screenshot of a Website
@@ -227,6 +231,7 @@ async def takess(client, message: Message):
 
 @Client.on_message(filters.command(cmds5, **prefixes))
 @user_commands
+@ratelimit
 async def wayback(client, message: Message):
     """
     Generate WayBack of a Website

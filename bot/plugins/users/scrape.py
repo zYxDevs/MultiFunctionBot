@@ -6,7 +6,7 @@ from pyrogram.types import Message
 
 from bot.config import BOT_USERNAME, DATABASE_URL, LOG_CHANNEL, prefixes
 from bot.helpers.database import DatabaseHelper
-from bot.helpers.decorators import user_commands
+from bot.helpers.decorators import user_commands, ratelimit
 from bot.helpers.functions import forcesub, get_readable_time
 from bot.modules.gdrive_direct import pahe
 from bot.modules.lists import *
@@ -18,6 +18,7 @@ commands = ["scrape", f"scrape@{BOT_USERNAME}"]
 
 @Client.on_message(filters.command(commands, **prefixes))
 @user_commands
+@ratelimit
 async def scrape(client, message: Message):
     """
     Extract Download/GDrive/Shortened Links from Supported Sites

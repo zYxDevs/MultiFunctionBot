@@ -31,6 +31,8 @@
 - `Sharerpw_XSRF` Put your Sharer XSRF Token
 - `Sharerpw_laravel` Put your Sharer Laravel Session
 - `SHAREDRIVE_PHPCKS ` Put your ShareDrive.pics PHP Packs Token
+- `DEFAULT_UPLOAD_HOST` Put the default host number for File Uploading. See the [table](/README.md#upload-hosts) for more Info
+- `UPLOAD_SIZE_LIMIT` Put the Max Size Limit (in GB) for File Upload Function
 - `UPTOBOX_TOKEN` Put your UptoBox Account Token (Free Account works too!)
 - `EMILY_API_URL` Your [Emily API](https://github.com/missemily22/EmilyAPI) instance Urls. Separate API URLs by space
 - `UPSTREAM_REPO` Add the Upstream Repo of your Bot for automatic updation
@@ -44,6 +46,7 @@
 start - Bot Start Message
 help - Alias command for start
 dalle - Generate images from a text prompt using DALLE-Mini
+upload - Upload a Telegram File to various Free File Hosting Servers
 bifm - Bypass Short Links using BIFM API
 direct - Get Direct Link for various Supported URLs
 bvip - Bypass Short Links using Bypass.vip API
@@ -73,6 +76,7 @@ wayback - Generate WayBack of a Webpage
 	/start - To get the start message.<br>
 	/help - Alias command for start. <br>
     /dalle - Generate images from a text prompt using DALLE-Mini <br>
+    /upload - Upload a Telegram File to various Free File Hosting Servers <br>
     /bifm - Bypass Short Links using BIFM API <br>
     /direct - Get Direct Link for various Supported URLs <br>
     /bvip - Bypass Short Links using Bypass.vip API <br>
@@ -103,7 +107,6 @@ wayback - Generate WayBack of a Webpage
     /stats: Alias command for serverstats.<br>
     /users - Get details about the Bot Users <br>
     /inspect - Inspect the message and give reply in json format <br>
-    /reload_browser - Reload the Browser to refresh the OpenAI`s Website <br>
     </li>
 <br>
     <li>
@@ -132,6 +135,28 @@ wayback - Generate WayBack of a Webpage
 7. Copy your `connection string` and replace `<password>` with the password of your user, then press close.
 
 ------
+
+## Upload Hosts
+
+| #  |     Host    |  Limit |
+|----|-------------|--------|
+| 1  | anonfiles   | 20 GB  |
+| 2  | Catbox      | 200 MB |
+| 3  | file.io     | 2 GB   |
+| 4  | Filemail    | 5 GB   |
+| 5  | Gofile      | unlim  |
+| 6  | KrakenFiles | 1 GB   |
+| 7  | LetsUpload  | 10 GB  |
+| 8  | MegaUp      | 5 GB   |
+| 9  | MixDrop     | unlim  |
+| 10 | pixeldrain  | 10 GB  |
+| 11 | Racaty      | 10 GB  |
+| 12 | transfer.sh | unlim  |
+| 13 | Uguu        | 128 MB |
+| 14 | WeTransfer  | 2 GB   |
+| 15 | workupload  | 2 GB   |
+| 16 | zippyshare  | 500 MB |
+
 
 # Contributions - 
 - Thanks to [Sanjit Sinha](https://github.com/sanjit-sinha) for [Telegram-Bot-Boilerplate](https://github.com/sanjit-sinha/Telegram-Bot-Boilerplate) Template

@@ -7,7 +7,7 @@ from pyrogram.types import Message
 
 from bot.config import *
 from bot.helpers.database import DatabaseHelper
-from bot.helpers.decorators import user_commands
+from bot.helpers.decorators import user_commands, ratelimit
 from bot.helpers.functions import forcesub, get_readable_time
 from bot.logging import LOGGER
 from bot.modules import scraper
@@ -18,6 +18,7 @@ commands = ["magnet", f"magnet@{BOT_USERNAME}"]
 
 @Client.on_message(filters.command(commands, **prefixes))
 @user_commands
+@ratelimit
 async def magnet(client, message: Message):
     """
     Extract Magnet from Torrent Websites

@@ -6,7 +6,7 @@ from pyrogram import Client, enums, filters
 
 from bot.config import *
 from bot.helpers.database import DatabaseHelper
-from bot.helpers.decorators import user_commands
+from bot.helpers.decorators import user_commands, ratelimit
 from bot.modules.pasting import katbin_paste
 
 commands = ["paste", "p", f"paste@{BOT_USERNAME}", f"p@{BOT_USERNAME}"]
@@ -15,6 +15,7 @@ paste_usage = f"**Usage:** paste the text to katb.in website. Reply to a text fi
 
 @Client.on_message(filters.command(commands, **prefixes))
 @user_commands
+@ratelimit
 async def paste(client, message):
     """
     Paste the text/document to KatBin

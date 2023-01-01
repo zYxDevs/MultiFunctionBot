@@ -8,6 +8,8 @@ from bot.config import *
 from bot.logging import LOGGER
 
 
+SIZE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+
 async def isAdmin(message: Message) -> bool:
     """
     Return True if the message is from owner or admin of the group or sudo of the bot.
@@ -121,6 +123,19 @@ def get_readable_size(size):
         size /= power
         raised_to_pow += 1
     return str(round(size, 2)) + " " + dict_power_n[raised_to_pow] + "B"
+
+
+def get_readable_file_size(size_in_bytes):
+    if size_in_bytes is None:
+        return '0B'
+    index = 0
+    while size_in_bytes >= 1024:
+        size_in_bytes /= 1024
+        index += 1
+    try:
+        return f'{round(size_in_bytes, 2)}{SIZE_UNITS[index]}'
+    except IndexError:
+        return 'File too large'
 
 
 async def multi_api():

@@ -7,7 +7,7 @@ from pyrogram.types import Message
 
 from bot.config import *
 from bot.helpers.database import DatabaseHelper
-from bot.helpers.decorators import user_commands
+from bot.helpers.decorators import user_commands, ratelimit
 from bot.helpers.functions import forcesub, get_readable_time
 from bot.logging import LOGGER
 from bot.modules import direct_link
@@ -20,6 +20,7 @@ commands = ["direct", f"direct@{BOT_USERNAME}"]
 
 @Client.on_message(filters.command(commands, **prefixes))
 @user_commands
+@ratelimit
 async def direct(client, message: Message):
     """
     Get Direct Link for various Supported URLs
@@ -657,9 +658,18 @@ async def direct(client, message: Message):
         await message.reply_text(text=err7, disable_web_page_preview=True, quote=True)
         return
 
-    if (DATABASE_URL and res) is not None and (
-        "Some Error Occurred" or "Could not" or "Error" or "error"
-    ) not in str(res):
+    if (
+            (DATABASE_URL and res) is not None
+            and link_type not in DB_SAVE_PREVENTION
+            and (
+            "some error occurred"
+            or "could not"
+            or "error"
+            or "not connect"
+            or "not"
+    )
+            not in str(res.lower())
+    ):
         if not await DatabaseHelper().is_dblink_exist(url):
             await DatabaseHelper().add_new_dblink(url, res)
             LOGGER(__name__).info(f"Successfully Added - {url} - {res} to DB!")

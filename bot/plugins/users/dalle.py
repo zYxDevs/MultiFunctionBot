@@ -7,7 +7,7 @@ from pyrogram import Client, filters
 from pyrogram.types import InputMediaPhoto, Message
 
 from bot.config import *
-from bot.helpers.decorators import user_commands
+from bot.helpers.decorators import user_commands, ratelimit
 from bot.helpers.functions import forcesub
 
 commands = ["dalle", f"dalle@{BOT_USERNAME}"]
@@ -15,6 +15,7 @@ commands = ["dalle", f"dalle@{BOT_USERNAME}"]
 
 @Client.on_message(filters.command(commands, **prefixes))
 @user_commands
+@ratelimit
 async def dalle(client, message: Message):
     """
     DALL·E Mini - Generate images from a text prompt

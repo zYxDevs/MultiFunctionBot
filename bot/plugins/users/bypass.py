@@ -7,7 +7,7 @@ from pyrogram.types import Message
 
 from bot.config import *
 from bot.helpers.database import DatabaseHelper
-from bot.helpers.decorators import user_commands
+from bot.helpers.decorators import user_commands, ratelimit
 from bot.helpers.functions import forcesub, get_readable_time
 from bot.logging import LOGGER
 from bot.modules import bypasser
@@ -19,6 +19,7 @@ commands = ["bypass", f"bypass@{BOT_USERNAME}"]
 
 @Client.on_message(filters.command(commands, **prefixes))
 @user_commands
+@ratelimit
 async def bypass(client, message: Message):
     """
     Bypass Various Supported Shortened URLs
@@ -227,7 +228,7 @@ async def bypass(client, message: Message):
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
         await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
     elif "htpmovies." in url and "/exit.php?url" in url:
-        link_type = "HTPMovies GDL"
+        link_type = "HTPMovies DL"
         LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
@@ -458,7 +459,7 @@ async def bypass(client, message: Message):
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
         await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
-    elif ("vearnl." or "urlearn.") in url:
+    elif ("vearnl." or "urlearn." or "earnl.") in url:
         link_type = "Vearnl"
         LOGGER(__name__).info(f" Received : {cmd} - {link_type} - {url}")
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
@@ -521,9 +522,18 @@ async def bypass(client, message: Message):
             await msg.edit(text=err)
             return
 
-    if (DATABASE_URL and res) is not None and (
-        "Some Error Occurred" or "Could not" or "Error" or "error"
-    ) not in str(res):
+    if (
+            (DATABASE_URL and res) is not None
+            and link_type not in DB_SAVE_PREVENTION
+            and (
+            "some error occurred"
+            or "could not"
+            or "error"
+            or "not connect"
+            or "not"
+    )
+            not in str(res.lower())
+    ):
         if not await DatabaseHelper().is_dblink_exist(url):
             await DatabaseHelper().add_new_dblink(url, res)
             LOGGER(__name__).info(f"Successfully Added - {url} - {res} to DB!")

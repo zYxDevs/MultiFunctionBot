@@ -1,4 +1,6 @@
 import os
+import platform
+import subprocess
 import sys
 import time
 
@@ -8,12 +10,16 @@ from pyrogram.raw.all import layer
 from bot.config import API_HASH, API_ID, BOT_TOKEN, BOT_USERNAME
 from bot.logging import LOGGER
 
+system = platform.system()
 BotStartTime = time.time()
 plugins = dict(root="bot/plugins")
 
 if os.path.exists("logs.txt"):
     with open("logs.txt", "r+") as f:
         f.truncate(0)
+
+if not os.path.exists("Downloads"):
+    os.makedirs("Downloads")
 
 if sys.version_info[0] < 3 or sys.version_info[1] < 7:
     VERSION_ASCII = """
@@ -39,7 +45,18 @@ ________________________________________________________________________________
 
 
 LOGGER(__name__).info("Installing Bot Requirements...")
-os.system("pip3 install --no-cache-dir -r requirements.txt --upgrade")
+subprocess.run(
+    ["pip3", "install", "--no-cache-dir", "-r", "requirements.txt", "--upgrade"]
+)
+
+LOGGER(__name__).info("Setting Upload Module Permissions...")
+if system == "Windows":
+    subprocess.run(["icacls", "upload_module_x64", "/grant", "*:F"])
+elif system == "Linux":
+    subprocess.run(["chmod", "777", "./upload_module_x64"])
+elif system == "Darwin":
+    subprocess.run(["chmod", "777", "./upload_module_x64"])
+
 LOGGER(__name__).info("Initiating the Client!")
 LOGGER(__name__).info(BANNER)
 LOGGER(__name__).info(

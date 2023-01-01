@@ -7,7 +7,7 @@ from pyrogram.types import Message
 
 from bot.config import BOT_USERNAME, DATABASE_URL, LOG_CHANNEL, prefixes
 from bot.helpers.database import DatabaseHelper
-from bot.helpers.decorators import user_commands
+from bot.helpers.decorators import user_commands, ratelimit
 from bot.helpers.functions import forcesub, get_readable_time
 from bot.logging import LOGGER
 from bot.modules.extras import headfone, hungama
@@ -18,6 +18,7 @@ from bot.modules.regex import URL_REGEX, is_a_url
     filters.command(["headfone", f"headfone@{BOT_USERNAME}"], **prefixes)
 )
 @user_commands
+@ratelimit
 async def headfone_hndlr(client, message: Message):
     """
     Scrape Headfone.co.in to get Direct Links of an Album
@@ -114,6 +115,7 @@ async def headfone_hndlr(client, message: Message):
 
 @Client.on_message(filters.command(["hungama", f"hungama@{BOT_USERNAME}"], **prefixes))
 @user_commands
+@ratelimit
 async def hungama_hndlr(client, message: Message):
     """
     Get Download link and Metadata of a Hungama Link

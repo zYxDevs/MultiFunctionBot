@@ -6,7 +6,7 @@ from pyrogram import Client, enums, filters
 from pyrogram.types import Message
 
 from bot.helpers.database import DatabaseHelper
-from bot.helpers.decorators import user_commands
+from bot.helpers.decorators import user_commands, ratelimit
 from bot.helpers.functions import forcesub, get_readable_time
 from bot.logging import LOGGER
 from bot.modules.gdrive_direct import *
@@ -17,6 +17,7 @@ commands = ["clone", f"clone@{BOT_USERNAME}", "gd", f"gd@{BOT_USERNAME}"]
 
 @Client.on_message(filters.command(commands, **prefixes))
 @user_commands
+@ratelimit
 async def gd(client, message: Message):
     """
     Get GDrive Links for various Drive File Sharer

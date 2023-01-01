@@ -15,7 +15,7 @@ from bot.helpers.constants import (
     USER_TEXT,
 )
 from bot.helpers.database import DatabaseHelper
-from bot.helpers.decorators import user_commands
+from bot.helpers.decorators import user_commands, ratelimit
 from bot.helpers.functions import forcesub, get_readable_time
 from bot.version import __gitrepo__
 
@@ -51,6 +51,7 @@ commands = ["start", f"start@{BOT_USERNAME}", "help", f"help@{BOT_USERNAME}"]
 
 @Client.on_message(filters.command(commands, **prefixes))
 @user_commands
+@ratelimit
 async def start(client, message):
     fsub = await forcesub(client, message)
     if not fsub:
@@ -82,6 +83,7 @@ async def start(client, message):
 
 
 @Client.on_callback_query(filters.regex("_BUTTON"))
+@ratelimit
 async def botCallbacks(client, CallbackQuery):
     clicker_user_id = CallbackQuery.from_user.id
     user_id = CallbackQuery.message.reply_to_message.from_user.id

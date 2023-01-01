@@ -301,3 +301,19 @@ adfly_list = [
     "barsoocm.com",
     "chuxoast.com",
 ]
+DB_SAVE_PREVENTION = [
+    "MDisk",
+    "WeTransfer",
+    "AnonFiles",
+    "Uptobox",
+    "Fichier",
+    "MegaUp",
+    "Bunkr.is",
+    "CyberDrop",
+    "Pixl.is",
+    "Sendcm Folder",
+    "Sendcm File",
+    "HTPMovies DL",
+    "PrivateMoviez DL",
+    "Script Generic"
+]
