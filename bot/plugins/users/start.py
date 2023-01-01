@@ -15,7 +15,7 @@ from bot.helpers.constants import (
     USER_TEXT,
 )
 from bot.helpers.database import DatabaseHelper
-from bot.helpers.decorators import user_commands, ratelimit
+from bot.helpers.decorators import ratelimit, user_commands
 from bot.helpers.functions import forcesub, get_readable_time
 from bot.version import __gitrepo__
 

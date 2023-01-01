@@ -17,7 +17,7 @@ from bot.config import (
     prefixes,
 )
 from bot.helpers.database import DatabaseHelper
-from bot.helpers.decorators import user_commands, ratelimit
+from bot.helpers.decorators import ratelimit, user_commands
 from bot.helpers.functions import forcesub, get_readable_file_size
 from bot.logging import LOGGER
 
@@ -218,4 +218,6 @@ async def thirdparty_upload(client, message: Message):
         os.remove(fileName)
     else:
         await progressMessage.delete()
-        await message.reply_text(text=upload_usage, disable_web_page_preview=True, quote=True)
+        await message.reply_text(
+            text=upload_usage, disable_web_page_preview=True, quote=True
+        )

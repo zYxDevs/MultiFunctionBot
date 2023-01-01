@@ -186,9 +186,11 @@ if len(UNIFIED_EMAIL) == 0 or len(UNIFIED_PASS) == 0:
 
 DEFAULT_UPLOAD_HOST = int(environ.get("DEFAULT_UPLOAD_HOST", 1))
 if DEFAULT_UPLOAD_HOST is None:
-    LOGGER(__name__).warning("Default Upload Host is missing, so it has been set to Anonfiles!")
+    LOGGER(__name__).warning(
+        "Default Upload Host is missing, so it has been set to Anonfiles!"
+    )
 
-UPLOAD_SIZE_LIMIT = float(environ.get('UPLOAD_SIZE_LIMIT', 2.5))
+UPLOAD_SIZE_LIMIT = float(environ.get("UPLOAD_SIZE_LIMIT", 2.5))
 if UPLOAD_SIZE_LIMIT is None:
     LOGGER(__name__).warning("UPLOAD_SIZE_LIMIT not provided! Set it to default 2.5GB!")
 

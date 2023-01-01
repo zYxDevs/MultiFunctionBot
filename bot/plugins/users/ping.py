@@ -7,7 +7,7 @@ from pyrogram.types import Message
 
 from bot import BotStartTime
 from bot.config import *
-from bot.helpers.decorators import user_commands, ratelimit
+from bot.helpers.decorators import ratelimit, user_commands
 from bot.helpers.functions import get_readable_time
 
 commands = ["ping", f"ping@{BOT_USERNAME}"]

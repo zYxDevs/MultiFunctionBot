@@ -7,7 +7,7 @@ from pyrogram.types import Message
 
 from bot.config import *
 from bot.helpers.database import DatabaseHelper
-from bot.helpers.decorators import user_commands, ratelimit
+from bot.helpers.decorators import ratelimit, user_commands
 from bot.helpers.functions import forcesub, get_readable_time
 from bot.logging import LOGGER
 from bot.modules import bypasser
@@ -523,16 +523,10 @@ async def bypass(client, message: Message):
             return
 
     if (
-            (DATABASE_URL and res) is not None
-            and link_type not in DB_SAVE_PREVENTION
-            and (
-            "some error occurred"
-            or "could not"
-            or "error"
-            or "not connect"
-            or "not"
-    )
-            not in str(res.lower())
+        (DATABASE_URL and res) is not None
+        and link_type not in DB_SAVE_PREVENTION
+        and ("some error occurred" or "could not" or "error" or "not connect" or "not")
+        not in str(res.lower())
     ):
         if not await DatabaseHelper().is_dblink_exist(url):
             await DatabaseHelper().add_new_dblink(url, res)

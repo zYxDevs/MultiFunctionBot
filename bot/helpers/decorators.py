@@ -8,7 +8,7 @@ from typing import Callable, Union
 
 from cachetools import TTLCache
 from pyrogram import Client
-from pyrogram.types import Message, CallbackQuery
+from pyrogram.types import CallbackQuery, Message
 
 from bot.config import *
 from bot.helpers.functions import isAdmin
@@ -28,7 +28,7 @@ def ratelimit(func: Callable) -> Callable:
     @wraps(func)
     async def decorator(client: Client, update: Union[Message, CallbackQuery]):
         userid = update.from_user.id
-        is_limited = ratelimiter.acquire(userid);
+        is_limited = ratelimiter.acquire(userid)
         if is_limited and userid not in warned_users:
             if isinstance(update, Message):
                 await update.reply_text(warning_message)

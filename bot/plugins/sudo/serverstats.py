@@ -8,7 +8,11 @@ from pyrogram.types import Message
 from bot import BotStartTime
 from bot.config import *
 from bot.helpers.decorators import sudo_commands
-from bot.helpers.functions import get_readable_size, get_readable_time, get_readable_file_size
+from bot.helpers.functions import (
+    get_readable_file_size,
+    get_readable_size,
+    get_readable_time,
+)
 
 commands = [
     "stats",

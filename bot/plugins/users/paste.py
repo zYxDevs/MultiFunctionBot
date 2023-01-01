@@ -6,7 +6,7 @@ from pyrogram import Client, enums, filters
 
 from bot.config import *
 from bot.helpers.database import DatabaseHelper
-from bot.helpers.decorators import user_commands, ratelimit
+from bot.helpers.decorators import ratelimit, user_commands
 from bot.modules.pasting import katbin_paste
 
 commands = ["paste", "p", f"paste@{BOT_USERNAME}", f"p@{BOT_USERNAME}"]
