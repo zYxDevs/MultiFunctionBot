@@ -1,6 +1,7 @@
 aiofiles
 beautifulsoup4
 bs4
+cachetools
 chromedriver_autoinstaller
 cloudscraper
 colorama
@@ -15,6 +16,7 @@ playwright
 psutil
 PyBypass
 pymongo
+pyrate_limiter
 pyrogram
 python-dotenv
 python-telegram-bot

@@ -19,6 +19,7 @@ from bot.config import (
 from bot.helpers.database import DatabaseHelper
 from bot.helpers.decorators import ratelimit, user_commands
 from bot.helpers.functions import forcesub, get_readable_file_size
+from bot.helpers.pyro_progress import progress
 from bot.logging import LOGGER
 
 service_id_rx = re.compile("#(\d{1,2})")
@@ -84,16 +85,6 @@ upload_usage = """**Supported Upload hosts:**`
 ex: TG file to WeTransfer:
 reply to a file with `/upload #14`
 """
-
-
-def progress(current, total, progressMessage, fileName):
-    if int(current * 100 / total) % 10 == 0:
-        try:
-            progressMessage.edit_text(
-                f"Downloading: `{fileName}`\nProgress: `{current * 100 / total:.1f}%`"
-            )
-        except BaseException:
-            pass
 
 
 @Client.on_message(filters.command(["upload", f"upload@{BOT_USERNAME}"], **prefixes))
@@ -176,11 +167,14 @@ async def thirdparty_upload(client, message: Message):
 
         file_path = os.path.join(os.getcwd(), "Downloads", fileName)
         if not os.path.exists(file_path):
+            start_time = time.time()
             await progressMessage.edit(
                 text=f"Downloading: `{fileName}`\n Size: {get_readable_file_size(size)}"
             )
             await msg.download(
-                file_path, progress=progress, progress_args=(progressMessage, fileName)
+                file_path,
+                progress=progress,
+                progress_args=(progressMessage, fileName, start_time),
             )
 
         file_name = os.path.basename(file_path)
@@ -215,7 +209,12 @@ async def thirdparty_upload(client, message: Message):
                 disable_web_page_preview=True,
                 quote=True,
             )
-        os.remove(fileName)
+
+        try:
+            os.remove(file_path)
+        except Exception as e:
+            LOGGER(__name__).warning(f"Could not delete File on Disk due to : {e}")
+
     else:
         await progressMessage.delete()
         await message.reply_text(

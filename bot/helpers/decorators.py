@@ -15,7 +15,7 @@ from bot.helpers.functions import isAdmin
 from bot.helpers.ratelimiter import RateLimiter
 
 ratelimiter = RateLimiter()
-warned_users = TTLCache(maxsize=128, ttl=600)
+warned_users = TTLCache(maxsize=128, ttl=60)
 warning_message = "Spam Detected! Bot will ignore your all requests for few minutes..."
 
 
@@ -28,7 +28,7 @@ def ratelimit(func: Callable) -> Callable:
     @wraps(func)
     async def decorator(client: Client, update: Union[Message, CallbackQuery]):
         userid = update.from_user.id
-        is_limited = ratelimiter.acquire(userid)
+        is_limited = await ratelimiter.acquire(userid)
         if is_limited and userid not in warned_users:
             if isinstance(update, Message):
                 await update.reply_text(warning_message)

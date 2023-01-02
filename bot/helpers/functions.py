@@ -138,6 +138,21 @@ def get_readable_file_size(size_in_bytes):
         return "File too large"
 
 
+def TimeFormatter(milliseconds: int) -> str:
+    seconds, milliseconds = divmod(int(milliseconds), 1000)
+    minutes, seconds = divmod(seconds, 60)
+    hours, minutes = divmod(minutes, 60)
+    days, hours = divmod(hours, 24)
+    tmp = (
+        ((str(days) + "d ") if days else "")
+        + ((str(hours) + "h ") if hours else "")
+        + ((str(minutes) + "m ") if minutes else "")
+        + ((str(seconds) + "s ") if seconds else "")
+        + ((str(milliseconds) + "ms ") if milliseconds else "")
+    )
+    return tmp[:-2]
+
+
 async def multi_api():
     EMILY_API_LIST = []
     emilyapi_urls = EMILY_API_URL.split(" ")

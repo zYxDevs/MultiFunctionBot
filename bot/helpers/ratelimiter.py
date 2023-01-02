@@ -21,8 +21,8 @@ class RateLimiter:
         # 5 requests per seconds
         self.second_rate = RequestRate(5, Duration.SECOND)
 
-        # 10 requests per minute.
-        self.minute_rate = RequestRate(10, Duration.MINUTE)
+        # 20 requests per minute.
+        self.minute_rate = RequestRate(20, Duration.MINUTE)
 
         # 1000 requests per hour
         self.hourly_rate = RequestRate(1000, Duration.HOUR)
@@ -37,7 +37,7 @@ class RateLimiter:
             bucket_class=MemoryListBucket,
         )
 
-    def acquire(self, userid: Union[int, str]) -> bool:
+    async def acquire(self, userid: Union[int, str]) -> bool:
         """
         Acquire rate limit per userid and return True / False
         based on userid ratelimit status.

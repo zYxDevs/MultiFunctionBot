@@ -77,6 +77,7 @@ async def start(client, message):
             await DatabaseHelper().update_last_used_on(user_id)
     await message.reply_text(
         text=START_TEXT.format(botuptime),
+        quote=True,
         disable_web_page_preview=True,
         reply_markup=InlineKeyboardMarkup(START_BUTTON),
     )
