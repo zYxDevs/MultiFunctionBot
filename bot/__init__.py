@@ -3,10 +3,9 @@ import platform
 import subprocess
 import sys
 import time
-from asyncio import get_event_loop, set_event_loop, new_event_loop
+from asyncio import get_event_loop, new_event_loop, set_event_loop
 
 import uvloop
-
 from pyrogram import Client, __version__
 from pyrogram.raw.all import layer
 

@@ -16,7 +16,7 @@ commands = ["broadcast", f"broadcast@{BOT_USERNAME}"]
 @dev_commands
 async def broadcast(c, m):
     """
-        Broadcast the message via bot to bot users
+    Broadcast the message via bot to bot users
     """
 
     if not (broadcast_msg := m.reply_to_m):
@@ -24,7 +24,9 @@ async def broadcast(c, m):
         return await m.reply_text(broadcast_usage, quote=True)
 
     proses_msg = await m.reply_text(
-        "**Broadcasting started. Please wait for few minutes for it to get completed.**", quote=True)
+        "**Broadcasting started. Please wait for few minutes for it to get completed.**",
+        quote=True,
+    )
 
     disable_notification = True
     commands = m.command
@@ -44,7 +46,8 @@ async def broadcast(c, m):
     for __id in total_list:
         try:
             await broadcast_msg.copy(
-                __id, broadcast_msg.caption, disable_notification=disable_notification)
+                __id, broadcast_msg.caption, disable_notification=disable_notification
+            )
             success += 1
             await asyncio.sleep(0.3)
         except Exception as error:
@@ -52,4 +55,5 @@ async def broadcast(c, m):
             failed += 1
 
     return await proses_msg.edit(
-        f"**The message has been successfully broadcasted.**\n\nTotal success = {success}\nTotal Failure = {failed}")
+        f"**The message has been successfully broadcasted.**\n\nTotal success = {success}\nTotal Failure = {failed}"
+    )

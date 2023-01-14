@@ -210,7 +210,7 @@ async def cinevood_scrap(url):
     soup = BeautifulSoup(p.text, "html.parser")
     x = soup.select('a[href^="https://filepress"]')
     for a in x:
-        t_urls.append(a['href'])
+        t_urls.append(a["href"])
     for c in t_urls:
         res = client.get(c)
         soup = BeautifulSoup(res.content, "html.parser")

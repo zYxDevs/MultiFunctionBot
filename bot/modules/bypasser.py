@@ -119,7 +119,9 @@ async def droplink(url):
             data = {input.get("name"): input.get("value") for input in inputs}
             await asyncio.sleep(4)
             headers = {"x-requested-with": "XMLHttpRequest"}
-            des_url = (await client.post(f"{dom}/links/go", data=data, headers=headers)).json()["url"]
+            des_url = (
+                await client.post(f"{dom}/links/go", data=data, headers=headers)
+            ).json()["url"]
             des_url = des_url.replace(" ", "%20")
             return des_url
         except BaseException:
@@ -143,7 +145,9 @@ async def dulink(url):
             inputs = soup.find_all("input")
             data = {input.get("name"): input.get("value") for input in inputs}
             h = {"x-requested-with": "XMLHttpRequest"}
-            des_url = (await client.post(f"{dom}/links/go", data=data, headers=h)).json()["url"]
+            des_url = (
+                await client.post(f"{dom}/links/go", data=data, headers=h)
+            ).json()["url"]
             des_url = des_url.replace(" ", "%20")
             return des_url
         except BaseException:
@@ -165,7 +169,9 @@ async def ez4short(url):
             data = {input.get("name"): input.get("value") for input in inputs}
             h = {"x-requested-with": "XMLHttpRequest"}
             await asyncio.sleep(8)
-            des_url = (await client.post(f"{dom}/links/go", data=data, headers=h)).json()["url"]
+            des_url = (
+                await client.post(f"{dom}/links/go", data=data, headers=h)
+            ).json()["url"]
             des_url = des_url.replace(" ", "%20")
             return des_url
         except BaseException:
@@ -188,7 +194,9 @@ async def gplinks(url):
             data = {input.get("name"): input.get("value") for input in inputs}
             h = {"x-requested-with": "XMLHttpRequest"}
             await asyncio.sleep(6)
-            des_url = (await client.post(f"{dom}/links/go", data=data, headers=h)).json()["url"]
+            des_url = (
+                await client.post(f"{dom}/links/go", data=data, headers=h)
+            ).json()["url"]
             des_url = des_url.replace(" ", "%20")
             return des_url
         except BaseException:
@@ -212,9 +220,9 @@ async def gtlinks(url):
             data = {input.get("name"): input.get("value") for input in inputs}
             await asyncio.sleep(5)
             headers = {"x-requested-with": "XMLHttpRequest"}
-            des_url = (await client.post(dom + "links/go", data=data, headers=headers)).json()[
-                "url"
-            ]
+            des_url = (
+                await client.post(dom + "links/go", data=data, headers=headers)
+            ).json()["url"]
             des_url = des_url.replace(" ", "%20")
             return des_url
         except BaseException:
@@ -235,7 +243,9 @@ async def gyanilinks(url):
             data = {input.get("name"): input.get("value") for input in inputs}
             h = {"x-requested-with": "XMLHttpRequest"}
             await asyncio.sleep(10)
-            des_url = (await client.post(f"{dom}/links/go", data=data, headers=h)).json()["url"]
+            des_url = (
+                await client.post(f"{dom}/links/go", data=data, headers=h)
+            ).json()["url"]
             des_url = des_url.replace(" ", "%20")
             return des_url
         except BaseException:
@@ -258,7 +268,9 @@ async def htpmovies(url):
             data = {input.get("name"): input.get("value") for input in inputs}
             h = {"x-requested-with": "XMLHttpRequest"}
             await asyncio.sleep(10)
-            des_url = (await client.post(f"{dom}/links/go", data=data, headers=h)).json()["url"]
+            des_url = (
+                await client.post(f"{dom}/links/go", data=data, headers=h)
+            ).json()["url"]
             des_url = des_url.replace(" ", "%20")
             return des_url
         except BaseException:
@@ -278,7 +290,9 @@ async def hypershort(url):
             token_regex = re.search("itsToken\.value = \S+", token_response.text)
             token = token_regex[0].split("=")[1].removesuffix('"').removeprefix(' "')
             inputs = soup.find(id="re-form").find_all(name="input")
-            data = {input.get("name"): input.get("value") for input in inputs}["getData"]
+            data = {input.get("name"): input.get("value") for input in inputs}[
+                "getData"
+            ]
             next_page_link = soup.find("form").get("action")
             resp = await client.post(
                 next_page_link,
@@ -294,12 +308,17 @@ async def hypershort(url):
             await asyncio.sleep(1)
             inputs = soup.find(id="go-link").find_all(name="input")
             data = {input.get("name"): input.get("value") for input in inputs}
-            des_url = (await client.post(
-                "https://blog.miuiflash.com/blog/links/go",
-                data=data,
-                cookies=tokenize_url_resp.cookies,
-                headers={"x-requested-with": "XMLHttpRequest", "referer": tokenize_url},
-            )).json()["url"]
+            des_url = (
+                await client.post(
+                    "https://blog.miuiflash.com/blog/links/go",
+                    data=data,
+                    cookies=tokenize_url_resp.cookies,
+                    headers={
+                        "x-requested-with": "XMLHttpRequest",
+                        "referer": tokenize_url,
+                    },
+                )
+            ).json()["url"]
             des_url = des_url.replace(" ", "%20")
             return des_url
         except BaseException:
@@ -321,7 +340,9 @@ async def krownlinks(url):
             data = {input.get("name"): input.get("value") for input in inputs}
             h = {"x-requested-with": "XMLHttpRequest"}
             await asyncio.sleep(10)
-            des_url = (await client.post(f"{dom}/links/go", data=data, headers=h)).json()["url"]
+            des_url = (
+                await client.post(f"{dom}/links/go", data=data, headers=h)
+            ).json()["url"]
             des_url = des_url.replace(" ", "%20")
             return des_url
         except BaseException:
@@ -342,7 +363,9 @@ async def linkbnao(url):
             data = {input.get("name"): input.get("value") for input in inputs}
             h = {"x-requested-with": "XMLHttpRequest"}
             await asyncio.sleep(8)
-            des_url = (await client.post(f"{dom}/links/go", data=data, headers=h)).json()["url"]
+            des_url = (
+                await client.post(f"{dom}/links/go", data=data, headers=h)
+            ).json()["url"]
             des_url = des_url.replace(" ", "%20")
             return des_url
         except BaseException:
@@ -357,7 +380,9 @@ async def linkvertise(url):
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36",
         }
         try:
-            data = await client.get(f"https://bypass.pm/bypass2?url={url}", headers=headers)
+            data = await client.get(
+                f"https://bypass.pm/bypass2?url={url}", headers=headers
+            )
             query = data.json()
             if query["success"] is True:
                 return query["destination"]
@@ -387,7 +412,9 @@ async def mdiskpro(url):
             data = {input.get("name"): input.get("value") for input in inputs}
             h = {"x-requested-with": "XMLHttpRequest"}
             await asyncio.sleep(8)
-            des_url = (await client.post(f"{dom}/links/go", data=data, headers=h)).json()["url"]
+            des_url = (
+                await client.post(f"{dom}/links/go", data=data, headers=h)
+            ).json()["url"]
             des_url = des_url.replace(" ", "%20")
             return des_url
         except BaseException:
@@ -517,9 +544,7 @@ async def pkin(url):
         token = url.split("/")[-1]
         user_agent = "Mozilla/5.0 (Linux; Android 11; 2201116PI) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Mobile Safari/537.36"
         try:
-            response = await client.get(
-                dom + token, headers={"referer": ref}
-            )
+            response = await client.get(dom + token, headers={"referer": ref})
             soup = BeautifulSoup(response.content, "html.parser")
             inputs = soup.find(id="go-link").find_all(name="input")
             data = {input.get("name"): input.get("value") for input in inputs}

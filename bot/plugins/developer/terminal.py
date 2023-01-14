@@ -68,12 +68,20 @@ async def py_runexec(client: Client, message: Message, replymsg: Message):
         await replymsg.edit("Executing...")
         code = message.text.split(None, 1)[1]
     except IndexError:
-        return await replymsg.edit("No codes found to execute.", reply_markup=InlineKeyboardMarkup(
-            [[InlineKeyboardButton("Refresh  🔄", callback_data="refresh")]]))
+        return await replymsg.edit(
+            "No codes found to execute.",
+            reply_markup=InlineKeyboardMarkup(
+                [[InlineKeyboardButton("Refresh  🔄", callback_data="refresh")]]
+            ),
+        )
 
     if "config.env" in code:
-        return await replymsg.edit("That's a dangerous operation! Not Permitted!", reply_markup=InlineKeyboardMarkup(
-            [[InlineKeyboardButton("Refresh  🔄", callback_data="refresh")]]))
+        return await replymsg.edit(
+            "That's a dangerous operation! Not Permitted!",
+            reply_markup=InlineKeyboardMarkup(
+                [[InlineKeyboardButton("Refresh  🔄", callback_data="refresh")]]
+            ),
+        )
 
     try:
         await aexec(code, client, message)
@@ -100,14 +108,22 @@ async def py_runexec(client: Client, message: Message, replymsg: Message):
         async with aiofiles.open("output.txt", "w+", encoding="utf8") as file:
             await file.write(str(evaluation.strip()))
 
-        await replymsg.edit("Output too large. Sending it as a File...", reply_markup=InlineKeyboardMarkup(
-            [[InlineKeyboardButton("refresh 🔄", callback_data="refresh")]]))
+        await replymsg.edit(
+            "Output too large. Sending it as a File...",
+            reply_markup=InlineKeyboardMarkup(
+                [[InlineKeyboardButton("refresh 🔄", callback_data="refresh")]]
+            ),
+        )
         await client.send_document(message.chat.id, "output.txt", caption="output.txt")
         os.remove("output.txt")
 
     else:
-        return await replymsg.edit(final_output, reply_markup=InlineKeyboardMarkup(
-            [[InlineKeyboardButton("refresh 🔄", callback_data="refresh")]]))
+        return await replymsg.edit(
+            final_output,
+            reply_markup=InlineKeyboardMarkup(
+                [[InlineKeyboardButton("refresh 🔄", callback_data="refresh")]]
+            ),
+        )
 
 
 @Client.on_callback_query(filters.regex("refresh"))
@@ -121,10 +137,12 @@ async def botCallbacks(client, CallbackQuery):
         )
 
     message = await client.get_messages(
-        CallbackQuery.message.chat.id, CallbackQuery.message.reply_to_message.id)
+        CallbackQuery.message.chat.id, CallbackQuery.message.reply_to_message.id
+    )
 
     replymsg = await client.get_messages(
-        CallbackQuery.message.chat.id, CallbackQuery.message.id)
+        CallbackQuery.message.chat.id, CallbackQuery.message.id
+    )
 
     if CallbackQuery.data == "refresh":
         await py_runexec(client, message, replymsg)
@@ -139,7 +157,8 @@ async def py_exec(client, message):
     """
     if len(message.command) < 2:
         await message.reply_text(
-            f"**Usage:** Executes python commands directly via bot.\n\n**Example: **<pre>/exec print('hello world')</pre>")
+            f"**Usage:** Executes python commands directly via bot.\n\n**Example: **<pre>/exec print('hello world')</pre>"
+        )
     else:
         replymsg = await message.reply_text("executing..", quote=True)
         await py_runexec(client, message, replymsg)

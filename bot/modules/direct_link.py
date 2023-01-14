@@ -3,11 +3,11 @@ import json
 import os
 import re
 import urllib.parse
+from http.cookiejar import MozillaCookieJar
 from time import sleep
 
 import chromedriver_autoinstaller
 import cloudscraper
-from http.cookiejar import MozillaCookieJar
 import httpx
 from bs4 import BeautifulSoup
 from lk21 import Bypass
@@ -164,11 +164,15 @@ async def fichier(url):
             elif len(soup.find_all("div", {"class": "ct_warn"})) == 3:
                 str_2 = soup.find_all("div", {"class": "ct_warn"})[-1]
                 if "you must wait" in str(str_2).lower():
-                    numbers = [int(word) for word in str(str_2).split() if word.isdigit()]
+                    numbers = [
+                        int(word) for word in str(str_2).split() if word.isdigit()
+                    ]
                     if not numbers:
                         return "1fichier is on a limit. Please wait a few minutes/hour."
                     else:
-                        return f"1fichier is on a limit. Please wait {numbers[0]} minute."
+                        return (
+                            f"1fichier is on a limit. Please wait {numbers[0]} minute."
+                        )
                 elif "protect access" in str(str_2).lower():
                     return f"This link requires a password!\n\n<b>This link requires a password!</b>"
                 else:
@@ -178,11 +182,15 @@ async def fichier(url):
                 str_1 = soup.find_all("div", {"class": "ct_warn"})[-2]
                 str_3 = soup.find_all("div", {"class": "ct_warn"})[-1]
                 if "you must wait" in str(str_1).lower():
-                    numbers = [int(word) for word in str(str_1).split() if word.isdigit()]
+                    numbers = [
+                        int(word) for word in str(str_1).split() if word.isdigit()
+                    ]
                     if not numbers:
                         return "1fichier is on a limit. Please wait a few minutes/hour."
                     else:
-                        return f"1fichier is on a limit. Please wait {numbers[0]} minute."
+                        return (
+                            f"1fichier is on a limit. Please wait {numbers[0]} minute."
+                        )
                 elif "bad password" in str(str_3).lower():
                     return "The password you entered is wrong!"
                 else:
@@ -378,7 +386,9 @@ async def krakenfiles(url):
                 "hash": dl_hash,
             }
             dl_link_resp = await client.post(
-                f"https://krakenfiles.com/download/{hash}", data=payload, headers=headers
+                f"https://krakenfiles.com/download/{hash}",
+                data=payload,
+                headers=headers,
             )
             dl_link_json = dl_link_resp.json()
             dl_url = dl_link_json["url"].replace(" ", "%20")
@@ -461,21 +471,22 @@ async def megaup(url):
         try:
             resp = await client.get(url)
             data = (
-                resp.text.split("DeObfuscate_String_and_Create_Form_With_Mhoa_URL(", 2)[2]
+                resp.text.split("DeObfuscate_String_and_Create_Form_With_Mhoa_URL(", 2)[
+                    2
+                ]
                 .split(");")[0]
                 .split(",")
             )
             data = [a.strip("' ") for a in data]
             idurl = "".join(data[0][i] for i in range(len(data[0]) // 4 - 1, -1, -1))
             for i in range(
-                    int(len(data[0]) / 4 * 3 - 1), int(len(data[0]) / 4 * 2) - 1, -1
+                int(len(data[0]) / 4 * 3 - 1), int(len(data[0]) / 4 * 2) - 1, -1
             ):
                 idurl += data[0][i]
             for i in range(int((len(data[1]) - 3) / 2 + 2), 2, -1):
                 idurl += data[1][i]
-            des_url = (
-                f"https://download.megaup.net/?idurl={idurl}&idfilename={data[2]}&idfilesize={data[3]}"
-                .replace(" ", "%20")
+            des_url = f"https://download.megaup.net/?idurl={idurl}&idfilename={data[2]}&idfilesize={data[3]}".replace(
+                " ", "%20"
             )
             return des_url
         except BaseException:
@@ -694,7 +705,9 @@ async def sendcm(url):
                     scrape = BeautifulSoup(response2.text, "html.parser")
                     inputs = scrape.find_all("input")
                     file_id = inputs[1]["value"]
-                    file_name = re.findall("URL=(.*?) - ", response2.text)[0].split("]")[1]
+                    file_name = re.findall("URL=(.*?) - ", response2.text)[0].split(
+                        "]"
+                    )[1]
                     parse = {"op": "download2", "id": file_id, "referer": url}
                     response3 = await client.post(base_url, data=parse, headers=hs)
                     dl_url = response3.headers["Location"]
@@ -704,7 +717,9 @@ async def sendcm(url):
                     if pages is None:
                         done = True
                     else:
-                        current_page = pages.find("li", "page-item actived", recursive=False)
+                        current_page = pages.find(
+                            "li", "page-item actived", recursive=False
+                        )
                         next_page = current_page.next_sibling
                         if next_page is None:
                             done = True
@@ -723,7 +738,7 @@ async def sendcm(url):
             response2 = await client.post(base_url, data=parse, headers=hs)
             dl_url = response2.headers["Location"]
             dl_url = dl_url.replace(" ", "%20")
-            return (f"File Name: {file_name}\n File Link: {url}\n Download Link: {dl_url}\n\n")
+            return f"File Name: {file_name}\n File Link: {url}\n Download Link: {dl_url}\n\n"
 
 
 async def solidfiles(url):
@@ -736,7 +751,9 @@ async def solidfiles(url):
         async with httpx.AsyncClient() as client:
             response = await client.get(url, headers=headers)
             pageSource = response.text
-            mainOptions = re.search(r"viewerOptions\'\,\ (.*?)\)\;", pageSource).group(1)
+            mainOptions = re.search(r"viewerOptions\'\,\ (.*?)\)\;", pageSource).group(
+                1
+            )
             return json.loads(mainOptions)["downloadUrl"]
     except BaseException:
         return "Some Error Occurred \nCould not generate dl-link for your URL"
@@ -829,22 +846,25 @@ async def terabox(url) -> str:
     if not url_exists(url):
         return "Bot could not connect to the URL!"
 
-    if not os.path.isfile('terabox_cookies.txt'):
+    if not os.path.isfile("terabox_cookies.txt"):
         LOGGER(__name__).info("TeraBox Error: Cookies not Provided!")
         return "TeraBox Cookies not Provided!"
     dl_links = ""
     try:
         client = requests.Session()
-        res = client.request('GET', url)
-        key = res.url.split('?surl=')[-1]
-        jar = MozillaCookieJar('terabox_cookies.txt')
+        res = client.request("GET", url)
+        key = res.url.split("?surl=")[-1]
+        jar = MozillaCookieJar("terabox_cookies.txt")
         jar.load()
         client.cookies.update(jar)
-        res = client.request('GET', f'https://www.terabox.com/share/list?app_id=250528&shorturl={key}&root=1')
-        results = res.json()['list']
+        res = client.request(
+            "GET",
+            f"https://www.terabox.com/share/list?app_id=250528&shorturl={key}&root=1",
+        )
+        results = res.json()["list"]
         for result in results:
-            if result['isdir'] != '0':
-                dl_links += result['dlink']
+            if result["isdir"] != "0":
+                dl_links += result["dlink"]
     except Exception as e:
         return f"ERROR: {e.__class__.__name__}"
     if dl_links != "":
@@ -914,7 +934,8 @@ async def uppit(url):
             response = await client.post(url, headers=headers, data=data)
             soup = BeautifulSoup(response.text, "html.parser")
             download_url = soup.find(
-                "span", {"style": "background:#f9f9f9;border:1px dotted #bbb;padding:7px;"}
+                "span",
+                {"style": "background:#f9f9f9;border:1px dotted #bbb;padding:7px;"},
             ).a.get("href")
             return download_url
     except BaseException:
@@ -984,8 +1005,8 @@ async def uptobox(url):
                 result2 = req2.json()
                 dl_url = result2["data"]["dlLink"]
             elif (
-                    result["message"].lower()
-                    == "you need to wait before requesting a new download link"
+                result["message"].lower()
+                == "you need to wait before requesting a new download link"
             ):
                 waiting_time = result["data"]["waiting"]
                 cooldown = divmod(waiting_time, 60)
@@ -1032,9 +1053,12 @@ async def wetransfer(url):
         async with httpx.AsyncClient() as s:
             r = await s.get("https://wetransfer.com/")
             m = re.search('name="csrf-token" content="([^"]+)"', r.text)
-            s.headers.update({"x-csrf-token": m[1], "x-requested-with": "XMLHttpRequest"})
+            s.headers.update(
+                {"x-csrf-token": m[1], "x-requested-with": "XMLHttpRequest"}
+            )
             r = await s.post(
-                f"https://wetransfer.com/api/v4/transfers/{transfer_id}/download", json=j
+                f"https://wetransfer.com/api/v4/transfers/{transfer_id}/download",
+                json=j,
             )
             j = r.json()
             dl_url = j["direct_link"].replace(" ", "%20")

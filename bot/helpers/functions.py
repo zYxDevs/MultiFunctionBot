@@ -155,21 +155,21 @@ def speed_convert(size, byte=True):
 
 def get_readable_bitrate(bitrate_kbps):
     if bitrate_kbps > 10000:
-        bitrate = str(round(bitrate_kbps / 1000, 2)) + ' ' + 'Mb/s'
+        bitrate = str(round(bitrate_kbps / 1000, 2)) + " " + "Mb/s"
     else:
-        bitrate = str(round(bitrate_kbps, 2)) + ' ' + 'kb/s'
+        bitrate = str(round(bitrate_kbps, 2)) + " " + "kb/s"
 
     return bitrate
 
 
 def get_readable_filesize(num):
-    for x in {'bytes', 'KB', 'MB', 'GB', 'TB'}:
+    for x in {"bytes", "KB", "MB", "GB", "TB"}:
         if num < 1024.0:
             return "%3.1f %s" % (num, x)
 
         num /= 1024.0
 
-    return "%3.1f %s" % (num, 'TB')
+    return "%3.1f %s" % (num, "TB")
 
 
 def makedir(name: str):
@@ -182,13 +182,14 @@ def remove_N(seq):
     i = 1
     while i < len(seq):
         if seq[i] == seq[i - 1]:
-            del seq[i]; i -= 1
+            del seq[i]
+            i -= 1
         else:
             i += 1
 
 
 def randstr():
-    return ''.join(random.choices(string.ascii_lowercase + string.digits, k=7))
+    return "".join(random.choices(string.ascii_lowercase + string.digits, k=7))
 
 
 def TimeFormatter(milliseconds: int) -> str:
