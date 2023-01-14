@@ -26,7 +26,6 @@ async def katbin_paste(text: str) -> str:
     response = await client.get(katbin_url)
     soup = BeautifulSoup(response.content, "html.parser")
     csrf_token = soup.find("input", {"name": "_csrf_token"}).get("value")
-
     try:
         paste_post = await client.post(
             katbin_url,

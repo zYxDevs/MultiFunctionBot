@@ -1,4 +1,7 @@
+import os
 import random
+import shutil
+import string
 
 from pyrogram.enums import ChatMemberStatus, ChatType, ParseMode
 from pyrogram.errors import UserNotParticipant
@@ -136,6 +139,56 @@ def get_readable_file_size(size_in_bytes):
         return f"{round(size_in_bytes, 2)}{SIZE_UNITS[index]}"
     except IndexError:
         return "File too large"
+
+
+def speed_convert(size, byte=True):
+    if not byte:
+        size = size / 8
+    power = 2**10
+    zero = 0
+    units = {0: "B/s", 1: "KB/s", 2: "MB/s", 3: "GB/s", 4: "TB/s"}
+    while size > power:
+        size /= power
+        zero += 1
+    return f"{round(size, 2)} {units[zero]}"
+
+
+def get_readable_bitrate(bitrate_kbps):
+    if bitrate_kbps > 10000:
+        bitrate = str(round(bitrate_kbps / 1000, 2)) + ' ' + 'Mb/s'
+    else:
+        bitrate = str(round(bitrate_kbps, 2)) + ' ' + 'kb/s'
+
+    return bitrate
+
+
+def get_readable_filesize(num):
+    for x in {'bytes', 'KB', 'MB', 'GB', 'TB'}:
+        if num < 1024.0:
+            return "%3.1f %s" % (num, x)
+
+        num /= 1024.0
+
+    return "%3.1f %s" % (num, 'TB')
+
+
+def makedir(name: str):
+    if os.path.exists(name):
+        shutil.rmtree(name)
+    os.mkdir(name)
+
+
+def remove_N(seq):
+    i = 1
+    while i < len(seq):
+        if seq[i] == seq[i - 1]:
+            del seq[i]; i -= 1
+        else:
+            i += 1
+
+
+def randstr():
+    return ''.join(random.choices(string.ascii_lowercase + string.digits, k=7))
 
 
 def TimeFormatter(milliseconds: int) -> str:

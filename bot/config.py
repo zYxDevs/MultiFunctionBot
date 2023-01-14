@@ -184,6 +184,22 @@ if len(UNIFIED_EMAIL) == 0 or len(UNIFIED_PASS) == 0:
     UNIFIED_EMAIL = ""
     UNIFIED_PASS = ""
 
+TERABOX_COOKIES_URL = environ.get("TERABOX_COOKIES_URL", "")
+if len(TERABOX_COOKIES_URL) != 0:
+    try:
+        res = requests.get(TERABOX_COOKIES_URL)
+        if res.status_code == 200:
+            with open("terabox_cookies.txt", "wb+") as f:
+                f.write(res.content)
+        else:
+            LOGGER(__name__).error(
+                f"Failed to load the terabox_cookies.txt file [{res.status_code}]"
+            )
+    except Exception as err:
+        LOGGER(__name__).error(f"TeraBox Cookies URL: {err}")
+else:
+    LOGGER(__name__).warning("TeraBox Cookies URL Not Provided, Proceeding without it!")
+
 DEFAULT_UPLOAD_HOST = int(environ.get("DEFAULT_UPLOAD_HOST", 1))
 if DEFAULT_UPLOAD_HOST is None:
     LOGGER(__name__).warning(

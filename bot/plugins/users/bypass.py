@@ -123,7 +123,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.adrinolinks(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -134,7 +134,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.droplink(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -145,7 +145,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.dulink(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -156,7 +156,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.ez4short(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -167,7 +167,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.gplinks(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -178,7 +178,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.krownlinks(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -189,7 +189,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.linkbnao(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -200,7 +200,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.linkvertise(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -211,7 +211,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.adfly(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -222,7 +222,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.gyanilinks(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -233,7 +233,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.htpmovies(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -244,7 +244,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.privatemoviez(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -255,7 +255,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.hypershort(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -266,7 +266,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.sirigan(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -277,7 +277,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.ouo(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -288,7 +288,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.shorte(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -299,7 +299,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.rocklinks(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -310,7 +310,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.mdiskpro(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -322,7 +322,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.gtlinks(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -333,7 +333,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.gyanilinks(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -344,7 +344,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.shareus(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -355,7 +355,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.short2url(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -366,7 +366,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.shortingly(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -377,7 +377,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.tnlink(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -388,7 +388,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.xpshort(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -399,7 +399,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.pkin(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -410,7 +410,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.rewayatcafe(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -421,7 +421,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.shortly(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -432,7 +432,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.try2link(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -443,7 +443,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.thinfi(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -454,7 +454,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.urlsopen(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -465,7 +465,7 @@ async def bypass(client, message: Message):
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
         res = await bypasser.vearnl(url)
-        sleep(1)
+
         time_taken = get_readable_time(time() - start)
         LOGGER(__name__).info(f" Destination : {cmd} - {res}")
         b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"
@@ -512,7 +512,7 @@ async def bypass(client, message: Message):
             a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n<b>Link Type</b> : <i>{link_type}</i>"
             await msg.edit(text=a)
             res = await bypasser.script(url)
-            sleep(1)
+    
             time_taken = get_readable_time(time() - start)
             LOGGER(__name__).info(f" Destination : {cmd} - {res}")
             b = f"<b>Bypassed Result :\n</b>{res}\n\n<i>Time Taken : {time_taken}</i>"

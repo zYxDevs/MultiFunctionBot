@@ -4,7 +4,7 @@ from speedtest import Speedtest
 
 from bot.config import *
 from bot.helpers.decorators import sudo_commands
-from bot.helpers.functions import get_readable_size
+from bot.helpers.functions import get_readable_size, speed_convert
 from bot.logging import LOGGER
 
 commands = ["speedtest", f"speedtest@{BOT_USERNAME}"]
@@ -53,15 +53,3 @@ async def speedtest(_, message: Message):
 
     await speed.delete()
     await message.reply_photo(photo=photo, caption=string_speed, quote=True)
-
-
-def speed_convert(size, byte=True):
-    if not byte:
-        size = size / 8
-    power = 2**10
-    zero = 0
-    units = {0: "B/s", 1: "KB/s", 2: "MB/s", 3: "GB/s", 4: "TB/s"}
-    while size > power:
-        size /= power
-        zero += 1
-    return f"{round(size, 2)} {units[zero]}"

@@ -3,6 +3,9 @@ import platform
 import subprocess
 import sys
 import time
+from asyncio import get_event_loop, set_event_loop, new_event_loop
+
+import uvloop
 
 from pyrogram import Client, __version__
 from pyrogram.raw.all import layer
@@ -20,6 +23,12 @@ if os.path.exists("logs.txt"):
 
 if not os.path.exists("Downloads"):
     os.makedirs("Downloads")
+
+try:
+    loop = get_event_loop()
+except RuntimeError:
+    set_event_loop(new_event_loop())
+    loop = get_event_loop()
 
 if sys.version_info[0] < 3 or sys.version_info[1] < 7:
     VERSION_ASCII = """
@@ -43,6 +52,7 @@ ________________________________________________________________________________
 """
 # https://patorjk.com/software/taag/#p=display&f=Graffiti&t=Multi%20Function%20Bot
 
+uvloop.install()
 
 LOGGER(__name__).info("Installing Bot Requirements...")
 subprocess.run(

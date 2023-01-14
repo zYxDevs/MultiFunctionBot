@@ -28,5 +28,7 @@ telegram
 telegraph
 tgcrypto
 urllib3
+uvloop
 waybackpy
 yt_dlp
+zippyshare_downloader

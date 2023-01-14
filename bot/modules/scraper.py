@@ -1,6 +1,6 @@
+import asyncio
 import json
 import re
-import time
 import urllib.parse
 from base64 import b64decode
 
@@ -30,7 +30,7 @@ def index_scraper(payload, url):
     url = url + "/" if url[-1] != "/" else url
     client = cloudscraper.create_scraper(allow_brotli=False)
     resp = client.post(url, data=payload)
-    time.sleep(1)
+    await asyncio.sleep(1)
     if resp.status_code == 401:
         return "Could not Access your Entered URL!"
     try:
@@ -48,7 +48,7 @@ def index_scraper(payload, url):
         pass
     else:
         file_len = len(resp2["data"]["files"])
-        time.sleep(1)
+        await asyncio.sleep(1)
         for i, _ in enumerate(range(file_len)):
             file_type = resp2["data"]["files"][i]["mimeType"]
             file_name = resp2["data"]["files"][i]["name"]
@@ -69,7 +69,7 @@ async def index_scrap(url):
     msg += index_scraper(payload, url)
     while next_page:
         payload = {"page_token": next_page_token, "page_index": x}
-        time.sleep(2)
+        await asyncio.sleep(2)
         msg += index_scraper(payload, url)
         x += 1
     return msg
@@ -208,18 +208,14 @@ async def cinevood_scrap(url):
     url = url + "/" if url[-1] != "/" else url
     p = client.get(url)
     soup = BeautifulSoup(p.text, "html.parser")
-    for a in soup.find_all("div", {"class": "cat-b"}):
-        for b in a.find_all("a"):
-            t_urls.append(b["href"])
+    x = soup.select('a[href^="https://filepress"]')
+    for a in x:
+        t_urls.append(a['href'])
     for c in t_urls:
         res = client.get(c)
         soup = BeautifulSoup(res.content, "html.parser")
-        title = soup.title.string
-        text = re.sub(r"Kolop \| ", "", title)
-        if text is not None:
-            rslt += f"• {text} <code>{b['href']}</code><br>"
-        else:
-            rslt += f"• <code>{b['href']}</code><br>"
+        title = soup.title
+        rslt += f"• <b>{title}</b><br><code>{c}</code><br>"
     tlg_url = await telegraph_paste(rslt)
     return tlg_url
 
@@ -312,7 +308,7 @@ async def htpmovies_scrap(url):
             try:
                 text = re.sub(r"www\S+ \- ", "", li[0])
             except IndexError:
-                time.sleep(2)
+                await asyncio.sleep(2)
                 p = client.get(byp)
                 soup = BeautifulSoup(p.content, "html.parser")
                 ss = soup.select("li.list-group-item")
@@ -686,7 +682,7 @@ async def olamovies_scrap(url):
                     break
                 else:
                     count -= 1
-            time.sleep(10)
+            await asyncio.sleep(10)
 
     final = []
     for ele in slist:
@@ -805,10 +801,11 @@ async def toonworld4all_scrap(url):
     url = url + "/" if url[-1] != "/" else url
     r = client.get(url)
     soup = BeautifulSoup(r.text, "html.parser")
-    links = soup.select('a[href*="redirect/main.php?"]')
-    for a in links:
-        down = client.get(a["href"], stream=True, allow_redirects=False)
-        link = down.headers["location"]
-        ad_urls += f"• <code>{link}</code><br><br>"
+    for a in soup.find_all("a"):
+        b = a["href"]
+        if "redirect/main.php?" in b:
+            down = client.get(a["href"], stream=True, allow_redirects=False)
+            link = down.headers["location"]
+            ad_urls += f"• <code>{link}</code><br><br>"
     tlg_url = await telegraph_paste(ad_urls)
     return tlg_url

@@ -1,11 +1,14 @@
+import asyncio
 import json
-import math
+import os
 import re
 import urllib.parse
 from time import sleep
 
 import chromedriver_autoinstaller
 import cloudscraper
+from http.cookiejar import MozillaCookieJar
+import httpx
 from bs4 import BeautifulSoup
 from lk21 import Bypass
 from selenium import webdriver
@@ -13,6 +16,7 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
+from zippyshare_downloader import extract_info as zippy_info
 
 from bot.config import *
 from bot.helpers.functions import url_exists
@@ -22,54 +26,60 @@ from bot.modules.regex import is_sendcm_folder_link
 async def androiddatahost(url):
     if not url_exists(url):
         return "Bot could not connect to the URL!"
-    try:
-        c = BeautifulSoup(requests.get(url).content, "html.parser")
-        fin = c.find("div", {"download2"})
-        dl_url = fin.find("a")["href"].replace(" ", "%20")
-        return dl_url
-    except BaseException:
-        return "Some Error Occurred \nCould not generate dl-link for your URL"
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get(url)
+            c = BeautifulSoup(response.content, "html.parser")
+            fin = c.find("div", {"download2"})
+            dl_url = fin.find("a")["href"].replace(" ", "%20")
+            return dl_url
+        except BaseException:
+            return "Some Error Occurred \nCould not generate dl-link for your URL"
 
 
 async def anonfiles(url):
     if not url_exists(url):
         return "Bot could not connect to the URL!"
-    try:
-        soup = BeautifulSoup(requests.get(url).content, "html.parser")
-        if dlurl := soup.find(id="download-url"):
-            return dlurl["href"]
-    except BaseException:
-        return "Could not Generate Direct Link for your AnonFiles Link :("
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get(url)
+            soup = BeautifulSoup(response.content, "html.parser")
+            if dlurl := soup.find(id="download-url"):
+                return dlurl["href"]
+        except BaseException:
+            return "Could not Generate Direct Link for your AnonFiles Link :("
 
 
 async def antfiles(url):
     if not url_exists(url):
         return "Bot could not connect to the URL!"
-    try:
-        soup = BeautifulSoup(requests.get(url).content, "html.parser")
-        parsed_url = urllib.parse.urlparse(url)
-        if a := soup.find(class_="main-btn", href=True):
-            final_url = "{0.scheme}://{0.netloc}/{1}".format(parsed_url, a["href"])
-            return final_url
-    except BaseException:
-        return "Could not Generate Direct Link for your AntFiles Link :("
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get(url)
+            soup = BeautifulSoup(response.content, "html.parser")
+            parsed_url = urllib.parse.urlparse(url)
+            if a := soup.find(class_="main-btn", href=True):
+                final_url = "{0.scheme}://{0.netloc}/{1}".format(parsed_url, a["href"])
+                return final_url
+        except BaseException:
+            return "Could not Generate Direct Link for your AntFiles Link :("
 
 
 async def artstation(url):
     if not url_exists(url):
         return "Bot could not connect to the URL!"
     url = url.split("/")[-1]
-    client = cloudscraper.create_scraper(interpreter="nodejs", allow_brotli=False)
     h = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36"
     }
     apix = f"https://www.artstation.com/projects/{url}.json"
-    sleep(2)
+    await asyncio.sleep(2)
     try:
-        resp = client.get(apix, headers=h)
-        uhh = resp.json()
-        dl_url = uhh["assets"][0]["image_url"]
-        return dl_url
+        async with httpx.AsyncClient() as client:
+            response = await client.get(apix, headers=h)
+            uhh = response.json()
+            dl_url = uhh["assets"][0]["image_url"]
+            return dl_url
     except BaseException:
         return "Some Error Occurred \nCould not generate dl-link for your URL"
 
@@ -83,31 +93,33 @@ async def bunkr_cyber(url):
     if resp.status_code == 404:
         return "File not found/The link you entered is wrong!"
     link_type = "Bunkr" if "bunkr.is" in url else "CyberDrop"
-    try:
-        soup = BeautifulSoup(resp.content, "html.parser")
-        if link_type == "Bunkr":
-            if "stream.bunkr.is" in url:
-                return url.replace("stream.bunkr.is/v", "media-files.bunkr.is")
-            json_data_element = soup.find("script", {"id": "__NEXT_DATA__"})
-            json_data = json.loads(json_data_element.string)
-            files = json_data["props"]["pageProps"]["files"]
-            for file in files:
-                item_url = "https://media-files.bunkr.is/" + file["name"]
-                item_url = item_url.replace(" ", "%20")
-                dl_msg += f"<b>{count}.</b> <code>{item_url}</code><br>"
-                count += 1
-        else:
-            items = soup.find_all("a", {"class": "image"})
-            for item in items:
-                item_url = item["href"]
-                item_url = item_url.replace(" ", "%20")
-                dl_msg += f"<b>{count}.</b> <code>{item_url}</code><br>"
-                count += 1
-        fld_msg = f"Your provided {link_type} link is of Folder and I've Found {count - 1} files in the Folder."
-        fld_msg += f"I've generated Direct Links for all the files.<br><br>"
-        return fld_msg + dl_msg
-    except BaseException:
-        return f"Could not Generate Direct Link for your {link_type} Link :("
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get(url)
+            soup = BeautifulSoup(response.content, "html.parser")
+            if link_type == "Bunkr":
+                if "stream.bunkr.is" in url:
+                    return url.replace("stream.bunkr.is/v", "media-files.bunkr.is")
+                json_data_element = soup.find("script", {"id": "__NEXT_DATA__"})
+                json_data = json.loads(json_data_element.string)
+                files = json_data["props"]["pageProps"]["files"]
+                for file in files:
+                    item_url = "https://media-files.bunkr.is/" + file["name"]
+                    item_url = item_url.replace(" ", "%20")
+                    dl_msg += f"<b>{count}.</b> <code>{item_url}</code><br>"
+                    count += 1
+            else:
+                items = soup.find_all("a", {"class": "image"})
+                for item in items:
+                    item_url = item["href"]
+                    item_url = item_url.replace(" ", "%20")
+                    dl_msg += f"<b>{count}.</b> <code>{item_url}</code><br>"
+                    count += 1
+            fld_msg = f"Your provided {link_type} link is of Folder and I've Found {count - 1} files in the Folder."
+            fld_msg += f"I've generated Direct Links for all the files.<br><br>"
+            return fld_msg + dl_msg
+        except BaseException:
+            return f"Could not Generate Direct Link for your {link_type} Link :("
 
 
 async def dropbox(url):
@@ -126,9 +138,10 @@ async def fembed(url):
         url = url[:-1] if url[-1] == "/" else url
         TOKEN = url.split("/")[-1]
         API = "https://fembed-hd.com/api/source/"
-        response = requests.post(API + TOKEN).json()
-        dl_url = response["data"].replace(" ", "%20")
-        return dl_url
+        async with httpx.AsyncClient() as client:
+            response = await client.post(API + TOKEN)
+            dl_url = response.json()["data"].replace(" ", "%20")
+            return dl_url
     except BaseException:
         return "Could not Generate Direct Link for your FEmbed Link :("
 
@@ -136,44 +149,48 @@ async def fembed(url):
 async def fichier(url):
     if not url_exists(url):
         return "Bot could not connect to the URL!"
-    req = requests.post(url)
-    if req.status_code == 404:
-        return "File not found/The link you entered is wrong!"
-    soup = BeautifulSoup(req.content, "lxml")
-    if soup.find("a", {"class": "ok btn-general btn-orange"}) is not None:
-        dl_url = soup.find("a", {"class": "ok btn-general btn-orange"})["href"]
-        if dl_url is None:
-            return "Unable to generate Direct Link for 1fichier!"
-        else:
-            return dl_url
-    elif len(soup.find_all("div", {"class": "ct_warn"})) == 3:
-        str_2 = soup.find_all("div", {"class": "ct_warn"})[-1]
-        if "you must wait" in str(str_2).lower():
-            numbers = [int(word) for word in str(str_2).split() if word.isdigit()]
-            if not numbers:
-                return "1fichier is on a limit. Please wait a few minutes/hour."
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.post(url)
+            if response.status_code == 404:
+                return "File not found/The link you entered is wrong!"
+            soup = BeautifulSoup(response.content, "lxml")
+            if soup.find("a", {"class": "ok btn-general btn-orange"}) is not None:
+                dl_url = soup.find("a", {"class": "ok btn-general btn-orange"})["href"]
+                if dl_url is None:
+                    return "Unable to generate Direct Link for 1fichier!"
+                else:
+                    return dl_url
+            elif len(soup.find_all("div", {"class": "ct_warn"})) == 3:
+                str_2 = soup.find_all("div", {"class": "ct_warn"})[-1]
+                if "you must wait" in str(str_2).lower():
+                    numbers = [int(word) for word in str(str_2).split() if word.isdigit()]
+                    if not numbers:
+                        return "1fichier is on a limit. Please wait a few minutes/hour."
+                    else:
+                        return f"1fichier is on a limit. Please wait {numbers[0]} minute."
+                elif "protect access" in str(str_2).lower():
+                    return f"This link requires a password!\n\n<b>This link requires a password!</b>"
+                else:
+                    print(str_2)
+                    return "Error trying to generate Direct Link from 1fichier!"
+            elif len(soup.find_all("div", {"class": "ct_warn"})) == 4:
+                str_1 = soup.find_all("div", {"class": "ct_warn"})[-2]
+                str_3 = soup.find_all("div", {"class": "ct_warn"})[-1]
+                if "you must wait" in str(str_1).lower():
+                    numbers = [int(word) for word in str(str_1).split() if word.isdigit()]
+                    if not numbers:
+                        return "1fichier is on a limit. Please wait a few minutes/hour."
+                    else:
+                        return f"1fichier is on a limit. Please wait {numbers[0]} minute."
+                elif "bad password" in str(str_3).lower():
+                    return "The password you entered is wrong!"
+                else:
+                    return "Error trying to generate Direct Link from 1fichier!"
             else:
-                return f"1fichier is on a limit. Please wait {numbers[0]} minute."
-        elif "protect access" in str(str_2).lower():
-            return f"This link requires a password!\n\n<b>This link requires a password!</b>"
-        else:
-            print(str_2)
+                return "Error trying to generate Direct Link from 1fichier!"
+        except httpx.HTTPError as e:
             return "Error trying to generate Direct Link from 1fichier!"
-    elif len(soup.find_all("div", {"class": "ct_warn"})) == 4:
-        str_1 = soup.find_all("div", {"class": "ct_warn"})[-2]
-        str_3 = soup.find_all("div", {"class": "ct_warn"})[-1]
-        if "you must wait" in str(str_1).lower():
-            numbers = [int(word) for word in str(str_1).split() if word.isdigit()]
-            if not numbers:
-                return "1fichier is on a limit. Please wait a few minutes/hour."
-            else:
-                return f"1fichier is on a limit. Please wait {numbers[0]} minute."
-        elif "bad password" in str(str_3).lower():
-            return "The password you entered is wrong!"
-        else:
-            return "Error trying to generate Direct Link from 1fichier!"
-    else:
-        return "Error trying to generate Direct Link from 1fichier!"
 
 
 async def filesIm(url):
@@ -190,15 +207,16 @@ async def gdbot(url):
         return "Bot could not connect to the URL!"
     client = cloudscraper.create_scraper(allow_brotli=False)
     try:
-        resp = client.get(url)
-        gdtot_url = re.findall('mb-2" href="(.*?)" target="_blank"', resp.text)
-        url = gdtot_url[0]
-        resp = client.get(url)
-        token = re.findall("'token', '(.*?)'", resp.text)[0]
-        data = {"token": token}
-        resp2 = client.post(url, data=data).text
-        res = resp2.split('":"')[1].split('"}')[0].replace("\\", "")
-        return res
+        with httpx.AsyncClient() as client:
+            resp = await client.get(url)
+            gdtot_url = re.findall('mb-2" href="(.*?)" target="_blank"', resp.text)
+            url = gdtot_url[0]
+            resp = await client.get(url)
+            token = re.findall("'token', '(.*?)'", resp.text)[0]
+            data = {"token": token}
+            resp2 = await client.post(url, data=data).text
+            res = resp2.split('":"')[1].split('"}')[0].replace("\\", "")
+            return res
     except BaseException:
         return "Some Error Occurred \nCould not generate dl-link for your URL"
 
@@ -207,8 +225,9 @@ async def github(url):
     if not url_exists(url):
         return "Bot could not connect to the URL!"
     try:
-        download = requests.get(url, stream=True, allow_redirects=False)
-        return download.headers["location"]
+        async with httpx.AsyncClient() as client:
+            async with client.get(url) as response:
+                return response.headers["location"]
     except BaseException:
         return "Some Error Occurred \nCould not generate dl-link for your URL"
 
@@ -217,21 +236,23 @@ async def gofile(url):
     if not url_exists(url):
         return "Bot could not connect to the URL!"
     api_uri = "https://api.gofile.io"
-    client = cloudscraper.create_scraper(allow_brotli=False)
     try:
-        res = client.get(f"{api_uri}/createAccount").json()
-        data = {
-            "contentId": url.split("/")[-1],
-            "token": res["data"]["token"],
-            "websiteToken": 12345,
-            "cache": "true",
-        }
-        res = client.get(f"{api_uri}/getContent", params=data).json()
-        for item in res["data"]["contents"].values():
-            content = item
-            dl_url = content["directLink"]
-            dl_url = dl_url.replace(" ", "%20")
-            return dl_url
+        async with httpx.AsyncClient() as client:
+            async with client.get(f"{api_uri}/createAccount") as response:
+                res = response.json()
+                data = {
+                    "contentId": url.split("/")[-1],
+                    "token": res["data"]["token"],
+                    "websiteToken": 12345,
+                    "cache": "true",
+                }
+                async with client.get(f"{api_uri}/getContent", params=data) as response:
+                    res = response.json()
+                    for item in res["data"]["contents"].values():
+                        content = item
+                        dl_url = content["directLink"]
+                        dl_url = dl_url.replace(" ", "%20")
+                        return dl_url
     except BaseException:
         return "Some Error Occurred \nCould not generate dl-link for your URL"
 
@@ -308,28 +329,28 @@ async def hubcloud(url):
 async def hxfile(url):
     if not url_exists(url):
         return "Bot could not connect to the URL!"
-    url = url[:-1] if url[-1] == "/" else url
-    token = url.split("/")[-1]
-    client = requests.Session()
-    headers = {
-        "content-type": "application/x-www-form-urlencoded",
-        "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36",
-    }
-    data = {
-        "op": "download2",
-        "id": token,
-        "rand": "",
-        "referer": "",
-        "method_free": "",
-        "method_premium": "",
-    }
     try:
-        response = client.post(url, headers=headers, data=data)
-        soup = BeautifulSoup(response.text, "html.parser")
-        if btn := soup.find(class_="btn btn-dow"):
-            return btn["href"]
-        if unique := soup.find(id="uniqueExpirylink"):
-            return unique["href"]
+        url = url[:-1] if url[-1] == "/" else url
+        token = url.split("/")[-1]
+        async with httpx.AsyncClient() as client:
+            headers = {
+                "content-type": "application/x-www-form-urlencoded",
+                "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36",
+            }
+            data = {
+                "op": "download2",
+                "id": token,
+                "rand": "",
+                "referer": "",
+                "method_free": "",
+                "method_premium": "",
+            }
+            async with client.post(url, headers=headers, data=data) as response:
+                soup = BeautifulSoup(response.text, "html.parser")
+                if btn := soup.find(class_="btn btn-dow"):
+                    return btn["href"]
+                if unique := soup.find(id="uniqueExpirylink"):
+                    return unique["href"]
     except BaseException:
         return "Could not Generate Direct Link for your HXFile Link :("
 
@@ -337,32 +358,33 @@ async def hxfile(url):
 async def krakenfiles(url):
     if not url_exists(url):
         return "Bot could not connect to the URL!"
-    client = requests.session()
-    try:
-        resp = client.get(url)
-        soup = BeautifulSoup(resp.text, "lxml")
-        token = soup.find("input", id="dl-token")["value"]
-        hashes = [
-            item["data-file-hash"]
-            for item in soup.find_all("div", attrs={"data-file-hash": True})
-        ]
-        if not hashes:
-            return f"KrakenFiles: Hash not found for : {url}"
-        dl_hash = hashes[0]
-        payload = f'------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name="token"\r\n\r\n{token}\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW--'
-        headers = {
-            "content-type": "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW",
-            "cache-control": "no-cache",
-            "hash": dl_hash,
-        }
-        dl_link_resp = client.post(
-            f"https://krakenfiles.com/download/{hash}", data=payload, headers=headers
-        )
-        dl_link_json = dl_link_resp.json()
-        dl_url = dl_link_json["url"].replace(" ", "%20")
-        return dl_url
-    except BaseException:
-        return "Some Error Occurred \nCould not generate dl-link for your URL"
+    async with httpx.AsyncClient() as client:
+        try:
+            resp = await client.get(url)
+            soup = BeautifulSoup(resp.text, "lxml")
+            token = soup.find("input", id="dl-token")["value"]
+            items = soup.find_all("div", attrs={"data-file-hash": True})
+            hashes = [item["data-file-hash"] for item in items]
+            if not hashes:
+                return f"KrakenFiles: Hash not found for : {url}"
+            dl_hash = hashes[0]
+            payload = (
+                f'------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name="token"\r\n\r\n'
+                f"{token}\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW--"
+            )
+            headers = {
+                "content-type": "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW",
+                "cache-control": "no-cache",
+                "hash": dl_hash,
+            }
+            dl_link_resp = await client.post(
+                f"https://krakenfiles.com/download/{hash}", data=payload, headers=headers
+            )
+            dl_link_json = dl_link_resp.json()
+            dl_url = dl_link_json["url"].replace(" ", "%20")
+            return dl_url
+        except BaseException:
+            return "Some Error Occurred \nCould not generate dl-link for your URL"
 
 
 async def letsupload(url):
@@ -387,81 +409,83 @@ async def mdisk(url):
     if not url_exists(url):
         return "Bot could not connect to the URL!"
     token = url.split("/")[-1]
-    client = cloudscraper.create_scraper(interpreter="nodejs", allow_brotli=False)
-    h = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36"
-    }
-    f_url = f"https://diskuploader.entertainvideo.com/v1/file/cdnurl?param={token}"
-    try:
-        response = client.get(f_url, headers=h).json()
-        dl_url = response["download"].replace(" ", "%20")
-        return dl_url
-    except BaseException:
-        return "Some Error Occurred \nCould not generate dl-link for your URL"
+    async with httpx.AsyncClient() as client:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36",
+        }
+        f_url = f"https://diskuploader.entertainvideo.com/v1/file/cdnurl?param={token}"
+        try:
+            response = await client.get(f_url, headers=headers)
+            dl_url = response.json()["download"].replace(" ", "%20")
+            return dl_url
+        except BaseException:
+            return "Some Error Occurred \nCould not generate dl-link for your URL"
 
 
 async def mdisk_mpd(url):
     if not url_exists(url):
         return "Bot could not connect to the URL!"
     token = url.split("/")[-1]
-    client = cloudscraper.create_scraper(interpreter="nodejs", allow_brotli=False)
-    h = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36"
-    }
-    f_url = f"https://diskuploader.entertainvideo.com/v1/file/cdnurl?param={token}"
-    try:
-        response = client.get(f_url, headers=h).json()
-        dl_url = response["source"].replace(" ", "%20")
-        return dl_url
-    except BaseException:
-        return "Some Error Occurred \nCould not generate dl-link for your URL"
+    async with httpx.AsyncClient() as client:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36",
+        }
+        f_url = f"https://diskuploader.entertainvideo.com/v1/file/cdnurl?param={token}"
+        try:
+            response = await client.get(f_url, headers=headers)
+            dl_url = response.json()["source"].replace(" ", "%20")
+            return dl_url
+        except BaseException:
+            return "Some Error Occurred \nCould not generate dl-link for your URL"
 
 
 async def mediafire(url):
     if not url_exists(url):
         return "Bot could not connect to the URL!"
-    try:
-        page = BeautifulSoup(requests.get(url).content, "lxml")
-        info = page.find("a", {"aria-label": "Download file"})
-        dl_url = info.get("href").replace(" ", "%20")
-        return dl_url
-    except BaseException:
-        return "Some Error Occurred \nCould not generate dl-link for your URL"
+    async with httpx.AsyncClient() as client:
+        try:
+            resp = await client.get(url)
+            page = BeautifulSoup(resp.content, "lxml")
+            info = page.find("a", {"aria-label": "Download file"})
+            dl_url = info.get("href").replace(" ", "%20")
+            return dl_url
+        except BaseException:
+            return "Some Error Occurred \nCould not generate dl-link for your URL"
 
 
 async def megaup(url):
     if not url_exists(url):
         return "Bot could not connect to the URL!"
     client = cloudscraper.create_scraper(allow_brotli=False)
-    try:
-        resp = client.get(url)
-        data = (
-            resp.text.split("DeObfuscate_String_and_Create_Form_With_Mhoa_URL(", 2)[2]
-            .split(");")[0]
-            .split(",")
-        )
-        data = [a.strip("' ") for a in data]
-        sleep(3)
-        idurl = "".join(data[0][i] for i in range(len(data[0]) // 4 - 1, -1, -1))
-        for i in range(
-            int(len(data[0]) / 4 * 3 - 1), int(len(data[0]) / 4 * 2) - 1, -1
-        ):
-            idurl += data[0][i]
-        for i in range(int((len(data[1]) - 3) / 2 + 2), 2, -1):
-            idurl += data[1][i]
-            des_url = f"https://download.megaup.net/?idurl={idurl}&idfilename={data[2]}&idfilesize={data[3]}".replace(
-                " ", "%20"
+    async with httpx.AsyncClient() as client:
+        try:
+            resp = await client.get(url)
+            data = (
+                resp.text.split("DeObfuscate_String_and_Create_Form_With_Mhoa_URL(", 2)[2]
+                .split(");")[0]
+                .split(",")
+            )
+            data = [a.strip("' ") for a in data]
+            idurl = "".join(data[0][i] for i in range(len(data[0]) // 4 - 1, -1, -1))
+            for i in range(
+                    int(len(data[0]) / 4 * 3 - 1), int(len(data[0]) / 4 * 2) - 1, -1
+            ):
+                idurl += data[0][i]
+            for i in range(int((len(data[1]) - 3) / 2 + 2), 2, -1):
+                idurl += data[1][i]
+            des_url = (
+                f"https://download.megaup.net/?idurl={idurl}&idfilename={data[2]}&idfilesize={data[3]}"
+                .replace(" ", "%20")
             )
             return des_url
-    except BaseException:
-        return "Some Error Occurred \nCould not generate dl-link for your URL"
+        except BaseException:
+            return "Some Error Occurred \nCould not generate dl-link for your URL"
 
 
 async def mirrored(url):
     if not url_exists(url):
         return "Bot could not connect to the URL!"
     res_msg = None
-    client = cloudscraper.create_scraper(interpreter="javascript", allow_brotli=False)
     url = url + "/" if url[-1] != "/" else url
     hs = {
         "Connection": "Keep-Alive",
@@ -471,18 +495,20 @@ async def mirrored(url):
         "Vary": "Accept-Encoding",
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
     }
-    try:
-        res = client.post(url, headers=hs)
-        soup = BeautifulSoup(res.text, "html.parser")
-        x = soup.select('link[href^="https://www.mirrored.to/files"]')
-        res2 = client.get(x, allow_redirects=False)
-        soup2 = BeautifulSoup(res2.content, "html.parser")
-        y = soup2.select('link[href^="/getlink/"]')
-        for _ in y:
-            res_msg += f"{_}"
-        return res_msg
-    except BaseException:
-        return "Could not Generate Direct Link for your Mirrored Link :("
+    async with httpx.AsyncClient() as client:
+        try:
+            res = await client.post(url, headers=hs)
+            soup = BeautifulSoup(res.text, "html.parser")
+            x = soup.select('link[href^="https://www.mirrored.to/files"]')
+            res2 = await client.get(x)
+            soup2 = BeautifulSoup(res2.content, "html.parser")
+            y = soup2.select('link[href^="/getlink/"]')
+            res_msg = ""
+            for _ in y:
+                res_msg += f"{_}"
+            return res_msg
+        except BaseException:
+            return "Could not Generate Direct Link for your Mirrored Link :("
 
 
 async def mp4upload(url):
@@ -499,12 +525,13 @@ async def mp4upload(url):
         "method_free": "",
         "method_premium": "",
     }
-    try:
-        response = requests.post(url, headers=headers, data=data, allow_redirects=False)
-        des_url = response.headers["Location"]
-        return des_url
-    except BaseException:
-        return "Some Error Occurred \nCould not generate dl-link for your URL"
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.post(url, headers=headers, data=data)
+            des_url = response.headers["Location"]
+            return des_url
+        except BaseException:
+            return "Some Error Occurred \nCould not generate dl-link for your URL"
 
 
 async def osdn(url):
@@ -512,15 +539,18 @@ async def osdn(url):
         return "Bot could not connect to the URL!"
     link = re.findall(r"\bhttps?://.*osdn\.net\S+", url)[0]
     try:
-        page = BeautifulSoup(requests.get(link, allow_redirects=True).content, "lxml")
-        info = page.find("a", {"class": "mirror_link"})
-        link = urllib.parse.unquote("https://osdn.net" + info["href"])
-        mirrors = page.find("form", {"id": "mirror-select-form"}).findAll("tr")
-        urls = []
-        for data in mirrors[1:]:
-            mirror = data.find("input")["value"]
-            urls.append(re.sub(r"m=(.*)&f", f"m={mirror}&f", link))
-        return urls[0]
+        async with httpx.AsyncClient() as client:
+            response = await client.get(link, allow_redirects=True)
+            page = BeautifulSoup(response.content, "lxml")
+            info = page.find("a", {"class": "mirror_link"})
+            link = urllib.parse.unquote("https://osdn.net" + info["href"])
+            mirrors = page.find("form", {"id": "mirror-select-form"}).findAll("tr")
+            urls = []
+            for data in mirrors[1:]:
+                mirror = data.find("input")["value"]
+                urls.append(re.sub(r"m=(.*)&f", f"m={mirror}&f", link))
+            await asyncio.sleep(0.5)
+            return urls[0]
     except BaseException:
         return "Some Error Occurred \nCould not generate dl-link for your URL"
 
@@ -556,11 +586,13 @@ async def pandafile(url):
         "adblock_detected": "0",
     }
     try:
-        resp = requests.post(url, headers=headers, data=data)
-        bsObj = BeautifulSoup(resp.content, features="lxml")
-        for a in bsObj.find_all("a", href=True):
-            dl_url = a["href"].replace(" ", "%20")
-            return dl_url
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, headers=headers, data=data)
+            bsObj = BeautifulSoup(response.content, features="lxml")
+            for a in bsObj.find_all("a", href=True):
+                dl_url = a["href"].replace(" ", "%20")
+                await asyncio.sleep(0.5)
+                return dl_url
     except BaseException:
         return "Some Error Occurred \nCould not generate dl-link for your URL"
 
@@ -576,41 +608,43 @@ async def pixeldrain(url):
     else:
         dl_link = f"https://pixeldrain.com/api/file/{file_id}"
     dl_link = dl_link.replace(" ", "%20")
+    await asyncio.sleep(0.5)
     return dl_link
 
 
 async def pixl(url):
     if not url_exists(url):
         return "Bot could not connect to the URL!"
-
     resp = requests.get(url)
     if resp.status_code == 404:
         return "File not found/The link you entered is wrong!"
     try:
         currentpage = 1
-        soup = BeautifulSoup(resp.content, "html.parser")
-        thmbnailanchors = soup.findAll(attrs={"class": "--media"})
-        links = soup.findAll(attrs={"data-pagination": "next"})
-        try:
-            url = links[0].attrs["href"]
-        except BaseException:
-            url = None
-        count = 1
-        ddl_msg = ""
-        for ref in thmbnailanchors:
-            imgdata = requests.get(ref.attrs["href"])
-            if not imgdata.status_code == 200:
-                sleep(3)
-                continue
-            imghtml = BeautifulSoup(imgdata.text, "html.parser")
-            downloadanch = imghtml.find(attrs={"class": "btn-download"})
-            currentimg = downloadanch.attrs["href"]
-            ddl_msg += f"<b>{count}.</b> <code>{currentimg}</code><br>"
-            count += 1
-        currentpage += 1
-        fld_msg = f"Your provided Pixl.is link is of Folder and I've Found {count - 1} files in the folder.<br>"
-        fld_msg += f"I've generated Direct Links for all the files.<br><br>"
-        return fld_msg + ddl_msg
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url)
+            soup = BeautifulSoup(response.content, "html.parser")
+            thmbnailanchors = soup.findAll(attrs={"class": "--media"})
+            links = soup.findAll(attrs={"data-pagination": "next"})
+            try:
+                url = links[0].attrs["href"]
+            except BaseException:
+                url = None
+            count = 1
+            ddl_msg = ""
+            for ref in thmbnailanchors:
+                imgdata = await client.get(ref.attrs["href"])
+                if not imgdata.status_code == 200:
+                    await asyncio.sleep(3)
+                    continue
+                imghtml = BeautifulSoup(imgdata.text, "html.parser")
+                downloadanch = imghtml.find(attrs={"class": "btn-download"})
+                currentimg = downloadanch.attrs["href"]
+                ddl_msg += f"<b>{count}.</b> <code>{currentimg}</code><br>"
+                count += 1
+            currentpage += 1
+            fld_msg = f"Your provided Pixl.is link is of Folder and I've Found {count - 1} files in the folder.<br>"
+            fld_msg += f"I've generated Direct Links for all the files.<br><br>"
+            return fld_msg + ddl_msg
     except BaseException:
         return "Could not Generate Direct Link for your Pixl.is Link :("
 
@@ -647,52 +681,49 @@ async def sendcm(url):
         done = False
         msg = ""
         page_no = 0
-        while not done:
-            page_no += 1
-            resp = client.get(url)
-            soup = BeautifulSoup(resp.content, "lxml")
-            table = soup.find("table", id="xfiles")
-            files = table.find_all("a", class_="tx-dark")
-            for file in files:
-                file_url = file["href"]
-                resp2 = client.get(file_url)
-                scrape = BeautifulSoup(resp2.text, "html.parser")
-                inputs = scrape.find_all("input")
-                file_id = inputs[1]["value"]
-                file_name = re.findall("URL=(.*?) - ", resp2.text)[0].split("]")[1]
-                parse = {"op": "download2", "id": file_id, "referer": url}
-                resp3 = client.post(
-                    base_url, data=parse, headers=hs, allow_redirects=False
-                )
-                dl_url = resp3.headers["Location"]
-                dl_url = dl_url.replace(" ", "%20")
-                msg += f"File Name: {file_name}<br>File Link: {file_url}<br>Download Link: {dl_url}<br>"
-                pages = soup.find("ul", class_="pagination")
-                if pages is None:
-                    done = True
-                else:
-                    current_page = pages.find(
-                        "li", "page-item actived", recursive=False
-                    )
-                    next_page = current_page.next_sibling
-                    if next_page is None:
+        async with httpx.AsyncClient() as client:
+            while not done:
+                page_no += 1
+                response = await client.get(url)
+                soup = BeautifulSoup(response.content, "lxml")
+                table = soup.find("table", id="xfiles")
+                files = table.find_all("a", class_="tx-dark")
+                for file in files:
+                    file_url = file["href"]
+                    response2 = await client.get(file_url)
+                    scrape = BeautifulSoup(response2.text, "html.parser")
+                    inputs = scrape.find_all("input")
+                    file_id = inputs[1]["value"]
+                    file_name = re.findall("URL=(.*?) - ", response2.text)[0].split("]")[1]
+                    parse = {"op": "download2", "id": file_id, "referer": url}
+                    response3 = await client.post(base_url, data=parse, headers=hs)
+                    dl_url = response3.headers["Location"]
+                    dl_url = dl_url.replace(" ", "%20")
+                    msg += f"File Name: {file_name}<br>File Link: {file_url}<br>Download Link: {dl_url}<br>"
+                    pages = soup.find("ul", class_="pagination")
+                    if pages is None:
                         done = True
                     else:
-                        url = base_url + next_page["href"]
-        return msg
+                        current_page = pages.find("li", "page-item actived", recursive=False)
+                        next_page = current_page.next_sibling
+                        if next_page is None:
+                            done = True
+                        else:
+                            url = base_url + next_page["href"]
+                await asyncio.sleep(0.5)
+                return msg
     else:
-        resp = client.get(url)
-        scrape = BeautifulSoup(resp.text, "html.parser")
-        inputs = scrape.find_all("input")
-        file_id = inputs[1]["value"]
-        file_name = re.findall("URL=(.*?) - ", resp.text)[0].split("]")[1]
-        parse = {"op": "download2", "id": file_id, "referer": url}
-        resp2 = client.post(base_url, data=parse, headers=hs, allow_redirects=False)
-        dl_url = resp2.headers["Location"]
-        dl_url = dl_url.replace(" ", "%20")
-        return (
-            f"File Name: {file_name}\n File Link: {url}\n Download Link: {dl_url}\n\n"
-        )
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url)
+            scrape = BeautifulSoup(response.text, "html.parser")
+            inputs = scrape.find_all("input")
+            file_id = inputs[1]["value"]
+            file_name = re.findall("URL=(.*?) - ", response.text)[0].split("]")[1]
+            parse = {"op": "download2", "id": file_id, "referer": url}
+            response2 = await client.post(base_url, data=parse, headers=hs)
+            dl_url = response2.headers["Location"]
+            dl_url = dl_url.replace(" ", "%20")
+            return (f"File Name: {file_name}\n File Link: {url}\n Download Link: {dl_url}\n\n")
 
 
 async def solidfiles(url):
@@ -702,11 +733,11 @@ async def solidfiles(url):
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36"
     }
     try:
-        pageSource = requests.get(url, headers=headers).text
-        mainOptions = str(
-            re.search(r"viewerOptions\'\,\ (.*?)\)\;", pageSource).group(1)
-        )
-        return json.loads(mainOptions)["downloadUrl"]
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, headers=headers)
+            pageSource = response.text
+            mainOptions = re.search(r"viewerOptions\'\,\ (.*?)\)\;", pageSource).group(1)
+            return json.loads(mainOptions)["downloadUrl"]
     except BaseException:
         return "Some Error Occurred \nCould not generate dl-link for your URL"
 
@@ -718,9 +749,11 @@ async def sfile(url):
         "User-Agent": "Mozilla/5.0 (Linux; Android 8.0.1; SM-G532G Build/MMB29T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3239.83 Mobile Safari/537.36"
     }
     try:
-        url3 = BeautifulSoup(requests.get(url, headers=headers).content, "html.parser")
-        dl_url = url3.find("a", "w3-button w3-blue")["href"].replace(" ", "%20")
-        return dl_url
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, headers=headers)
+            url3 = BeautifulSoup(response.content, "html.parser")
+            dl_url = url3.find("a", "w3-button w3-blue")["href"].replace(" ", "%20")
+            return dl_url
     except BaseException:
         return "Some Error Occurred \nCould not generate dl-link for your URL"
 
@@ -736,10 +769,12 @@ async def sourceforge(url):
         f"projectname={project}&filename={file_path}"
     )
     try:
-        page = BeautifulSoup(requests.get(mirrors).content, "html.parser")
-        info = page.find("ul", {"id": "mirrorList"}).findAll("li")
-        for mirror in info[1:]:
-            return f'https://{mirror["id"]}.dl.sourceforge.net/project/{project}/{file_path}?viasf=1'
+        async with httpx.AsyncClient() as client:
+            response = await client.get(mirrors)
+            page = BeautifulSoup(response.content, "html.parser")
+            info = page.find("ul", {"id": "mirrorList"}).findAll("li")
+            for mirror in info[1:]:
+                return f'https://{mirror["id"]}.dl.sourceforge.net/project/{project}/{file_path}?viasf=1'
     except BaseException:
         return "Some Error Occurred \nCould not generate dl-link for your URL"
 
@@ -781,12 +816,41 @@ async def streamtape(url):
     if not url_exists(url):
         return "Bot could not connect to the URL!"
     try:
-        response = requests.get(url)
-        if videolink := re.findall(r"document.*((?=id\=)[^\"']+)", response.text):
-            nexturl = "https://streamtape.com/get_video?" + videolink[-1]
-            return nexturl
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url)
+            if videolink := re.findall(r"document.*((?=id\=)[^\"']+)", response.text):
+                nexturl = "https://streamtape.com/get_video?" + videolink[-1]
+                return nexturl
     except BaseException:
         return "Could not Generate Direct Link for your StreamTape Link :("
+
+
+async def terabox(url) -> str:
+    if not url_exists(url):
+        return "Bot could not connect to the URL!"
+
+    if not os.path.isfile('terabox_cookies.txt'):
+        LOGGER(__name__).info("TeraBox Error: Cookies not Provided!")
+        return "TeraBox Cookies not Provided!"
+    dl_links = ""
+    try:
+        client = requests.Session()
+        res = client.request('GET', url)
+        key = res.url.split('?surl=')[-1]
+        jar = MozillaCookieJar('terabox_cookies.txt')
+        jar.load()
+        client.cookies.update(jar)
+        res = client.request('GET', f'https://www.terabox.com/share/list?app_id=250528&shorturl={key}&root=1')
+        results = res.json()['list']
+        for result in results:
+            if result['isdir'] != '0':
+                dl_links += result['dlink']
+    except Exception as e:
+        return f"ERROR: {e.__class__.__name__}"
+    if dl_links != "":
+        return dl_links
+    else:
+        return "Could not Generate Direct Link for your TeraBox Link :("
 
 
 async def uploadbaz(url):
@@ -794,7 +858,6 @@ async def uploadbaz(url):
         return "Bot could not connect to the URL!"
     url = url[:-1] if url[-1] == "/" else url
     token = url.split("/")[-1]
-    client = requests.Session()
     headers = {
         "content-type": "application/x-www-form-urlencoded",
         "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36",
@@ -808,8 +871,9 @@ async def uploadbaz(url):
         "method_premium": "",
     }
     try:
-        response = client.post(url, headers=headers, data=data, allow_redirects=False)
-        return response.headers["Location"]
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, headers=headers, data=data)
+            return response.headers["Location"]
     except BaseException:
         return "Some Error Occurred \nCould not generate dl-link for your URL"
 
@@ -818,9 +882,11 @@ async def uploadee(url):
     if not url_exists(url):
         return "Bot could not connect to the URL!"
     try:
-        soup = BeautifulSoup(requests.get(url).content, "lxml")
-        sa = soup.find("a", attrs={"id": "d_l"})
-        return sa["href"]
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url)
+            soup = BeautifulSoup(response.content, "lxml")
+            sa = soup.find("a", attrs={"id": "d_l"})
+            return sa["href"]
     except BaseException:
         return "Some Error Occurred \nCould not generate dl-link for your URL"
 
@@ -844,12 +910,13 @@ async def uppit(url):
         "method_premium": "",
     }
     try:
-        response = client.post(url, headers=headers, data=data)
-        soup = BeautifulSoup(response.text, "html.parser")
-        download_url = soup.find(
-            "span", {"style": "background:#f9f9f9;border:1px dotted #bbb;padding:7px;"}
-        ).a.get("href")
-        return download_url
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, headers=headers, data=data)
+            soup = BeautifulSoup(response.text, "html.parser")
+            download_url = soup.find(
+                "span", {"style": "background:#f9f9f9;border:1px dotted #bbb;padding:7px;"}
+            ).a.get("href")
+            return download_url
     except BaseException:
         return "Some Error Occurred \nCould not generate dl-link for your URL"
 
@@ -873,8 +940,9 @@ async def userscloud(url):
         "method_premium": "",
     }
     try:
-        response = client.post(url, headers=headers, data=data, allow_redirects=False)
-        return response.headers["Location"]
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, headers=headers, data=data)
+            return response.headers["Location"]
     except BaseException:
         return "Some Error Occurred \nCould not generate dl-link for your URL"
 
@@ -916,8 +984,8 @@ async def uptobox(url):
                 result2 = req2.json()
                 dl_url = result2["data"]["dlLink"]
             elif (
-                result["message"].lower()
-                == "you need to wait before requesting a new download link"
+                    result["message"].lower()
+                    == "you need to wait before requesting a new download link"
             ):
                 waiting_time = result["data"]["waiting"]
                 cooldown = divmod(waiting_time, 60)
@@ -945,7 +1013,7 @@ async def wetransfer(url):
         return "Bot could not connect to the URL!"
     try:
         if url.startswith("https://we.tl/"):
-            r = requests.head(url, allow_redirects=True)
+            r = requests.head(url)
             url = r.url
         recipient_id = None
         params = urllib.parse.urlparse(url).path.split("/")[2:]
@@ -961,16 +1029,16 @@ async def wetransfer(url):
         }
         if recipient_id:
             j["recipient_id"] = recipient_id
-        s = cloudscraper.create_scraper(allow_brotli=False)
-        r = s.get("https://wetransfer.com/")
-        m = re.search('name="csrf-token" content="([^"]+)"', r.text)
-        s.headers.update({"x-csrf-token": m[1], "x-requested-with": "XMLHttpRequest"})
-        r = s.post(
-            f"https://wetransfer.com/api/v4/transfers/{transfer_id}/download", json=j
-        )
-        j = r.json()
-        dl_url = j["direct_link"].replace(" ", "%20")
-        return dl_url
+        async with httpx.AsyncClient() as s:
+            r = await s.get("https://wetransfer.com/")
+            m = re.search('name="csrf-token" content="([^"]+)"', r.text)
+            s.headers.update({"x-csrf-token": m[1], "x-requested-with": "XMLHttpRequest"})
+            r = await s.post(
+                f"https://wetransfer.com/api/v4/transfers/{transfer_id}/download", json=j
+            )
+            j = r.json()
+            dl_url = j["direct_link"].replace(" ", "%20")
+            return dl_url
     except BaseException:
         return "Some Error Occurred \nCould not generate dl-link for your URL"
 
@@ -980,8 +1048,10 @@ async def yandex_disk(url):
         return "Bot could not connect to the URL!"
     api = "https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key={}"
     try:
-        dl_url = requests.get(api.format(url)).json()["href"].replace(" ", "%20")
-        return dl_url
+        async with httpx.AsyncClient() as client:
+            response = await client.get(api.format(url))
+            dl_url = response.json()["href"].replace(" ", "%20")
+            return dl_url
     except BaseException:
         return "Some Error Occurred \nCould not generate dl-link for your URL"
 
@@ -989,36 +1059,8 @@ async def yandex_disk(url):
 async def zippyshare(url):
     if not url_exists(url):
         return "Bot could not connect to the URL!"
-    client = requests.Session()
     try:
-        response = client.get(url)
-        if dlbutton := re.search(
-            r'href = "([^"]+)" \+ \(([^)]+)\) \+ "([^"]+)', response.text
-        ):
-            folder, math_chall, filename = dlbutton.groups()
-            math_chall = eval(math_chall)
-            return "%s%s%s%s" % (
-                re.search(r"https?://[^/]+", response.url).group(0),
-                folder,
-                math_chall,
-                filename,
-            )
-        soup = BeautifulSoup(response.text, "html.parser")
-        if script := soup.find("script", text=re.compile("(?si)\s*var a = \d+;")):
-            sc = str(script)
-            var = re.findall(r"var [ab] = (\d+)", sc)
-            omg = re.findall(r"\.omg (!?=) [\"']([^\"']+)", sc)
-            file = re.findall(r'"(/[^"]+)', sc)
-            if var and omg:
-                a, b = var
-                if eval(f"{omg[0][1]!r} {omg[1][0]} {omg[1][1]!r}") or 1:
-                    a = math.ceil(int(a) // 3)
-                else:
-                    a = math.floor(int(a) // 3)
-                divider = int(re.findall(f"(\d+)%b", sc)[0])
-
-                return re.search(
-                    r"(^https://www\d+.zippyshare.com)", response.url
-                ).group(1) + "".join([file[0], str(a + (divider % int(b))), file[1]])
+        file = zippy_info(url, download=False)
+        return file.download_url
     except BaseException:
         return "Some Error Occurred \nCould not generate dl-link for your URL"

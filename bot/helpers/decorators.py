@@ -3,6 +3,7 @@ About python decorators.
 https://www.geeksforgeeks.org/decorators-in-python/
 https://realpython.com/primer-on-python-decorators/
 """
+import asyncio
 from functools import wraps
 from typing import Callable, Union
 
@@ -10,6 +11,7 @@ from cachetools import TTLCache
 from pyrogram import Client
 from pyrogram.types import CallbackQuery, Message
 
+from bot import loop
 from bot.config import *
 from bot.helpers.functions import isAdmin
 from bot.helpers.ratelimiter import RateLimiter
@@ -114,3 +116,44 @@ def errors(func: Callable) -> Callable:
             await message.reply(f"{type(error).__name__}: {error}")
 
     return decorator
+
+
+def run_sync_in_thread(func: Callable) -> Callable:
+    """
+    A decorator for running a synchronous long running function asynchronously in a separate thread,
+    without blocking the main event loop which make bot unresponsive.
+    To use this decorator, apply it to any synchronous function, then you can then call that function to anywhere
+    in your program and can use it along with await keyword. This will allow the function to be run asynchronously,
+    and avoid blocking of the main event loop.
+    """
+
+    @wraps(func)
+    async def wrapper(*args, **kwargs):
+        return await loop.run_in_executor(None, func, *args, **kwargs)
+
+    return wrapper
+
+
+def run_async_in_thread(func: Callable) -> Callable:
+    """
+    A decorator for running time blocking asynchronous function in a separate thread,
+    without blocking the main event loop, causing unresponsiveness of the program/bot.
+    This decorator run a new event loop in separate thread without blocking the main thread and causing
+    conflicting problem with current loop.
+    To use this decorator, apply it to any asynchronous function which is time blocking and using some
+    synchronous library/Apis.
+    """
+
+    def new_event_loop(func, *args, **kwargs):
+        """Creating a new event loop."""
+
+        new_loop = asyncio.new_event_loop()
+        result = new_loop.run_until_complete(func, *args, **kwargs)
+        new_loop.close()
+        return result
+
+    @wraps(func)
+    async def wrapper(*args, **kwargs):
+        return await loop.run_in_executor(None, new_event_loop, func(*args, **kwargs))
+
+    return wrapper
