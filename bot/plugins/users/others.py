@@ -194,7 +194,7 @@ async def hungama_hndlr(client, message: Message):
     await msg.edit(text=a)
     des_url = await hungama(url)
     time_taken = get_readable_time(time.time() - start)
-    LOGGER(__name__).info(f" Destination : {cmd} - Headfone - {des_url}")
+    LOGGER(__name__).info(f" Destination : {cmd} - Hungama - {des_url}")
     b = f"<b>Telegraph URL(with Result):\n</b> {des_url}\n\n<i>Time Taken : {time_taken}</i>"
     await message.reply_text(text=b, disable_web_page_preview=True, quote=True)
 

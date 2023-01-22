@@ -46,7 +46,7 @@ def is_udrive_link(url: str):
 
 
 def is_sharedrive_link(url: str):
-    url = re.match(r"https?://(sharedrive)\.pics/\S+", url)
+    url = re.match(r"https?://(sharedrive)\.site/\S+", url)
     return bool(url)
 
 
@@ -73,7 +73,7 @@ def is_fichier_link(url: str):
 
 
 def is_filepress_link(url: str):
-    url = re.match(r"https?://(filepress|filebee)\.\S+", url)
+    url = re.match(r"https?://(filepress|filebee|mirrobox|nephobox|4funbox)\.\S+", url)
     return bool(url)
 
 

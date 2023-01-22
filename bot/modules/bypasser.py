@@ -353,8 +353,8 @@ async def linkbnao(url):
     if not url_exists(url):
         return "Bot could not connect to the URL!"
     async with cloudscraper.create_scraper(allow_brotli=False) as client:
-        dom = "https://go.linkbnao.com"
-        ref = "https://ctdbihar.in/"
+        dom = "https://vip.linkbnao.com"
+        ref = "https://technoloy.xyz/"
         h = {"referer": ref}
         try:
             resp = await client.get(url, headers=h)

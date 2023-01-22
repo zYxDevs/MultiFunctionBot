@@ -1,4 +1,3 @@
-import base64
 import os
 import re
 from time import sleep
@@ -6,8 +5,8 @@ from urllib.parse import urlparse
 
 import chromedriver_autoinstaller
 import cloudscraper
+import lxml
 from lxml import etree
-from playwright.sync_api import Playwright, expect, sync_playwright
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
@@ -17,108 +16,76 @@ from selenium.webdriver.support.ui import WebDriverWait
 from bot.config import *
 
 
-async def gdtot(url: str) -> str:
-    if GDTOT_CRYPT is None:
-        return "GdTot Crypt not provided!"
-    crypt = GDTOT_CRYPT
-    client = requests.Session()
-    match = re.findall(r"https?://(.+)\.gdtot\.(.+)\/\S+\/\S+", url)[0]
-    client.cookies.update({"crypt": crypt})
-    res = client.get(f"https://{match[0]}.gdtot.{match[1]}/dld?id={url.split('/')[-1]}")
-    params = re.findall("gd=(.*?)&", res.text)
+async def gdtot(url):
+    cget = cloudscraper.create_scraper().request
     try:
-        decoded_id = base64.b64decode(str(params[0])).decode("utf-8")
-    except BaseException:
-        return "Something went wrong. Could not generate GDrive URL for your GDTot Link"
-    drive_link = f"https://drive.google.com/open?id={decoded_id}"
-    return drive_link
+        res = cget('GET', f'https://gdbot.xyz/file/{url.split("/")[-1]}')
+        token_url = lxml.etree.HTML(res.content).xpath("//a[contains(@class,'inline-flex items-center justify-center')]/@href")[0]
+        token_page = cget('GET', token_url)
+    except Exception as e:
+        LOGGER(__name__).error(f'ERROR: {e.__class__.__name__} with {token_url}')
+        return f'ERROR: {e.__class__.__name__}'
+    path = re.findall('\("(.*?)"\)', token_page.text)[0]
+    raw = urlparse(token_url)
+    try:
+        final_url = f'{raw.scheme}://{raw.netloc}{path}'
+        res = cget('GET', final_url)
+    except Exception as e:
+        LOGGER(__name__).error(f'ERROR: {e.__class__.__name__} with {final_url}')
+        return f'ERROR: {e.__class__.__name__}'
+    try:
+        key = re.findall('"key",\s+"(.*?)"', res.text)[0]
+    except Exception as e:
+        LOGGER(__name__).error(f'ERROR: {e.__class__.__name__}')
+        return f'ERROR: {e.__class__.__name__}'
+    ddl_btn = lxml.etree.HTML(res.content).xpath("//button[@id='drc']")
+    if not ddl_btn:
+        LOGGER(__name__).error("ERROR: This link don't have direct download button")
+        return "ERROR: This link don't have direct download button!"
+    headers = {
+        'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundaryi3pOrWU7hGYfwwL4',
+        'x-token': raw.netloc,
+    }
+    data = '------WebKitFormBoundaryi3pOrWU7hGYfwwL4\r\nContent-Disposition: form-data; name="action"\r\n\r\ndirect\r\n' \
+        f'------WebKitFormBoundaryi3pOrWU7hGYfwwL4\r\nContent-Disposition: form-data; name="key"\r\n\r\n{key}\r\n' \
+        '------WebKitFormBoundaryi3pOrWU7hGYfwwL4\r\nContent-Disposition: form-data; name="action_token"\r\n\r\n\r\n' \
+        '------WebKitFormBoundaryi3pOrWU7hGYfwwL4--\r\n'
+    try:
+        response = cget("POST", final_url, cookies=res.cookies, headers=headers, data=data).json()
+        res = cget('GET', response["url"])
+        return lxml.etree.HTML(res.content).xpath("//a[contains(@class,'btn')]/@href")[0]
+    except Exception as e:
+        LOGGER(__name__).error(f'ERROR: {e.__class__.__name__}')
+        return f'ERROR: {e.__class__.__name__}'
 
 
 async def unified(url: str) -> str:
-    global response
-    if (UNIFIED_EMAIL or UNIFIED_PASS) is None:
-        return "AppDrive Look-Alike Credentials not Found!"
     try:
-        account = {"email": UNIFIED_EMAIL, "passwd": UNIFIED_PASS}
-        client = requests.Session()
-        client.headers.update(
-            {
-                "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36"
-            }
-        )
-        data = {"email": account["email"], "password": account["passwd"]}
-        client.post(f"https://{urlparse(url).netloc}/login", data=data)
-        res = client.get(url)
+        cget = cloudscraper.create_scraper().request
+        raw = urlparse(url)
+        res = cget('GET', url)
         key = re.findall('"key",\s+"(.*?)"', res.text)[0]
-        ddl_btn = etree.HTML(res.content).xpath("//button[@id='drc']")
-        info = re.findall(">(.*?)<\/li>", res.text)
-        info_parsed = {}
-        for item in info:
-            kv = [s.strip() for s in item.split(":", maxsplit=1)]
-            info_parsed[kv[0].lower()] = kv[1]
-        info_parsed = info_parsed
-        info_parsed["error"] = False
-        info_parsed["link_type"] = "login"
-        headers = {
-            "Content-Type": f"multipart/form-data; boundary={'-' * 4}_",
-        }
-        data = {"type": 1, "key": key, "action": "original"}
-        if len(ddl_btn):
-            info_parsed["link_type"] = "direct"
-            data["action"] = "direct"
-        while data["type"] <= 3:
-            boundary = f'{"-" * 6}_'
-            data_string = ""
-            for item in data:
-                data_string += f"{boundary}\r\n"
-                data_string += f'Content-Disposition: form-data; name="{item}"\r\n\r\n{data[item]}\r\n'
-            data_string += f"{boundary}--\r\n"
-            gen_payload = data_string
-            try:
-                response = client.post(url, data=gen_payload, headers=headers).json()
-                break
-            except BaseException:
-                data["type"] += 1
-        if "url" in response:
-            info_parsed["gdrive_link"] = response["url"]
-        elif "error" in response and response["error"]:
-            info_parsed["error"] = True
-            info_parsed["error_message"] = response["message"]
-        else:
-            info_parsed["error"] = True
-            info_parsed["error_message"] = "Something went wrong :("
-        if info_parsed["error"]:
-            return f"{info_parsed}"
-        info_parsed["src_url"] = url
-        if "appdrive." in urlparse(url).netloc:
-            flink = info_parsed["gdrive_link"]
-            return flink
-        elif urlparse(url).netloc in (
-            "driveapp.in",
-            "drivehub.in",
-            "gdflix.pro",
-            "gdflix.top",
-            "drivesharer.in",
-            "drivebit.in",
-            "drivelinks.in",
-            "driveace.in",
-            "drivepro.in",
-        ):
-            res = client.get(info_parsed["gdrive_link"])
-            drive_link = etree.HTML(res.content).xpath(
-                "//a[contains(@class,'btn')]/@href"
-            )[0]
-            flink = drive_link
-            return flink
-        else:
-            res = client.get(info_parsed["gdrive_link"])
-            drive_link = etree.HTML(res.content).xpath(
-                "//a[contains(@class,'btn btn-primary')]/@href"
-            )[0]
-            flink = drive_link
-            return flink
-    except Exception as err:
-        return f"Encountered Error while parsing Link : {err}"
+        ddl_btn = lxml.etree.HTML(res.content).xpath("//button[@id='drc']")
+    except Exception as e:
+        LOGGER(__name__).error(f'ERROR: {e.__class__.__name__}')
+        return f'ERROR: {e.__class__.__name__}'
+    if not ddl_btn:
+        LOGGER(__name__).error("ERROR: This link don't have direct download button")
+        return f"ERROR: This link don't have direct download button"
+    headers = {
+        'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundaryi3pOrWU7hGYfwwL4',
+        'x-token': raw.netloc,
+    }
+    data = '------WebKitFormBoundaryi3pOrWU7hGYfwwL4\r\nContent-Disposition: form-data; name="action"\r\n\r\ndirect\r\n' \
+           f'------WebKitFormBoundaryi3pOrWU7hGYfwwL4\r\nContent-Disposition: form-data; name="key"\r\n\r\n{key}\r\n' \
+           '------WebKitFormBoundaryi3pOrWU7hGYfwwL4\r\nContent-Disposition: form-data; name="action_token"\r\n\r\n\r\n' \
+           '------WebKitFormBoundaryi3pOrWU7hGYfwwL4--\r\n'
+    try:
+        res = cget("POST", url, cookies=res.cookies, headers=headers, data=data).json()
+        return res["url"]
+    except Exception as e:
+        LOGGER(__name__).error(f'ERROR: {e.__class__.__name__}')
+        return f'ERROR: {e.__class__.__name__}'
 
 
 async def udrive(url: str) -> str:
@@ -269,32 +236,23 @@ async def drivehubs(url: str) -> str:
         return f"ERROR! Maybe Direct Download is not working for this file !\n Retrived URL : {flink}"
 
 
-def filep_prun(playwright: Playwright, url: str) -> str:
-    browser = playwright.chromium.launch()
-    context = browser.new_context()
-    page = context.new_page()
-    page.goto(url)
-    firstbtn = page.locator("xpath=//div[text()='Direct Download']/parent::button")
-    expect(firstbtn).to_be_visible()
-    firstbtn.click()
-    sleep(10)
-    secondBtn = page.get_by_role("button", name="Download Now")
-    expect(secondBtn).to_be_visible()
-    with page.expect_navigation():
-        secondBtn.click()
-    flink = page.url
-    context.close()
-    browser.close()
-    if "drive.google.com" in flink:
-        return flink
-    else:
-        return f"ERROR! Maybe Direct Download is not working for this file !\n Retrived URL : {flink}"
-
-
-def filepress(url: str) -> str:
-    with sync_playwright() as playwright:
-        flink = filep_prun(playwright, url)
-        return flink
+def filepress(url):
+    cget = cloudscraper.create_scraper().request
+    try:
+        raw = urlparse(url)
+        json_data = {
+            'id': url.split('/')[-1],
+            'method': 'publicDownlaod',
+            }
+        api = f'{raw.scheme}://api.{raw.netloc}/api/file/downlaod/'
+        res = cget('POST', api, headers={'Referer': f'{raw.scheme}://{raw.netloc}'}, json=json_data).json()
+        if 'data' not in res:
+            LOGGER(__name__).error(f'ERROR: {res["statusText"]}')
+            return f'ERROR: {res["statusText"]}'
+        return f'https://drive.google.com/uc?id={res["data"]}&export=download'
+    except Exception as e:
+        LOGGER(__name__).error(f'ERROR: {e.__class__.__name__}')
+        return f'ERROR: {e.__class__.__name__}'
 
 
 async def shareDrive(url, directLogin=True):

@@ -13,10 +13,6 @@ COPY requirements.txt requirements.txt
 # Install the requirements
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-# Setup and Install Chromium - Playwright on the Server
-RUN playwright install chromium
-RUN playwright install-deps
-
 # Copy the rest of the files to the working directory
 COPY . .
 

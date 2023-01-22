@@ -30,7 +30,6 @@ def index_scraper(payload, url):
     url = url + "/" if url[-1] != "/" else url
     client = cloudscraper.create_scraper(allow_brotli=False)
     resp = client.post(url, data=payload)
-    await asyncio.sleep(1)
     if resp.status_code == 401:
         return "Could not Access your Entered URL!"
     try:
@@ -48,7 +47,6 @@ def index_scraper(payload, url):
         pass
     else:
         file_len = len(resp2["data"]["files"])
-        await asyncio.sleep(1)
         for i, _ in enumerate(range(file_len)):
             file_type = resp2["data"]["files"][i]["mimeType"]
             file_name = resp2["data"]["files"][i]["name"]

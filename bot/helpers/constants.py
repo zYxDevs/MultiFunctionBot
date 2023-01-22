@@ -29,6 +29,10 @@ USER_TEXT = """🗒️ Documentation for commands available to user's
 
 • /upload - Upload a Telegram File to various Free File Hosting Servers
 
+• /mediainfo - (or use /m) Generate mediainfo from Telegram files or direct download links
+
+• /screenshot - (or use /ss) Generates video frame screenshot from Telegram files or direct download links
+
 • /bifm - Bypass Short Links using BIFM API
 
 • /direct - Get Direct Link for various Supported URLs

@@ -12,7 +12,6 @@ httpx
 img2pdf
 lk21
 lxml
-playwright
 psutil
 PyBypass
 pymongo

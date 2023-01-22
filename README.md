@@ -17,9 +17,6 @@
 - `FORCESUB_ENABLE` Set to True if you want to enable ForceSubscribe else set to False/None
 - `FORCESUB_CHANNEL` ID of the Channel you want ForceSubscribe
 - `FORCESUB_CHANNEL_UNAME` Username of the Channel you want ForceSubscribe (without `@`)
-- `GDTOT_CRYPT` Put your GDTot Crypt
-- `UNIFIED_EMAIL` Put your Generated Unified Email
-- `UNIFIED_PASS` Put your Generated Unified Pass
 - `HUBDRIVE_CRYPT` Put your HubDrive Crypt
 - `KATDRIVE_CRYPT` Put your KatDrive Crypt
 - `KOLOP_CRYPT` Put your Kolop Crypt
