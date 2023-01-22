@@ -19,73 +19,83 @@ from bot.config import *
 async def gdtot(url):
     cget = cloudscraper.create_scraper().request
     try:
-        res = cget('GET', f'https://gdbot.xyz/file/{url.split("/")[-1]}')
-        token_url = lxml.etree.HTML(res.content).xpath("//a[contains(@class,'inline-flex items-center justify-center')]/@href")[0]
-        token_page = cget('GET', token_url)
+        res = cget("GET", f'https://gdbot.xyz/file/{url.split("/")[-1]}')
+        token_url = lxml.etree.HTML(res.content).xpath(
+            "//a[contains(@class,'inline-flex items-center justify-center')]/@href"
+        )[0]
+        token_page = cget("GET", token_url)
     except Exception as e:
-        LOGGER(__name__).error(f'ERROR: {e.__class__.__name__} with {token_url}')
-        return f'ERROR: {e.__class__.__name__}'
+        LOGGER(__name__).error(f"ERROR: {e.__class__.__name__} with {token_url}")
+        return f"ERROR: {e.__class__.__name__}"
     path = re.findall('\("(.*?)"\)', token_page.text)[0]
     raw = urlparse(token_url)
     try:
-        final_url = f'{raw.scheme}://{raw.netloc}{path}'
-        res = cget('GET', final_url)
+        final_url = f"{raw.scheme}://{raw.netloc}{path}"
+        res = cget("GET", final_url)
     except Exception as e:
-        LOGGER(__name__).error(f'ERROR: {e.__class__.__name__} with {final_url}')
-        return f'ERROR: {e.__class__.__name__}'
+        LOGGER(__name__).error(f"ERROR: {e.__class__.__name__} with {final_url}")
+        return f"ERROR: {e.__class__.__name__}"
     try:
         key = re.findall('"key",\s+"(.*?)"', res.text)[0]
     except Exception as e:
-        LOGGER(__name__).error(f'ERROR: {e.__class__.__name__}')
-        return f'ERROR: {e.__class__.__name__}'
+        LOGGER(__name__).error(f"ERROR: {e.__class__.__name__}")
+        return f"ERROR: {e.__class__.__name__}"
     ddl_btn = lxml.etree.HTML(res.content).xpath("//button[@id='drc']")
     if not ddl_btn:
         LOGGER(__name__).error("ERROR: This link don't have direct download button")
         return "ERROR: This link don't have direct download button!"
     headers = {
-        'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundaryi3pOrWU7hGYfwwL4',
-        'x-token': raw.netloc,
+        "Content-Type": "multipart/form-data; boundary=----WebKitFormBoundaryi3pOrWU7hGYfwwL4",
+        "x-token": raw.netloc,
     }
-    data = '------WebKitFormBoundaryi3pOrWU7hGYfwwL4\r\nContent-Disposition: form-data; name="action"\r\n\r\ndirect\r\n' \
-        f'------WebKitFormBoundaryi3pOrWU7hGYfwwL4\r\nContent-Disposition: form-data; name="key"\r\n\r\n{key}\r\n' \
-        '------WebKitFormBoundaryi3pOrWU7hGYfwwL4\r\nContent-Disposition: form-data; name="action_token"\r\n\r\n\r\n' \
-        '------WebKitFormBoundaryi3pOrWU7hGYfwwL4--\r\n'
+    data = (
+        '------WebKitFormBoundaryi3pOrWU7hGYfwwL4\r\nContent-Disposition: form-data; name="action"\r\n\r\ndirect\r\n'
+        f'------WebKitFormBoundaryi3pOrWU7hGYfwwL4\r\nContent-Disposition: form-data; name="key"\r\n\r\n{key}\r\n'
+        '------WebKitFormBoundaryi3pOrWU7hGYfwwL4\r\nContent-Disposition: form-data; name="action_token"\r\n\r\n\r\n'
+        "------WebKitFormBoundaryi3pOrWU7hGYfwwL4--\r\n"
+    )
     try:
-        response = cget("POST", final_url, cookies=res.cookies, headers=headers, data=data).json()
-        res = cget('GET', response["url"])
-        return lxml.etree.HTML(res.content).xpath("//a[contains(@class,'btn')]/@href")[0]
+        response = cget(
+            "POST", final_url, cookies=res.cookies, headers=headers, data=data
+        ).json()
+        res = cget("GET", response["url"])
+        return lxml.etree.HTML(res.content).xpath("//a[contains(@class,'btn')]/@href")[
+            0
+        ]
     except Exception as e:
-        LOGGER(__name__).error(f'ERROR: {e.__class__.__name__}')
-        return f'ERROR: {e.__class__.__name__}'
+        LOGGER(__name__).error(f"ERROR: {e.__class__.__name__}")
+        return f"ERROR: {e.__class__.__name__}"
 
 
 async def unified(url: str) -> str:
     try:
         cget = cloudscraper.create_scraper().request
         raw = urlparse(url)
-        res = cget('GET', url)
+        res = cget("GET", url)
         key = re.findall('"key",\s+"(.*?)"', res.text)[0]
         ddl_btn = lxml.etree.HTML(res.content).xpath("//button[@id='drc']")
     except Exception as e:
-        LOGGER(__name__).error(f'ERROR: {e.__class__.__name__}')
-        return f'ERROR: {e.__class__.__name__}'
+        LOGGER(__name__).error(f"ERROR: {e.__class__.__name__}")
+        return f"ERROR: {e.__class__.__name__}"
     if not ddl_btn:
         LOGGER(__name__).error("ERROR: This link don't have direct download button")
         return f"ERROR: This link don't have direct download button"
     headers = {
-        'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundaryi3pOrWU7hGYfwwL4',
-        'x-token': raw.netloc,
+        "Content-Type": "multipart/form-data; boundary=----WebKitFormBoundaryi3pOrWU7hGYfwwL4",
+        "x-token": raw.netloc,
     }
-    data = '------WebKitFormBoundaryi3pOrWU7hGYfwwL4\r\nContent-Disposition: form-data; name="action"\r\n\r\ndirect\r\n' \
-           f'------WebKitFormBoundaryi3pOrWU7hGYfwwL4\r\nContent-Disposition: form-data; name="key"\r\n\r\n{key}\r\n' \
-           '------WebKitFormBoundaryi3pOrWU7hGYfwwL4\r\nContent-Disposition: form-data; name="action_token"\r\n\r\n\r\n' \
-           '------WebKitFormBoundaryi3pOrWU7hGYfwwL4--\r\n'
+    data = (
+        '------WebKitFormBoundaryi3pOrWU7hGYfwwL4\r\nContent-Disposition: form-data; name="action"\r\n\r\ndirect\r\n'
+        f'------WebKitFormBoundaryi3pOrWU7hGYfwwL4\r\nContent-Disposition: form-data; name="key"\r\n\r\n{key}\r\n'
+        '------WebKitFormBoundaryi3pOrWU7hGYfwwL4\r\nContent-Disposition: form-data; name="action_token"\r\n\r\n\r\n'
+        "------WebKitFormBoundaryi3pOrWU7hGYfwwL4--\r\n"
+    )
     try:
         res = cget("POST", url, cookies=res.cookies, headers=headers, data=data).json()
         return res["url"]
     except Exception as e:
-        LOGGER(__name__).error(f'ERROR: {e.__class__.__name__}')
-        return f'ERROR: {e.__class__.__name__}'
+        LOGGER(__name__).error(f"ERROR: {e.__class__.__name__}")
+        return f"ERROR: {e.__class__.__name__}"
 
 
 async def udrive(url: str) -> str:
@@ -241,18 +251,23 @@ def filepress(url):
     try:
         raw = urlparse(url)
         json_data = {
-            'id': url.split('/')[-1],
-            'method': 'publicDownlaod',
-            }
-        api = f'{raw.scheme}://api.{raw.netloc}/api/file/downlaod/'
-        res = cget('POST', api, headers={'Referer': f'{raw.scheme}://{raw.netloc}'}, json=json_data).json()
-        if 'data' not in res:
+            "id": url.split("/")[-1],
+            "method": "publicDownlaod",
+        }
+        api = f"{raw.scheme}://api.{raw.netloc}/api/file/downlaod/"
+        res = cget(
+            "POST",
+            api,
+            headers={"Referer": f"{raw.scheme}://{raw.netloc}"},
+            json=json_data,
+        ).json()
+        if "data" not in res:
             LOGGER(__name__).error(f'ERROR: {res["statusText"]}')
             return f'ERROR: {res["statusText"]}'
         return f'https://drive.google.com/uc?id={res["data"]}&export=download'
     except Exception as e:
-        LOGGER(__name__).error(f'ERROR: {e.__class__.__name__}')
-        return f'ERROR: {e.__class__.__name__}'
+        LOGGER(__name__).error(f"ERROR: {e.__class__.__name__}")
+        return f"ERROR: {e.__class__.__name__}"
 
 
 async def shareDrive(url, directLogin=True):
