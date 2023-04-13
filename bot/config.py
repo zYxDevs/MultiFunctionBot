@@ -44,8 +44,7 @@ if "@" in BOT_USERNAME:
 cmd_list = []
 cmd_prfx = environ.get("COMMAND_PREFIXES", "! / .")
 if len(cmd_prfx) != 0:
-    for cmds in cmd_prfx.split():
-        cmd_list.append(cmds.strip())
+    cmd_list.extend(cmds.strip() for cmds in cmd_prfx.split())
     COMMAND_PREFIXES = prefixes = dict(prefixes=cmd_list)
 else:
     COMMAND_PREFIXES = set()

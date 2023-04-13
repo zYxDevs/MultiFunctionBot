@@ -61,15 +61,12 @@ subprocess.run(
 LOGGER(__name__).info("Setting Upload Module Permissions...")
 if system == "Windows":
     subprocess.run(["icacls", "upload_module_x64", "/grant", "*:F"])
-elif system == "Linux":
+elif system in ["Linux", "Darwin"]:
     subprocess.run(["chmod", "777", "./upload_module_x64"])
-elif system == "Darwin":
-    subprocess.run(["chmod", "777", "./upload_module_x64"])
-
 LOGGER(__name__).info("Initiating the Client!")
 LOGGER(__name__).info(BANNER)
 LOGGER(__name__).info(
-    f"Pyrogram v{__version__} (Layer {layer}) started on {f'@{BOT_USERNAME}'}."
+    f"Pyrogram v{__version__} (Layer {layer}) started on @{BOT_USERNAME}."
 )
 LOGGER(__name__).info("Telegram Bot Started.")
 

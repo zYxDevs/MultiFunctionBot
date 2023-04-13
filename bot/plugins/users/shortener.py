@@ -47,7 +47,7 @@ async def shorten(client, message: Message):
             )
         url = reply_text.strip()
         cmd = msg_args[0]
-    elif message.command == (0 or 1) or reply_to is None:
+    else:
         err = "<b><i>Please send a URL or reply to an URL to proceed!</i></b>"
         await message.reply_text(text=err, disable_web_page_preview=True, quote=True)
         return

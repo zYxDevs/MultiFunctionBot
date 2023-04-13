@@ -79,7 +79,7 @@ async def unified(url: str) -> str:
         return f"ERROR: {e.__class__.__name__}"
     if not ddl_btn:
         LOGGER(__name__).error("ERROR: This link don't have direct download button")
-        return f"ERROR: This link don't have direct download button"
+        return "ERROR: This link don't have direct download button"
     headers = {
         "Content-Type": "multipart/form-data; boundary=----WebKitFormBoundaryi3pOrWU7hGYfwwL4",
         "x-token": raw.netloc,
@@ -147,40 +147,30 @@ async def udrive(url: str) -> str:
         return "File Not Found or User rate exceeded !!"
     if "drivefire." in url:
         gd_id = res.rsplit("/", 1)[-1]
-        flink = f"https://drive.google.com/file/d/{gd_id}"
-        return flink
-    elif "drivehub." in url:
+        return f"https://drive.google.com/file/d/{gd_id}"
+    elif "drivehub." in url or "drivebuzz." in url:
         gd_id = res.rsplit("=", 1)[-1]
-        flink = f"https://drive.google.com/open?id={gd_id}"
-        return flink
-    elif "drivebuzz." in url:
-        gd_id = res.rsplit("=", 1)[-1]
-        flink = f"https://drive.google.com/open?id={gd_id}"
-        return flink
+        return f"https://drive.google.com/open?id={gd_id}"
     else:
         try:
             gd_id = re.findall("gd=(.*)", res, re.DOTALL)[0]
         except BaseException:
             return "Unknown Error Occurred!"
-        flink = f"https://drive.google.com/open?id={gd_id}"
-        return flink
+        return f"https://drive.google.com/open?id={gd_id}"
 
 
 async def parse_info(res, url):
-    info_parsed = {}
     if "drivebuzz." in url:
         info_chunks = re.findall('<td\salign="right">(.*?)<\/td>', res.text)
     elif "sharer.pw" in url:
         f = re.findall(">(.*?)<\/td>", res.text)
-        info_parsed = {}
-        for i in range(0, len(f), 3):
-            info_parsed[f[i].lower().replace(" ", "_")] = f[i + 2]
-        return info_parsed
+        return {f[i].lower().replace(" ", "_"): f[i + 2] for i in range(0, len(f), 3)}
     else:
         info_chunks = re.findall(">(.*?)<\/td>", res.text)
-    for i in range(0, len(info_chunks), 2):
-        info_parsed[info_chunks[i]] = info_chunks[i + 1]
-    return info_parsed
+    return {
+        info_chunks[i]: info_chunks[i + 1]
+        for i in range(0, len(info_chunks), 2)
+    }
 
 
 async def sharerpw(url: str, forced_login=False) -> str:
@@ -212,7 +202,7 @@ async def sharerpw(url: str, forced_login=False) -> str:
         if not forced_login:
             data["nl"] = 1
         try:
-            res = scraper.post(url + "/dl", headers=headers, data=data).json()
+            res = scraper.post(f"{url}/dl", headers=headers, data=data).json()
         except BaseException:
             return f"{info_parsed}"
         if "url" in res and res["url"]:
@@ -300,15 +290,10 @@ async def shareDrive(url, directLogin=True):
             cookies=cookies,
         )
         toJson = resp.json()
-        if directLogin:
-            if toJson["message"] in successMsgs:
-                driveUrl = toJson["redirect"]
-                return driveUrl
-            else:
-                await shareDrive(url, directLogin=False)
+        if directLogin and toJson["message"] in successMsgs or not directLogin:
+            return toJson["redirect"]
         else:
-            driveUrl = toJson["redirect"]
-            return driveUrl
+            await shareDrive(url, directLogin=False)
     except Exception as err:
         return f"Encountered Error while parsing Link : {err}"
 
@@ -360,5 +345,4 @@ async def pahe(url: str) -> str:
     wd.execute_script("arguments[0].click();", last)
     flink = wd.current_url
     wd.close()
-    gd_url = await gdtot(flink)
-    return gd_url
+    return await gdtot(flink)

@@ -74,7 +74,7 @@ async def image2pdf(client, message: Message):
     os.mkdir(name)
     for _ in data:
         flnm = f"{name}/{data.index(_)}"
-        urllib.request.urlretrieve(_, flnm + ".jpg")
+        urllib.request.urlretrieve(_, f"{flnm}.jpg")
     with open(f"{name}s.pdf", "wb") as f:
         f.write(img2pdf.convert(glob.glob(f"{name}/*.jpg")))
     await message.reply_document(f"{name}s.pdf")
@@ -115,8 +115,7 @@ async def rename(client, message: Message):
     except Exception as e:
         await message.reply(f"{e}")
         return
-    reply = message.reply_to_message
-    if reply:
+    if reply := message.reply_to_message:
         x = await message.reply_text("Downloading.....")
         path = await reply.download(file_name=filename)
         await x.edit("Uploading.....")
@@ -174,8 +173,7 @@ async def tgupload(client, message: Message):
             else:
                 await message.reply_document(address)
         else:
-            if True:
-                await message.reply_document(address)
+            await message.reply_document(address)
         await x.delete()
     except BaseException:
         await message.reply("No such File/Directory/Link")
@@ -269,7 +267,7 @@ async def wayback(client, message: Message):
         try:
             wayback = waybackpy.Url(url, user_agent)
             archive = wayback.save()
-            LOGGER(__name__).info("wayback success for: " + url)
+            LOGGER(__name__).info(f"wayback success for: {url}")
             res = archive.archive_url
             reslt = f"<i>WayBack Generated,</i>\n<b>Check at</b> {res}"
             await m.edit(reslt)

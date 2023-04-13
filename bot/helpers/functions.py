@@ -125,7 +125,7 @@ def get_readable_size(size):
     while size > power:
         size /= power
         raised_to_pow += 1
-    return str(round(size, 2)) + " " + dict_power_n[raised_to_pow] + "B"
+    return f"{str(round(size, 2))} {dict_power_n[raised_to_pow]}B"
 
 
 def get_readable_file_size(size_in_bytes):
@@ -154,12 +154,11 @@ def speed_convert(size, byte=True):
 
 
 def get_readable_bitrate(bitrate_kbps):
-    if bitrate_kbps > 10000:
-        bitrate = str(round(bitrate_kbps / 1000, 2)) + " " + "Mb/s"
-    else:
-        bitrate = str(round(bitrate_kbps, 2)) + " " + "kb/s"
-
-    return bitrate
+    return (
+        f"{str(round(bitrate_kbps / 1000, 2))} Mb/s"
+        if bitrate_kbps > 10000
+        else f"{str(round(bitrate_kbps, 2))} kb/s"
+    )
 
 
 def get_readable_filesize(num):
@@ -193,25 +192,23 @@ def randstr():
 
 
 def TimeFormatter(milliseconds: int) -> str:
-    seconds, milliseconds = divmod(int(milliseconds), 1000)
+    seconds, milliseconds = divmod(milliseconds, 1000)
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
     days, hours = divmod(hours, 24)
     tmp = (
-        ((str(days) + "d ") if days else "")
-        + ((str(hours) + "h ") if hours else "")
-        + ((str(minutes) + "m ") if minutes else "")
-        + ((str(seconds) + "s ") if seconds else "")
-        + ((str(milliseconds) + "ms ") if milliseconds else "")
+        (f"{str(days)}d " if days else "")
+        + (f"{str(hours)}h " if hours else "")
+        + (f"{str(minutes)}m " if minutes else "")
+        + (f"{str(seconds)}s " if seconds else "")
+        + (f"{str(milliseconds)}ms " if milliseconds else "")
     )
     return tmp[:-2]
 
 
 async def multi_api():
-    EMILY_API_LIST = []
     emilyapi_urls = EMILY_API_URL.split(" ")
-    for api in emilyapi_urls:
-        EMILY_API_LIST.append(str(api))
+    EMILY_API_LIST = [str(api) for api in emilyapi_urls]
     return random.choice(EMILY_API_LIST)
 
 

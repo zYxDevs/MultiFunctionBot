@@ -82,7 +82,7 @@ class DatabaseHelper:
         if self.__err:
             return
         user = await self.get_user(user_id)
-        return True if user else False
+        return bool(user)
 
     async def total_users_count(self):
         if self.__err:
@@ -101,7 +101,7 @@ class DatabaseHelper:
     async def delete_user(self, user_id: int):
         if self.__err:
             return
-        if self.__col.find_one({"id": int(user_id)}):
+        if self.__col.find_one({"id": user_id}):
             self.__col.delete_many({"id": user_id})
         self.__client.close()
 
@@ -133,7 +133,7 @@ class DatabaseHelper:
         sudo_users = self.__col2.find().sort("sudo_user_id")
         for sudo_user in sudo_users:
             SUDO_USERS.add(sudo_user["sudo_user_id"])
-        LOGGER(__name__).info(f"Successfully Loaded Sudo Users from DB!")
+        LOGGER(__name__).info("Successfully Loaded Sudo Users from DB!")
         self.__client.close()
 
     def new_dblink(self, url, result):
@@ -173,7 +173,7 @@ class DatabaseHelper:
         if self.__err:
             return
         user = await self.check_dblink(url)
-        return True if user else False
+        return bool(user)
 
     async def fetch_dblink_result(self, url):
         if self.__err:
@@ -219,8 +219,7 @@ class DatabaseHelper:
     def check_db_connection(self):
         if self.__err:
             return None
-        if not self.__err:
-            LOGGER(__name__).info("Successfully Connected to DB!")
+        LOGGER(__name__).info("Successfully Connected to DB!")
         self.__client.close()
         return ""
 

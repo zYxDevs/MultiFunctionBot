@@ -49,7 +49,7 @@ async def scrape(client, message: Message):
             )
         url = reply_text.strip()
         cmd = msg_args[0]
-    elif message.command == (0 or 1) or reply_to is None:
+    else:
         err = "<b><i>Please send a URL or reply to an URL to proceed!</i></b>"
         await message.reply_text(text=err, disable_web_page_preview=True, quote=True)
         return
@@ -93,8 +93,7 @@ async def scrape(client, message: Message):
     )
     LOGGER(__name__).info(f" Received : {cmd} - {url}")
     time.sleep(1)
-    supp_index = is_bhadoo_index(url)
-    if supp_index:
+    if supp_index := is_bhadoo_index(url):
         link_type = "Bhadoo Index"
         a = f"<b>Dear</b> {uname} (ID: {uid}),\n\n<b>Bot has received the following link</b> :\n<code>{url}</code>\n\n<b>Link Type</b> : <i>{link_type}</i>"
         await msg.edit(text=a)
