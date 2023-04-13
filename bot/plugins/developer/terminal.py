@@ -104,26 +104,24 @@ async def py_runexec(client: Client, message: Message, replymsg: Message):
         evaluation = "success"
     final_output = f"{evaluation.strip()}"
 
-    if len(final_output) > 4000:
-        async with aiofiles.open("output.txt", "w+", encoding="utf8") as file:
-            await file.write(str(evaluation.strip()))
-
-        await replymsg.edit(
-            "Output too large. Sending it as a File...",
-            reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("refresh 🔄", callback_data="refresh")]]
-            ),
-        )
-        await client.send_document(message.chat.id, "output.txt", caption="output.txt")
-        os.remove("output.txt")
-
-    else:
+    if len(final_output) <= 4000:
         return await replymsg.edit(
             final_output,
             reply_markup=InlineKeyboardMarkup(
                 [[InlineKeyboardButton("refresh 🔄", callback_data="refresh")]]
             ),
         )
+    async with aiofiles.open("output.txt", "w+", encoding="utf8") as file:
+        await file.write(str(evaluation.strip()))
+
+    await replymsg.edit(
+        "Output too large. Sending it as a File...",
+        reply_markup=InlineKeyboardMarkup(
+            [[InlineKeyboardButton("refresh 🔄", callback_data="refresh")]]
+        ),
+    )
+    await client.send_document(message.chat.id, "output.txt", caption="output.txt")
+    os.remove("output.txt")
 
 
 @Client.on_callback_query(filters.regex("refresh"))

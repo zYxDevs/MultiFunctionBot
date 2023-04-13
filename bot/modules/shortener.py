@@ -16,10 +16,7 @@ async def bitly(url):
         res = resp.json()
     except BaseException:
         return "Emily API Unresponsive / Invalid Link!"
-    if res["success"] is True:
-        return res["url"]
-    else:
-        return res["msg"]
+    return res["url"] if res["success"] is True else res["msg"]
 
 
 async def dagd(url):
@@ -34,10 +31,7 @@ async def dagd(url):
         res = resp.json()
     except BaseException:
         return "Emily API Unresponsive / Invalid Link!"
-    if res["success"] is True:
-        return res["url"]
-    else:
-        return res["msg"]
+    return res["url"] if res["success"] is True else res["msg"]
 
 
 async def tinyurl(url):
@@ -52,10 +46,7 @@ async def tinyurl(url):
         res = resp.json()
     except BaseException:
         return "Emily API Unresponsive / Invalid Link!"
-    if res["success"] is True:
-        return res["url"]
-    else:
-        return res["msg"]
+    return res["url"] if res["success"] is True else res["msg"]
 
 
 async def osdb(url):
@@ -70,10 +61,7 @@ async def osdb(url):
         res = resp.json()
     except BaseException:
         return "Emily API Unresponsive / Invalid Link!"
-    if res["success"] is True:
-        return res["url"]
-    else:
-        return res["msg"]
+    return res["url"] if res["success"] is True else res["msg"]
 
 
 async def ttm(url):
@@ -88,10 +76,7 @@ async def ttm(url):
         res = resp.json()
     except BaseException:
         return "Emily API Unresponsive / Invalid Link!"
-    if res["success"] is True:
-        return res["url"]
-    else:
-        return res["msg"]
+    return res["url"] if res["success"] is True else res["msg"]
 
 
 async def isgd(url):
@@ -106,10 +91,7 @@ async def isgd(url):
         res = resp.json()
     except BaseException:
         return "Emily API Unresponsive / Invalid Link!"
-    if res["success"] is True:
-        return res["url"]
-    else:
-        return res["msg"]
+    return res["url"] if res["success"] is True else res["msg"]
 
 
 async def vgd(url):
@@ -124,10 +106,7 @@ async def vgd(url):
         res = resp.json()
     except BaseException:
         return "Emily API Unresponsive / Invalid Link!"
-    if res["success"] is True:
-        return res["url"]
-    else:
-        return res["msg"]
+    return res["url"] if res["success"] is True else res["msg"]
 
 
 async def clickru(url):
@@ -142,10 +121,7 @@ async def clickru(url):
         res = resp.json()
     except BaseException:
         return "Emily API Unresponsive / Invalid Link!"
-    if res["success"] is True:
-        return res["url"]
-    else:
-        return res["msg"]
+    return res["url"] if res["success"] is True else res["msg"]
 
 
 async def clilp(url):
@@ -160,7 +136,4 @@ async def clilp(url):
         res = resp.json()
     except BaseException:
         return "Emily API Unresponsive / Invalid Link!"
-    if res["success"] is True:
-        return res["url"]
-    else:
-        return res["msg"]
+    return res["url"] if res["success"] is True else res["msg"]

@@ -32,7 +32,7 @@ async def dalle(client, message: Message):
         query = message.text.split("/dalle ")[1]
     elif reply_to is not None:
         query = reply_to.text
-    elif len(message.command) < 2 or reply_to is None:
+    else:
         err = "<b><i>Please send a query or reply to an query to proceed!</i></b>"
         await message.reply_text(text=err, disable_web_page_preview=True, quote=True)
         return

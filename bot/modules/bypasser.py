@@ -99,10 +99,7 @@ async def bifm(url):
         query = response.json()
     except BaseException:
         return "Invalid Link"
-    if "destination" in query:
-        return query["destination"]
-    else:
-        return query["error"]
+    return query["destination"] if "destination" in query else query["error"]
 
 
 async def droplink(url):
@@ -221,7 +218,7 @@ async def gtlinks(url):
             await asyncio.sleep(5)
             headers = {"x-requested-with": "XMLHttpRequest"}
             des_url = (
-                await client.post(dom + "links/go", data=data, headers=headers)
+                await client.post(f"{dom}links/go", data=data, headers=headers)
             ).json()["url"]
             des_url = des_url.replace(" ", "%20")
             return des_url
@@ -386,14 +383,13 @@ async def linkvertise(url):
             query = data.json()
             if query["success"] is True:
                 return query["destination"]
-            else:
-                data = {
-                    "url": url,
-                }
-                async with httpx.AsyncClient() as client:
-                    r = await client.post("https://api.bypass.vip/", data=data)
-                    await asyncio.sleep(1)
-                    return r.json()["destination"]
+            data = {
+                "url": url,
+            }
+            async with httpx.AsyncClient() as client:
+                r = await client.post("https://api.bypass.vip/", data=data)
+                await asyncio.sleep(1)
+                return r.json()["destination"]
         except BaseException:
             return "Some Error Occurred \nCould not Bypass your URL"
 
@@ -455,10 +451,7 @@ async def multi_bypass(url):
                 res = resp.json()
             except BaseException:
                 return "Emily API Unresponsive!"
-            if res["success"] is True:
-                f_msg = res["url"]
-            else:
-                f_msg = res["msg"]
+            f_msg = res["url"] if res["success"] is True else res["msg"]
         return f_msg
 
 
@@ -550,7 +543,7 @@ async def pkin(url):
             data = {input.get("name"): input.get("value") for input in inputs}
             await asyncio.sleep(3)
             headers = {"x-requested-with": "XMLHttpRequest", "user-agent": user_agent}
-            des_url = await client.post(dom + "links/go", data=data, headers=headers)
+            des_url = await client.post(f"{dom}links/go", data=data, headers=headers)
             des_url = des_url.json()["url"]
             return des_url
         except BaseException:
@@ -627,9 +620,7 @@ async def scripta(dom, url, client):
     res = client.get(url)
     soup = BeautifulSoup(res.text, "html.parser")
     soup = soup.find("form").findAll("input")
-    datalist = []
-    for ele in soup:
-        datalist.append(ele.get("value"))
+    datalist = [ele.get("value") for ele in soup]
     data = {
         "_method": datalist[0],
         "_csrfToken": datalist[1],
@@ -651,9 +642,8 @@ async def scripta(dom, url, client):
         "Sec-Fetch-Site": "same-origin",
     }
     time.sleep(10)  # important
-    response = client.post(dom + "/links/go", data=data).json()
-    furl = response["url"]
-    return furl
+    response = client.post(f"{dom}/links/go", data=data).json()
+    return response["url"]
 
 
 async def scriptb(url):
@@ -664,9 +654,7 @@ async def scriptb(url):
     soup = soup.find("form")
     action = soup.get("action")
     soup = soup.findAll("input")
-    datalist = []
-    for ele in soup:
-        datalist.append(ele.get("value"))
+    datalist = [ele.get("value") for ele in soup]
     client.headers = {
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:103.0) Gecko/20100101 Firefox/103.0",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
@@ -958,7 +946,6 @@ async def xpshort(url):
         headers = {"x-requested-with": "XMLHttpRequest"}
         await asyncio.sleep(12)
         response = await client.post(f"{dom}/links/go", data=data, headers=headers)
-        des_url = response.json()["url"]
-        return des_url
+        return response.json()["url"]
     except BaseException:
         return "Some Error Occurred \nCould not Bypass your URL"

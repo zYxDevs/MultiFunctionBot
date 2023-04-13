@@ -26,7 +26,7 @@ async def sudo_user(_, message: Message):
         user_id = reply_to.from_user.id
     if user_id:
         if user_id in SUDO_USERS:
-            msg = f"<b><i>Already in Sudo Users List!</i></b>"
+            msg = "<b><i>Already in Sudo Users List!</i></b>"
         elif DATABASE_URL is not None:
             msg = await DatabaseHelper().auth_user(user_id)
             SUDO_USERS.add(user_id)

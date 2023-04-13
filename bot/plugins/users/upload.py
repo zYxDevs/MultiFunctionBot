@@ -137,20 +137,19 @@ async def thirdparty_upload(client, message: Message):
     time.sleep(1)
 
     if message.reply_to_message or "t.me" in message.text:
-        result = tgUrlRx.search(message.text)
-        if result:
-            chatid = "-100" + result.group(1)
+        if result := tgUrlRx.search(message.text):
+            chatid = f"-100{result.group(1)}"
             mid = result.group(2)
             msg = client.get_messages(chatid, int(mid))
         else:
             msg = message.reply_to_message
         mediaType = msg.media.value
-        if mediaType == "video":
-            media = msg.video
-        elif mediaType == "audio":
+        if mediaType == "audio":
             media = msg.audio
         elif mediaType == "document":
             media = msg.document
+        elif mediaType == "video":
+            media = msg.video
         else:
             await progressMessage.edit(text="This media type is not supported!")
             return

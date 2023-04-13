@@ -27,7 +27,7 @@ next_page_token = ""
 def index_scraper(payload, url):
     global next_page
     global next_page_token
-    url = url + "/" if url[-1] != "/" else url
+    url = f"{url}/" if url[-1] != "/" else url
     client = cloudscraper.create_scraper(allow_brotli=False)
     resp = client.post(url, data=payload)
     if resp.status_code == 401:
@@ -42,17 +42,13 @@ def index_scraper(payload, url):
     else:
         next_page = True
         next_page_token = page_token
-    res = ""
-    if list(resp2.get("data").keys())[0] == "error":
-        pass
-    else:
+    if list(resp2.get("data").keys())[0] != "error":
         file_len = len(resp2["data"]["files"])
+        res = ""
         for i, _ in enumerate(range(file_len)):
             file_type = resp2["data"]["files"][i]["mimeType"]
-            file_name = resp2["data"]["files"][i]["name"]
-            if file_type == "application/vnd.google-apps.folder":
-                pass
-            else:
+            if file_type != "application/vnd.google-apps.folder":
+                file_name = resp2["data"]["files"][i]["name"]
                 ddl = url + urllib.parse.quote(file_name)
                 res += f"• <b>{file_name}</b>:-<br><code>{ddl}</code><br><br>"
         return res
@@ -78,8 +74,8 @@ async def animeremux_scrap(url):
         return "Bot could not connect to the URL!"
     client = requests.Session()
     rslt = f"<b>User URL :</b> <code>{url}</code><br>"
-    rslt += f"<i>GDrive Links:</i><br>"
-    url = url + "/" if url[-1] != "/" else url
+    rslt += "<i>GDrive Links:</i><br>"
+    url = f"{url}/" if url[-1] != "/" else url
     r = client.get(url).text
     soup = BeautifulSoup(r, "html.parser")
     for a in soup.find_all("a"):
@@ -90,8 +86,7 @@ async def animeremux_scrap(url):
             soupt = BeautifulSoup(t, "html.parser")
             title = soupt.title
             rslt += f"<b>{(title.text).replace('GDToT | ', '')}</b><br><code>{x}</code><br><br>"
-    tlg_url = await telegraph_paste(rslt)
-    return tlg_url
+    return await telegraph_paste(rslt)
 
 
 async def atishmkv_scrap(url):
@@ -99,8 +94,8 @@ async def atishmkv_scrap(url):
         return "Bot could not connect to the URL!"
     client = requests.Session()
     rslt = f"<b>User URL :</b> <code>{url}</code><br>"
-    rslt += f"<i>GDrive Links:</i><br>"
-    url = url + "/" if url[-1] != "/" else url
+    rslt += "<i>GDrive Links:</i><br>"
+    url = f"{url}/" if url[-1] != "/" else url
     r = client.get(url)
     soup = BeautifulSoup(r.text, "html.parser")
     for a in soup.find_all(
@@ -150,8 +145,7 @@ async def atishmkv_scrap(url):
     ):
         i = g.get("href")
         rslt += f"• <code>{i}</code><br>"
-    tlg_url = await telegraph_paste(rslt)
-    return tlg_url
+    return await telegraph_paste(rslt)
 
 
 async def benzmovies_scrap(url):
@@ -159,16 +153,15 @@ async def benzmovies_scrap(url):
         return "Bot could not connect to the URL!"
     client = requests.Session()
     rslt = f"<b>User URL :</b> <code>{url}</code><br>"
-    rslt += f"<i>Links:</i><br>"
-    url = url + "/" if url[-1] != "/" else url
+    rslt += "<i>Links:</i><br>"
+    url = f"{url}/" if url[-1] != "/" else url
     p = client.get(url)
     soup = BeautifulSoup(p.text, "html.parser")
     links = soup.select('a[href*="filepress"]')
     for a in links:
         i = a["href"]
         rslt += f"• <code>{i}</code><br>"
-    tlg_url = await telegraph_paste(rslt)
-    return tlg_url
+    return await telegraph_paste(rslt)
 
 
 async def cinevez_scrap(url):
@@ -176,7 +169,7 @@ async def cinevez_scrap(url):
         return "Bot could not connect to the URL!"
     client = requests.Session()
     rslt = f"<b>User URL :</b> <code>{url}</code><br><br>"
-    url = url + "/" if url[-1] != "/" else url
+    url = f"{url}/" if url[-1] != "/" else url
     p = client.get(url)
     soup = BeautifulSoup(p.text, "html.parser")
     rslt += "<b><u>Magnet Torrents :</u></b><br>"
@@ -192,30 +185,26 @@ async def cinevez_scrap(url):
     ):
         for d in c.find_all("a"):
             rslt += f"• <code>{d['href']}</code><br>"
-    tlg_url = await telegraph_paste(rslt)
-    return tlg_url
+    return await telegraph_paste(rslt)
 
 
 async def cinevood_scrap(url):
     if not url_exists(url):
         return "Bot could not connect to the URL!"
-    t_urls = []
     client = requests.Session()
     rslt = f"<b>User URL :</b> <code>{url}</code><br>"
-    rslt += f"<i>Links:</i><br>"
-    url = url + "/" if url[-1] != "/" else url
+    rslt += "<i>Links:</i><br>"
+    url = f"{url}/" if url[-1] != "/" else url
     p = client.get(url)
     soup = BeautifulSoup(p.text, "html.parser")
     x = soup.select('a[href^="https://filepress"]')
-    for a in x:
-        t_urls.append(a["href"])
+    t_urls = [a["href"] for a in x]
     for c in t_urls:
         res = client.get(c)
         soup = BeautifulSoup(res.content, "html.parser")
         title = soup.title
         rslt += f"• <b>{title}</b><br><code>{c}</code><br>"
-    tlg_url = await telegraph_paste(rslt)
-    return tlg_url
+    return await telegraph_paste(rslt)
 
 
 async def filecrypt_scrap(url):
@@ -236,8 +225,8 @@ async def filecrypt_scrap(url):
         "upgrade-insecure-requests": "1",
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36",
     }
-    url = url + "/" if url[-1] != "/" else url
-    if "filecrypt" in url and "Container":  # Folder Check
+    url = f"{url}/" if url[-1] != "/" else url
+    if "filecrypt" in url:  # Folder Check
         resp = client.get(url, headers=h1)
         soup = BeautifulSoup(resp.content, "html.parser")
     else:  # File Check
@@ -258,28 +247,26 @@ async def filecrypt_scrap(url):
     if dlclink == "":
         return "File not found/The link you entered is wrong!"
     resp = client.get(dlclink, headers=h1)
-    if resp.text == "":
+    if not resp.text:
         return "Sorry! Some Error occured while parsing your Link."
-    else:
-        h2 = {
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:103.0) Gecko/20100101 Firefox/103.0",
-            "Accept": "application/json, text/javascript, */*",
-            "Accept-Language": "en-US,en;q=0.5",
-            "X-Requested-With": "XMLHttpRequest",
-            "Origin": "http://dcrypt.it",
-            "Connection": "keep-alive",
-            "Referer": "http://dcrypt.it/",
-        }
-        data = {
-            "content": resp.text,
-        }
-        response = client.post(
-            "http://dcrypt.it/decrypt/paste", headers=h2, data=data
-        ).json()["success"]["links"]
-        for link in response:
-            res_msg += f"<code>{link}</code><br>"
-        tlg_url = await telegraph_paste(res_msg)
-        return tlg_url
+    h2 = {
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:103.0) Gecko/20100101 Firefox/103.0",
+        "Accept": "application/json, text/javascript, */*",
+        "Accept-Language": "en-US,en;q=0.5",
+        "X-Requested-With": "XMLHttpRequest",
+        "Origin": "http://dcrypt.it",
+        "Connection": "keep-alive",
+        "Referer": "http://dcrypt.it/",
+    }
+    data = {
+        "content": resp.text,
+    }
+    response = client.post(
+        "http://dcrypt.it/decrypt/paste", headers=h2, data=data
+    ).json()["success"]["links"]
+    for link in response:
+        res_msg += f"<code>{link}</code><br>"
+    return await telegraph_paste(res_msg)
 
 
 async def htpmovies_scrap(url):
@@ -287,7 +274,7 @@ async def htpmovies_scrap(url):
         return "Bot could not connect to the URL!"
     client = requests.Session()
     rslt = f"<b>User URL :</b> <code>{url}</code><br><br>"
-    url = url + "/" if url[-1] != "/" else url
+    url = f"{url}/" if url[-1] != "/" else url
     dom = url.split("/")[-3]
     p = client.get(url)
     soup = BeautifulSoup(p.text, "html.parser")
@@ -295,14 +282,12 @@ async def htpmovies_scrap(url):
     for a in soup.find_all("a"):
         c = a.get("href")
         if "/exit.php?url=" in c:
-            temp_u = f"https://{dom}" + c
+            temp_u = f"https://{dom}{c}"
             byp = await htpmovies(temp_u)
             p = client.get(byp)
             soup = BeautifulSoup(p.content, "html.parser")
             ss = soup.select("li.list-group-item")
-            li = []
-            for item in ss:
-                li.append(item.string)
+            li = [item.string for item in ss]
             try:
                 text = re.sub(r"www\S+ \- ", "", li[0])
             except IndexError:
@@ -310,9 +295,7 @@ async def htpmovies_scrap(url):
                 p = client.get(byp)
                 soup = BeautifulSoup(p.content, "html.parser")
                 ss = soup.select("li.list-group-item")
-                li = []
-                for item in ss:
-                    li.append(item.string)
+                li = [item.string for item in ss]
                 text = re.sub(r"www\S+ \- ", "", li[0])
             if text is not None:
                 rslt += f"• {text} <code>{byp}</code><br>"
@@ -324,8 +307,7 @@ async def htpmovies_scrap(url):
         if "telegram.me/htpfilesbot" in d:
             rslt += f"• <code>{d}</code><br>"
     rslt += "<br><br><b><u>NOTE:</u></b><i>The GDrive Links are actually GTLinks AdLinks. Bypass them manually</i>"
-    tlg_url = await telegraph_paste(rslt)
-    return tlg_url
+    return await telegraph_paste(rslt)
 
 
 def decodeKey(encoded):
@@ -384,14 +366,12 @@ async def igggames_scrap(url):
     if not url_exists(url):
         return "Bot could not connect to the URL!"
     res_text = f"<b>User URL :</b> <code>{url}</code><br>"
-    res_text += f"<i>Links/Magnets Below:</i><br>"
-    url = url + "/" if url[-1] != "/" else url
+    res_text += "<i>Links/Magnets Below:</i><br>"
+    url = f"{url}/" if url[-1] != "/" else url
     res = requests.get(url)
     soup = BeautifulSoup(res.text, "html.parser")
     soup = soup.find("div", class_="uk-margin-medium-top").findAll("a")
-    bluelist = []
-    for ele in soup:
-        bluelist.append(ele.get("href"))
+    bluelist = [ele.get("href") for ele in soup]
     bluelist = bluelist[8:-1]
     for ele in bluelist:
         if "bluemediafiles." in ele:
@@ -412,26 +392,22 @@ async def igggames_scrap(url):
         else:
             res_text += f"<code>{ele}</code><br>"
     res_text = res_text[:-1]
-    tlg_url = await telegraph_paste(res_text)
-    return tlg_url
+    return await telegraph_paste(res_text)
 
 
 async def magnet_scrap(url):
     if not url_exists(url):
         return "Bot could not connect to the URL!"
     result = f"<b>User URL :</b> <code>{url}</code><br>"
-    result += f"<i>Magnets:</i><br>"
-    magns = []
-    url = url + "/" if url[-1] != "/" else url
+    result += "<i>Magnets:</i><br>"
+    url = f"{url}/" if url[-1] != "/" else url
     res = requests.get(url)
     soup = BeautifulSoup(res.text, "html.parser")
     x = soup.select('a[href^="magnet:?xt=urn:btih:"]')
-    for a in x:
-        magns.append(a["href"])
+    magns = [a["href"] for a in x]
     for o in magns:
         result += f"• <code>{o}</code><br>"
-    tlg_url = await telegraph_paste(result)
-    return tlg_url
+    return await telegraph_paste(result)
 
 
 async def moviesboss_scrap(url):
@@ -439,8 +415,8 @@ async def moviesboss_scrap(url):
         return "Bot could not connect to the URL!"
     client = requests.Session()
     rslt = f"<b>User URL :</b> <code>{url}</code><br>"
-    rslt += f"<i>Links:</i><br>"
-    url = url + "/" if url[-1] != "/" else url
+    rslt += "<i>Links:</i><br>"
+    url = f"{url}/" if url[-1] != "/" else url
     p = client.get(url, allow_redirects=True)
     soup = BeautifulSoup(p.text, "html.parser")
     links = soup.select('a[href^="https://themoviesboss.mx/links/"]')
@@ -457,8 +433,7 @@ async def moviesboss_scrap(url):
             for c in lks:
                 k = c["href"]
                 rslt += f"• <code>{k}</code><br>"
-    tlg_url = await telegraph_paste(rslt)
-    return tlg_url
+    return await telegraph_paste(rslt)
 
 
 async def moviesdrama_scrap(url):
@@ -466,8 +441,8 @@ async def moviesdrama_scrap(url):
         return "Bot could not connect to the URL!"
     client = requests.Session()
     rslt = f"<b>User URL :</b> <code>{url}</code><br>"
-    rslt += f"<i>Links:</i><br>"
-    url = url + "/" if url[-1] != "/" else url
+    rslt += "<i>Links:</i><br>"
+    url = f"{url}/" if url[-1] != "/" else url
     p = client.get(url)
     soup = BeautifulSoup(p.text, "html.parser")
     for a in soup.find("div", {"class": "fix-table"}):
@@ -479,8 +454,7 @@ async def moviesdrama_scrap(url):
                 f_url = c["href"]
                 if "moviesdrama." not in f_url:
                     rslt += f"• <code>{f_url}</code><br>"
-    tlg_url = await telegraph_paste(rslt)
-    return tlg_url
+    return await telegraph_paste(rslt)
 
 
 async def moviesmod_scrap(url):
@@ -488,7 +462,7 @@ async def moviesmod_scrap(url):
         return "Bot could not connect to the URL!"
     client = requests.Session()
     rslt = f"<b>User URL :</b> <code>{url}</code><br>"
-    url = url + "/" if url[-1] != "/" else url
+    url = f"{url}/" if url[-1] != "/" else url
     p = client.get(url)
     soup = BeautifulSoup(p.text, "html.parser")
     links = soup.select("a[rel='noopener nofollow external noreferrer']")
@@ -508,8 +482,7 @@ async def moviesmod_scrap(url):
                 atag = ssoup.select('div[id="text-url"] > a[href]')
                 for ref in atag:
                     rslt += f"• <code>{ref['href']}</code><br>"
-    tlg_url = await telegraph_paste(rslt)
-    return tlg_url
+    return await telegraph_paste(rslt)
 
 
 async def privatemoviez_scrap(url):
@@ -518,7 +491,7 @@ async def privatemoviez_scrap(url):
     client = requests.Session()
     rslt = f"<b>User URL :</b> <code>{url}</code><br>"
     rslt += "<b><u>Links :</u></b><br>"
-    url = url + "/" if url[-1] != "/" else url
+    url = f"{url}/" if url[-1] != "/" else url
     r = client.get(url)
     soup = BeautifulSoup(r.text, "html.parser")
     for a in soup.find_all(
@@ -556,8 +529,7 @@ async def privatemoviez_scrap(url):
         except BaseException:
             continue
     rslt += "<br><br><b><u>NOTE:</u></b><i>The GDrive Links are actually GTLinks AdLinks. Bypass them manually</i>"
-    tlg_url = await telegraph_paste(rslt)
-    return tlg_url
+    return await telegraph_paste(rslt)
 
 
 async def sharespark_scrap(url):
@@ -573,25 +545,28 @@ async def sharespark_scrap(url):
         if not (next_s and isinstance(next_s, NavigableString)):
             continue
         next2_s = next_s.nextSibling
-        if next2_s and isinstance(next2_s, Tag) and next2_s.name == "br":
-            if str(next_s).strip():
-                List = next_s.split()
-                if re.match(r"^(480p|720p|1080p)(.+)? Links:\Z", next_s):
-                    rslt += (
-                        f'<b>{next_s.replace("Links:", "GDToT Links :")}</b><br><br>'
-                    )
-                for s in List:
-                    ns = re.sub(r"\(|\)", "", s)
-                    if re.match(r"https?://.+\.gdtot\.\S+", ns):
-                        r = client.get(ns)
-                        soup = BeautifulSoup(r.content, "html.parser")
-                        title = soup.select('meta[property^="og:description"]')
-                        rslt += f"<code>{(title[0]['content']).replace('Download ' , '')}</code><br>{ns}<br><br>"
-                    elif re.match(r"https?://pastetot\.\S+", ns):
-                        nxt = re.sub(r"\(|\)|(https?://pastetot\.\S+)", "", next_s)
-                        rslt += f"<br><code>{nxt}</code><br>{ns}<br>"
-    tlg_url = await telegraph_paste(rslt)
-    return tlg_url
+        if (
+            next2_s
+            and isinstance(next2_s, Tag)
+            and next2_s.name == "br"
+            and str(next_s).strip()
+        ):
+            List = next_s.split()
+            if re.match(r"^(480p|720p|1080p)(.+)? Links:\Z", next_s):
+                rslt += (
+                    f'<b>{next_s.replace("Links:", "GDToT Links :")}</b><br><br>'
+                )
+            for s in List:
+                ns = re.sub(r"\(|\)", "", s)
+                if re.match(r"https?://.+\.gdtot\.\S+", ns):
+                    r = client.get(ns)
+                    soup = BeautifulSoup(r.content, "html.parser")
+                    title = soup.select('meta[property^="og:description"]')
+                    rslt += f"<code>{(title[0]['content']).replace('Download ' , '')}</code><br>{ns}<br><br>"
+                elif re.match(r"https?://pastetot\.\S+", ns):
+                    nxt = re.sub(r"\(|\)|(https?://pastetot\.\S+)", "", next_s)
+                    rslt += f"<br><code>{nxt}</code><br>{ns}<br>"
+    return await telegraph_paste(rslt)
 
 
 async def skymovieshd_scrap(url):
@@ -599,7 +574,7 @@ async def skymovieshd_scrap(url):
         return "Bot could not connect to the URL!"
     client = requests.Session()
     rslt = f"<b>User URL :</b> <code>{url}</code><br>"
-    url = url + "/" if url[-1] != "/" else url
+    url = f"{url}/" if url[-1] != "/" else url
     p = client.get(url)
     soup = BeautifulSoup(p.text, "html.parser")
     a = soup.select('a[href^="https://howblogs.xyz"]')
@@ -611,16 +586,15 @@ async def skymovieshd_scrap(url):
     atag = nsoup.select('div[class="cotent-box"] > a[href]')
     for no, link in enumerate(atag, start=1):
         rslt += f"• {no}. <code>{link['href']}</code><br>"
-    tlg_url = await telegraph_paste(rslt)
-    return tlg_url
+    return await telegraph_paste(rslt)
 
 
 async def olamovies_scrap(url):
     if not url_exists(url):
         return "Bot could not connect to the URL!"
-    url = url + "/" if url[-1] != "/" else url
+    url = f"{url}/" if url[-1] != "/" else url
     res_mesg = f"<b>User URL :</b> <code>{url}</code><br>"
-    res_mesg += f"<i>Direct Download Links:</i><br>"
+    res_mesg += "<i>Direct Download Links:</i><br>"
     headers = {
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:103.0) Gecko/20100101 Firefox/103.0",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
@@ -640,10 +614,7 @@ async def olamovies_scrap(url):
     soup = BeautifulSoup(res.text, "html.parser")
     soup = soup.findAll("div", class_="wp-block-button")
 
-    outlist = []
-    for ele in soup:
-        outlist.append(ele.find("a").get("href"))
-
+    outlist = [ele.find("a").get("href") for ele in soup]
     slist = []
     for ele in outlist:
         try:
@@ -661,7 +632,7 @@ async def olamovies_scrap(url):
         params = {"key": key, "id": id}
         soup = "None"
         LOGGER(__name__).info(f"Trying OlaMovies Scraping with Link : {url}!")
-        url = "https://olamovies.wtf/download/&key=" + key + "&id=" + id
+        url = f"https://olamovies.wtf/download/&key={key}&id={id}"
         while ("rocklinks." and "try2link." and "ez4short.com") not in soup:
             res = client.get(
                 "https://olamovies.ink/download/", params=params, headers=headers
@@ -669,17 +640,16 @@ async def olamovies_scrap(url):
             rand = res.text
             rose = rand.split('url = "')[-1]
             soup = rose.split('";')[0]
-            if soup != "":
-                if ("try2link." or "rocklinks." or "ez4short.") in soup:
-                    LOGGER(__name__).info(f"Added {soup} in OlaMovies Scraping")
-                    slist.append(soup)
-                else:
-                    LOGGER(__name__).info(f"Not Added {soup} in OlaMovies Scraping")
-            else:
+            if soup == "":
                 if count == 0:
                     break
                 else:
                     count -= 1
+            elif ("try2link." or "rocklinks." or "ez4short.") in soup:
+                LOGGER(__name__).info(f"Added {soup} in OlaMovies Scraping")
+                slist.append(soup)
+            else:
+                LOGGER(__name__).info(f"Not Added {soup} in OlaMovies Scraping")
             await asyncio.sleep(10)
 
     final = []
@@ -697,8 +667,7 @@ async def olamovies_scrap(url):
             final.append(ele)
     for ee in final:
         res_mesg += f"<code>{ee}</code><br>"
-    tlg_url = await telegraph_paste(res_mesg)
-    return tlg_url
+    return await telegraph_paste(res_mesg)
 
 
 async def try2link_scrape(url):
@@ -709,8 +678,7 @@ async def try2link_scrape(url):
     }
     res = client.get(url, cookies={}, headers=h)
     url = "https://try2link.com/" + re.findall("try2link\.com\/(.*?) ", res.text)[0]
-    res2 = await try2link(url)
-    return res2
+    return await try2link(url)
 
 
 async def psa_scrap(url):
@@ -718,7 +686,7 @@ async def psa_scrap(url):
         return "Bot could not connect to the URL!"
     rs_msg = f"<b>User URL :</b> <code>{url}</code><br><br>"
     client = requests.Session()
-    url = url + "/" if url[-1] != "/" else url
+    url = f"{url}/" if url[-1] != "/" else url
     r = client.get(url)
     soup = BeautifulSoup(r.text, "html.parser").find_all(
         class_="dropshadowboxes-drop-shadow dropshadowboxes-rounded-corners dropshadowboxes-inside-and-outside-shadow dropshadowboxes-lifted-both dropshadowboxes-effect-default"
@@ -730,8 +698,7 @@ async def psa_scrap(url):
             rs_msg += f"<code>{res}</code><br>"
         except BaseException:
             pass
-    tlg_url = await telegraph_paste(rs_msg)
-    return tlg_url
+    return await telegraph_paste(rs_msg)
 
 
 async def taemovies_scrap(url):
@@ -740,7 +707,7 @@ async def taemovies_scrap(url):
     client = requests.Session()
     rslt = f"User URL : {url}<br><br>"
     rslt += "Gdrive Links :<br><br>"
-    url = url + "/" if url[-1] != "/" else url
+    url = f"{url}/" if url[-1] != "/" else url
     res = client.get(url, allow_redirects=True)
     soup = BeautifulSoup(res.text, "html.parser")
     links = soup.select('a[href*="shortingly"]')
@@ -748,8 +715,7 @@ async def taemovies_scrap(url):
         c = a["href"]
         rslt += f"• {c}<br>"
     rslt += "<br><br><b><u>NOTE:</u></b><i>The GDrive Links are actually Shortingly AdLinks. Bypass them manually</i>"
-    tlg_url = await telegraph_paste(rslt)
-    return tlg_url
+    return await telegraph_paste(rslt)
 
 
 async def tamiltvtoons_scrap(url):
@@ -757,8 +723,8 @@ async def tamiltvtoons_scrap(url):
         return "Bot could not connect to the URL!"
     client = requests.Session()
     ad_urls = f"<b>User URL :</b> <code>{url}</code><br>"
-    ad_urls += f"<i>AdLinks:</i><br>"
-    url = url + "/" if url[-1] != "/" else url
+    ad_urls += "<i>AdLinks:</i><br>"
+    url = f"{url}/" if url[-1] != "/" else url
     r = client.get(url)
     soup = BeautifulSoup(r.text, "html.parser")
     links = soup.select('a[href*="short2url"]')
@@ -766,8 +732,7 @@ async def tamiltvtoons_scrap(url):
         down = client.get(a["href"], stream=True, allow_redirects=False)
         link = down.headers["location"]
         ad_urls += f"• <code>{link}</code><br><br>"
-    tlg_url = await telegraph_paste(ad_urls)
-    return tlg_url
+    return await telegraph_paste(ad_urls)
 
 
 async def teleguflix_scrap(url):
@@ -776,7 +741,7 @@ async def teleguflix_scrap(url):
     client = requests.Session()
     rslt = f"User URL : {url}<br><br>"
     rslt += "Links :<br><br>"
-    url = url + "/" if url[-1] != "/" else url
+    url = f"{url}/" if url[-1] != "/" else url
     res = client.get(url, allow_redirects=True)
     soup = BeautifulSoup(res.content, "html.parser")
     links = soup.select('a[href*="gdtot"]')
@@ -786,8 +751,7 @@ async def teleguflix_scrap(url):
         soupt = BeautifulSoup(t.text, "html.parser")
         title = soupt.select('meta[property^="og:description"]')
         rslt += f"{no}. <code>{(title[0]['content']).replace('Download ', '')}</code><br>{gdlk}<br><br>"
-    tlg_url = await telegraph_paste(rslt)
-    return tlg_url
+    return await telegraph_paste(rslt)
 
 
 async def toonworld4all_scrap(url):
@@ -795,8 +759,8 @@ async def toonworld4all_scrap(url):
         return "Bot could not connect to the URL!"
     client = requests.Session()
     ad_urls = f"<b>User URL :</b> <code>{url}</code><br>"
-    ad_urls += f"<i>AdLinks:</i><br>"
-    url = url + "/" if url[-1] != "/" else url
+    ad_urls += "<i>AdLinks:</i><br>"
+    url = f"{url}/" if url[-1] != "/" else url
     r = client.get(url)
     soup = BeautifulSoup(r.text, "html.parser")
     for a in soup.find_all("a"):
@@ -805,5 +769,4 @@ async def toonworld4all_scrap(url):
             down = client.get(a["href"], stream=True, allow_redirects=False)
             link = down.headers["location"]
             ad_urls += f"• <code>{link}</code><br><br>"
-    tlg_url = await telegraph_paste(ad_urls)
-    return tlg_url
+    return await telegraph_paste(ad_urls)
